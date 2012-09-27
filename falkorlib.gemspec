@@ -171,7 +171,7 @@ Gem::Specification.new do |s|
 
     # The key used to sign this gem.  See Gem::Security for details.
     #
-    s.signing_key = 0xDD01D5C0
+    #s.signing_key = "0xDD01D5C0"
 
     # The certificate chain used to sign this gem.  See Gem::Security for
     # details.

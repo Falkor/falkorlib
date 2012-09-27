@@ -1,5 +1,5 @@
 #
-# Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap} tasks
+# Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}` tasks
 #
 module FalkorLib
 

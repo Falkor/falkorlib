@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2012-09-26 17:19 svarrette>
+        Time-stamp: <Thu 2012-09-27 16:24 svarrette>
 
 -------------------------------------------
 * File:   	 `README.md`
@@ -12,7 +12,7 @@
 
 # FalkorLib
 
-Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap}
+Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
 tasks. 
 
 ## Installation
@@ -81,7 +81,7 @@ Also, to facilitate the tracking of remote branches, you probably wants to insta
 
 Then, to make your local copy of the repository ready to use my git-flow workflow, you have to run the following commands once you cloned it for the first time:
 
-      $> rake setup
+      $> rake setup # Not yet implemented!
 
 Note that it assumes you have installed `grb`
 
