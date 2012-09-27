@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Wed 2012-09-26 17:06 svarrette>
+# Time-stamp: <Thu 2012-09-27 15:49 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -34,4 +34,9 @@ RAKE_TASKS_TO_LOAD = [
 Dir["tasks/*.rake"].each do |taskfile|
 	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
 	load taskfile
+end
+
+desc "clean the directory"
+task :clean => :clobber_package do
+	sh "rm -rf doc" if File.directory?("doc")
 end
