@@ -6,3 +6,5 @@ doc/api
 .bundle
 .rvmrc
 *~
+tmp/
+*.noespec
