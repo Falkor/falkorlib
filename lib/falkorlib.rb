@@ -4,5 +4,6 @@
 module FalkorLib
 
 end # module FalkorLib
+
 require "falkorlib/version"
 require "falkorlib/loader"
