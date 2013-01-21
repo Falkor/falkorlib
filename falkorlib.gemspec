@@ -119,6 +119,8 @@ Gem::Specification.new do |s|
     #
 	s.add_dependency("rake", "~> 0.9.2")
 	s.add_dependency("git_remote_branch")
+	s.add_dependency("git", "~> 1.2.5")
+	s.add_dependency("term-ansicolor")
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
@@ -132,6 +134,8 @@ Gem::Specification.new do |s|
     s.add_development_dependency("yard", "~> 0.7.2")
     s.add_development_dependency("bluecloth", "~> 2.2.0")
     s.add_development_dependency("wlang", "~> 0.10.2")
+	s.add_development_dependency("git", "~> 1.2.5")
+	s.add_development_dependency("term-ansicolor", "~> 1.0.7")
 
 
     # The version of ruby required by this gem
