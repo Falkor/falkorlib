@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Thu 2012-09-27 15:49 svarrette>
+# Time-stamp: <Lun 2013-01-21 10:48 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -24,10 +24,10 @@ task :default => :test
 # See .rake files there for complete documentation.
 #
 RAKE_TASKS_TO_LOAD = [
-                      'debug_mail.rake',
+                      #'debug_mail.rake',
                       'gem.rake',
                       'spec_test.rake',
-                      'unit_test.rake',
+                      #'unit_test.rake',
                       'yard.rake'
                      ] 
 

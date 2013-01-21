@@ -30,7 +30,8 @@ begin
   desc "Run RSpec code examples"
   RSpec::Core::RakeTask.new(:spec_test) do |t|
     # Glob pattern to match files.
-    t.pattern = "spec/**/test_*.rb"
+    #t.pattern = "spec/**/test_*.rb"
+	t.pattern = "spec/**/*_spec.rb"
 
     # Whether or not to fail Rake when an error occurs (typically when
     # examples fail).
@@ -59,7 +60,7 @@ begin
     t.rspec_path = "rspec"
 
     # Command line options to pass to rspec. See 'rspec --help' about this
-    t.rspec_opts = ["--color", "--backtrace"]
+    t.rspec_opts = ["--color", "--backtrace"] # "--format d", 
   end
 rescue LoadError => ex
   task :spec_test do

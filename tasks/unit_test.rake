@@ -46,6 +46,7 @@ begin
 
     # Glob pattern to match test files. (default is 'test/test*.rb')
     t.pattern = "test/test_*.rb"
+    #t.pattern = "test/**/*_spec.rb"
 
     # Style of test loader to use.  Options are:
     #
