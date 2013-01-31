@@ -60,7 +60,8 @@ begin
     t.rspec_path = "rspec"
 
     # Command line options to pass to rspec. See 'rspec --help' about this
-    t.rspec_opts = ["--color", "--backtrace"] # "--format d", 
+    #t.rspec_opts = ["--color", "--backtrace"] 
+    t.rspec_opts = ["--color", "--format d", "--backtrace"] # "--format d", 
   end
 rescue LoadError => ex
   task :spec_test do

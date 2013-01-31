@@ -1,10 +1,12 @@
 require 'spec_helper'
+require 'tempfile'
 
 describe FalkorLib do
 
     include FalkorLib::Common
 
-    context "test printing functions" do
+	#############################################
+    context "Test (common) printing functions" do
 
         @print_test_conf = {
             :info => {
@@ -29,7 +31,7 @@ describe FalkorLib do
             end
         end
 
-		# Check the prining messages
+        # Check the prining messages
         @print_test_conf.each do |method,conf|
             it "should put a #{method} message" do
                 ((method == :error) ? STDERR : STDOUT).should_receive(:puts).with(send("#{conf[:color]}", "#{conf[:prefix]} #{method} text"))
@@ -43,20 +45,40 @@ describe FalkorLib do
             end
         end
 
-		# Check the really_continue? function
+        # Check the ask function
+        ['', 'default'].each do |default_answer|
+            @query = "Am I a query"
+            it "should ask '#{@query}' with default answer '#{default_answer}' and no answer" do
+                STDIN.should_receive(:gets).and_return('')
+                results = capture(:stdout) {
+                    answer = ask(@query, default_answer)
+                    if default_answer.empty?
+                        answer.should be_empty
+                    else
+                        answer.should == default_answer
+                    end
+                }
+                results.should =~ /#{@query}/;
+                unless default_answer.empty?
+                    results.should =~ /Default: #{default_answer}/;
+                end
+            end
+        end
+
+        # Check the really_continue? function
         [ '', 'Yes', 'y', 'Y', 'yes' ].each do |answer|
             it "should really continue after answer '#{answer}'" do
                 STDIN.should_receive(:gets).and_return(answer)
                 results = capture(:stdout) { really_continue? }
                 results.should =~ /=> Do you really want to continue/;
-                results.should =~ /Default: Yes/
+                results.should =~ /Default: Yes/;
             end
             next if answer.empty?
             it "should really continue (despite default answer 'No') after answer '#{answer}'" do
                 STDIN.should_receive(:gets).and_return(answer)
                 results = capture(:stdout) { really_continue?('No') }
                 results.should =~ /=> Do you really want to continue/;
-                results.should =~ /Default: No/
+                results.should =~ /Default: No/;
             end
         end
 
@@ -69,7 +91,7 @@ describe FalkorLib do
                     }.should raise_error (SystemExit)
                 }
                 results.should =~ /=> Do you really want to continue/;
-                results.should =~ /Default: No/
+                results.should =~ /Default: No/;
             end
             next if answer.empty?
             it "should not continue and exit after answer '#{answer}'" do
@@ -80,12 +102,36 @@ describe FalkorLib do
                     }.should raise_error (SystemExit)
                 }
                 results.should =~ /=> Do you really want to continue/;
-                results.should =~ /Default: Yes/
+                results.should =~ /Default: Yes/;
             end
         end
 
+        # Check the command? function
+        [ 'sqgfyueztruyjf', 'ruby' ].each do |command|
+            it "should check the command '#{command}'" do
+                command?(command).should ((command == 'ruby') ? be_true : be_false)
+            end
+        end
+   end
+	
+	#############################################
+    context "Test (common) YAML functions" do
 
+		it "should load the correct hash from YAML" do
+			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}                              
+			YAML.stub(:load_file).and_return(file_config)  
+			loaded = load_config('toto')
+			loaded.should == file_config
+		end 
 
-    end
+		it "should store the correct hash to YAML" do
+			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}    
+			f = Tempfile.new('toto')
+			store_config(f.path, file_config)
+			copy_file_config = YAML::load_file(f.path)
+			copy_file_config.should == file_config
+		end 
+
+	end 
 
 end
