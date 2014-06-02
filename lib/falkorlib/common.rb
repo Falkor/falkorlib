@@ -14,7 +14,7 @@ require 'yaml'
 
 module FalkorLib
     module Common
-
+	    module_function
         ##################################
         ### Default printing functions ###
         ##################################
@@ -56,6 +56,10 @@ module FalkorLib
             error("NOT YET IMPLEMENTED")
         end
 
+        ##############################
+        ### Interaction functions  ###
+        ##############################
+
         ## Ask a question
         def ask(question, default_answer='')
             print "#{question} "
@@ -89,6 +93,17 @@ module FalkorLib
 		        if ! ok
 			        error("The command '#{cmd}' failed with exit status #{res.exitstatus}")
 		        end
+	        end
+        end
+
+        ## "Nice" way to present run commands
+        ## Ex: run %{ hostname -f }
+        def run(cmds)
+	        puts bold("[Running]\n#{cmds.gsub(/^\s*/, '   ')}")
+	        #puts cmds.split(/\n */).inspect
+	        cmds.split(/\n */).each do |cmd|
+		        next if cmd.empty?
+		        system("#{cmd}") unless DEBUG
 	        end
         end
 

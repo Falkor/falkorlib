@@ -7,3 +7,4 @@ end # module FalkorLib
 
 require "falkorlib/version"
 require "falkorlib/loader"
+require "falkorlib/common"
