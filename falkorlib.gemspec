@@ -90,6 +90,14 @@ Gem::Specification.new do |s|
     #
     s.test_files = Dir["test/**/*"] + Dir["spec/**/*"]
 
+	# Alternative: 
+	#s.files         = `git ls-files`.split("\n")
+	#s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+	#s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  
+
+
+
     # The path in the gem for executable scripts (optional)
     #
     #s.bindir = "bin"
@@ -134,11 +142,10 @@ Gem::Specification.new do |s|
     s.add_development_dependency("bundler",        "~> 1.0")
 	s.add_development_dependency 'rspec', '~> 2.7', '>= 2.7.0'
 	s.add_development_dependency("pry",    "~> 0.9")
-    #s.add_development_dependency("yard",           "~> 0.7.2")
+    s.add_development_dependency("yard",   "~> 0.8")
+	s.add_development_dependency("awesome_print", "~> 1.2")
     #s.add_development_dependency("bluecloth",      "~> 2.2.0")
     #s.add_development_dependency("wlang",          "~> 0.10.2")
-	#s.add_development_dependency("git",            ">= 1.2.5")
-	#s.add_development_dependency("term-ansicolor", "~> 1.0.7")
 
 
     # The version of ruby required by this gem
