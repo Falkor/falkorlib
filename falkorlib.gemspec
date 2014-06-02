@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
     # The license(s) for the library.  Each license must be a short name, no
     # more than 64 characters.
     #
-    # s.licences = %w{}
+	s.licenses    = ['MIT']
 
     # The rubyforge project this gem lives under (optional)
     #
@@ -92,11 +92,11 @@ Gem::Specification.new do |s|
 
     # The path in the gem for executable scripts (optional)
     #
-    s.bindir = "bin"
+    #s.bindir = "bin"
 
     # Executables included in the gem.
     #
-    s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
+    #s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
 
     ################################################################### REQUIREMENTS & INSTALL
     # Remember the gem version requirements operators and schemes:
@@ -117,10 +117,12 @@ Gem::Specification.new do |s|
     #   "~> 2.2"                (shortcut for ">= 2.2.0", "< 3.0")
     #   "~> 2.2.0"              (shortcut for ">= 2.2.0", "< 2.3.0")
     #
-	s.add_dependency("rake", "~> 0.9.2")
-	s.add_dependency("git_remote_branch")
-	s.add_dependency("git", "~> 1.2.5")
-	s.add_dependency("term-ansicolor")
+	#s.add_dependency("rake", ">= 10.1.0")
+	s.add_runtime_dependency 'rake', '~> 10.1', '>= 10.1.0'
+	s.add_runtime_dependency 'git_remote_branch', '~> 0'
+	#s.add_dependency("git_remote_branch")
+	s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
+	s.add_dependency("term-ansicolor", "~> 1.3")
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
@@ -128,14 +130,15 @@ Gem::Specification.new do |s|
     # One call to add_development_dependency('gem_name', 'gem version requirement')
     # for each development dependency. These gems are required for developers
     #
-    s.add_development_dependency("rake",           "~> 0.9.2")
+    #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
     s.add_development_dependency("bundler",        "~> 1.0")
-    s.add_development_dependency("rspec",          "~> 2.7.0")
-    s.add_development_dependency("yard",           "~> 0.7.2")
-    s.add_development_dependency("bluecloth",      "~> 2.2.0")
-    s.add_development_dependency("wlang",          "~> 0.10.2")
-	s.add_development_dependency("git",            "~> 1.2.5")
-	s.add_development_dependency("term-ansicolor", "~> 1.0.7")
+	s.add_development_dependency 'rspec', '~> 2.7', '>= 2.7.0'
+	s.add_development_dependency("pry",    "~> 0.9")
+    #s.add_development_dependency("yard",           "~> 0.7.2")
+    #s.add_development_dependency("bluecloth",      "~> 2.2.0")
+    #s.add_development_dependency("wlang",          "~> 0.10.2")
+	#s.add_development_dependency("git",            ">= 1.2.5")
+	#s.add_development_dependency("term-ansicolor", "~> 1.0.7")
 
 
     # The version of ruby required by this gem
