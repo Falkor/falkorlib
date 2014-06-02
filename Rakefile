@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Lun 2013-01-21 10:48 svarrette>
+# Time-stamp: <Lun 2014-06-02 14:58 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -15,6 +15,9 @@
 # Resources:
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
+require "bundler/gem_tasks"
+
+
 # We run tests by default
 task :default => :test
 
