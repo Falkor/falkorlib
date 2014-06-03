@@ -1,14 +1,19 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Mar 2014-06-03 13:32 svarrette>
+# Time-stamp: <Mar 2014-06-03 23:48 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
-# On puupose, I try to avoid using the Git library to avoid instanciate the Git class and thus managing the working directory 
+# On purpose, I try to avoid using the Git library to avoid instanciate the Git
+# class and thus managing the working directory  
+
+require "falkorlib"
 require "falkorlib/common"
+require "git"
+
 include FalkorLib::Common
 
 module FalkorLib
-    module Git
+    class Git << ::Git::Base
 	    
 	    ## Get the current git branch
 	    def git_branch?()
