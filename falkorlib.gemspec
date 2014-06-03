@@ -130,7 +130,8 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency 'git_remote_branch', '~> 0'
 	#s.add_dependency("git_remote_branch")
 	s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
-	s.add_dependency("term-ansicolor", "~> 1.3")
+	s.add_runtime_dependency("term-ansicolor", "~> 1.3")
+	s.add_runtime_dependency("configatron",    "~> 3.2")
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
