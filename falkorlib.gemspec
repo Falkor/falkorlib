@@ -132,6 +132,8 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
 	s.add_runtime_dependency("term-ansicolor", "~> 1.3")
 	s.add_runtime_dependency("configatron",    "~> 3.2")
+	s.add_runtime_dependency("awesome_print", "~> 1.2")
+
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
@@ -144,7 +146,7 @@ Gem::Specification.new do |s|
 	s.add_development_dependency 'rspec', '~> 2.7', '>= 2.7.0'
 	s.add_development_dependency("pry",    "~> 0.9")
     s.add_development_dependency("yard",   "~> 0.8")
-	s.add_development_dependency("awesome_print", "~> 1.2")
+	
     #s.add_development_dependency("bluecloth",      "~> 2.2.0")
     #s.add_development_dependency("wlang",          "~> 0.10.2")
 
