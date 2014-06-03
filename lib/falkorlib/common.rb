@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-#!/usr/bin/ruby
+
+require "falkorlib"
 
 ### Configure colors ###
 begin
@@ -19,6 +20,11 @@ module FalkorLib
         ##################################
         ### Default printing functions ###
         ##################################
+	    # Print a text in bold
+        def bold(str)
+            COLOR == true ? Term::ANSIColor.bold(str) : str
+        end
+
 
         # Print a text in green
         def green(str)
@@ -104,7 +110,7 @@ module FalkorLib
 	        #puts cmds.split(/\n */).inspect
 	        cmds.split(/\n */).each do |cmd|
 		        next if cmd.empty?
-		        system("#{cmd}") unless DEBUG
+		        system("#{cmd}") unless FalkorLib.config.debug
 	        end
         end
 
