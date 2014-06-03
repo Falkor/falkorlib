@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Lun 2014-06-02 14:58 svarrette>
+# Time-stamp: <Mar 2014-06-03 09:58 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -15,7 +15,18 @@
 # Resources:
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
-require "bundler/gem_tasks"
+
+
+#.....................
+namespace :gem do
+	require "bundler/gem_tasks"
+end # namespace gem
+
+
+
+# lib = File.expand_path('../lib', __FILE__)
+# $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 
 
 # We run tests by default
@@ -26,20 +37,30 @@ task :default => :test
 #
 # See .rake files there for complete documentation.
 #
-RAKE_TASKS_TO_LOAD = [
-                      #'debug_mail.rake',
-                      'gem.rake',
-                      'spec_test.rake',
-                      #'unit_test.rake',
-                      'yard.rake'
-                     ] 
+# RAKE_TASKS_TO_LOAD = [
+#                       #'debug_mail.rake',
+#                       'gem.rake',
+#                       'spec_test.rake',
+#                       #'unit_test.rake',
+#                       'yard.rake'
+#                      ] 
 
-Dir["tasks/*.rake"].each do |taskfile|
-	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
-	load taskfile
-end
+# Dir["tasks/*.rake"].each do |taskfile|
+# 	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
+# 	load taskfile
+# end
 
-desc "clean the directory"
-task :clean => :clobber_package do
-	sh "rm -rf doc" if File.directory?("doc")
+
+
+# desc "clean the directory"
+# task :clean => :clobber_package do
+# 	sh "rm -rf doc" if File.directory?("doc")
+# end
+
+task :console do
+  require 'irb'
+  require 'irb/completion'
+  require 'my_gem' # You know what to do.
+  ARGV.clear
+  IRB.start
 end
