@@ -1,5 +1,5 @@
 require 'falkorlib/common'
-require 'git'
+#require 'git'
 
 module FalkorLib
 

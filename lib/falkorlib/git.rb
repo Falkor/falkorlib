@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Mar 2014-06-03 13:15 svarrette>
+# Time-stamp: <Mer 2014-06-04 15:40 svarrette>
 ################################################################################
 # Management of Git [flow] operations
 require "falkorlib"
@@ -10,3 +10,5 @@ end # module FalkorLib
 
 require "falkorlib/git/base"
 require "falkorlib/git/flow"
+
+#FalkorLib::Git.new
