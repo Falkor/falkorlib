@@ -128,8 +128,8 @@ Gem::Specification.new do |s|
 	#s.add_dependency("rake", ">= 10.1.0")
 	s.add_runtime_dependency 'rake', '~> 10.1', '>= 10.1.0'
 	s.add_runtime_dependency 'git_remote_branch', '~> 0'
-	#s.add_dependency("git_remote_branch")
-	s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
+	#s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
+	s.add_runtime_dependency('minigit', '~> 0')
 	s.add_runtime_dependency("term-ansicolor", "~> 1.3")
 	s.add_runtime_dependency("configatron",    "~> 3.2")
 	s.add_runtime_dependency("awesome_print", "~> 1.2")
