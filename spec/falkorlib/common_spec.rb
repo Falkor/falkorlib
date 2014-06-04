@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'tempfile'
 
-describe FalkorLib do
+describe FalkorLib::Common do
 
     include FalkorLib::Common
 
