@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Mar 2014-06-03 09:58 svarrette>
+# Time-stamp: <Mer 2014-06-04 16:27 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -37,18 +37,18 @@ task :default => :test
 #
 # See .rake files there for complete documentation.
 #
-# RAKE_TASKS_TO_LOAD = [
-#                       #'debug_mail.rake',
-#                       'gem.rake',
-#                       'spec_test.rake',
-#                       #'unit_test.rake',
-#                       'yard.rake'
-#                      ] 
+RAKE_TASKS_TO_LOAD = [
+                      #'debug_mail.rake',
+                      #'gem.rake',
+                      'spec_test.rake',
+                      #'unit_test.rake',
+                      #'yard.rake'
+                     ] 
 
-# Dir["tasks/*.rake"].each do |taskfile|
-# 	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
-# 	load taskfile
-# end
+Dir["tasks/*.rake"].each do |taskfile|
+	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
+	load taskfile
+end
 
 
 
