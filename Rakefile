@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-05 11:33 svarrette>
+# Time-stamp: <Jeu 2014-06-05 12:20 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -15,6 +15,8 @@
 # Resources:
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
+
+task :default => [ :rspec ]
 
 #.....................
 require 'rake/clean'
