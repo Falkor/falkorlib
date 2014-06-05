@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Jeu 2014-06-05 10:30 svarrette>
+# Time-stamp: <Jeu 2014-06-05 13:37 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -39,6 +39,18 @@ module FalkorLib
 
         ## Initialize a git repository
         def init(path = Dir.pwd)
+	        # FIXME for travis test: ensure the global git configurations
+			# 'user.email' and 'user.name' are set
+	        [ 'user.name', 'user.email' ].each do |userconf| 
+		        if MiniGit[userconf].empty?
+			        warn "The Git global configuration '#{userconf}' is not set so"
+			        warn "you should *seriously* consider setting them by running\n\t git config --global #{userconf} 'your_#{userconf.sub(/\./, '_')}'"
+			        default_val = ENV['USER']
+			        default_val += '@domain.org' if userconf =~ /email/
+			        warn "Now putting a default value '#{default_val}' you could change later on"
+			        MiniGit[userconf] = default_val
+		        end 
+	        end
 	        #puts "#init #{path}"
 	        Dir.chdir( "#{path}" ) do
 		       %x[ pwd && git init ] unless FalkorLib.config.debug

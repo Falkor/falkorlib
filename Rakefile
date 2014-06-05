@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-05 13:16 svarrette>
+# Time-stamp: <Jeu 2014-06-05 13:38 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -16,7 +16,7 @@
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
 
-task :default => [ 'gem:build', :rspec ]
+task :default => [ :build, :rspec ]
 
 #.....................
 require 'rake/clean'
@@ -26,12 +26,12 @@ CLOBBER.add 'doc'
 
 #.....................
 #namespace :gem do
-	require 'rubygems/tasks'
-	Gem::Tasks.new do |tasks|
-		tasks.console.command = 'pry'
-		#tasks.sign.checksum   = true
-		#tasks.sign.pgp        = true
-	end
+require 'rubygems/tasks'
+Gem::Tasks.new do |tasks|
+    tasks.console.command = 'pry'
+    tasks.sign.checksum   = true
+    tasks.sign.pgp        = true
+end
 #end # namespace gem
 
 
