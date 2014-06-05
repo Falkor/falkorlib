@@ -17,6 +17,7 @@ GEM
     configatron (3.2.0)
     diff-lcs (1.1.3)
     git_remote_branch (0.3.8)
+    hashr (0.0.22)
     method_source (0.8.2)
     minigit (0.0.4)
     pry (0.9.12.6)
@@ -33,10 +34,14 @@ GEM
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.7.0)
     rubygems-tasks (0.2.4)
+    safe_yaml (0.9.7)
     slop (3.5.0)
     term-ansicolor (1.3.0)
       tins (~> 1.0)
     tins (1.3.0)
+    travis-lint (1.8.0)
+      hashr (~> 0.0.22)
+      safe_yaml (~> 0.9.0)
     yard (0.8.7.4)
 
 PLATFORMS
@@ -48,4 +53,5 @@ DEPENDENCIES
   pry (~> 0.9)
   rspec (~> 2.7, >= 2.7.0)
   rubygems-tasks (~> 0.2)
+  travis-lint (~> 1.8)
   yard (~> 0.8)
