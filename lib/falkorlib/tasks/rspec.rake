@@ -1,6 +1,6 @@
 # Installs a rake task for for running examples written using rspec.
 #
-# This file installs the 'rake spec_test' (aliased as 'rake spec') as well as
+# This file installs the 'rake rspec' (aliased as 'rake spec') as well as
 # extends 'rake test' to run spec tests, if any. It is automatically generated
 # by Noe from your .noespec file, and should therefore be configured there,
 # under the variables/rake_tasks/spec_test entry, as illustrated below:
@@ -27,8 +27,8 @@
 #
 begin
   require "rspec/core/rake_task"
-  desc "Run RSpec code examples"
-  RSpec::Core::RakeTask.new(:spec_test) do |t|
+  desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
+  RSpec::Core::RakeTask.new(:rspec) do |t|
     # Glob pattern to match files.
     #t.pattern = "spec/**/test_*.rb"
 	t.pattern = "spec/**/*_spec.rb"

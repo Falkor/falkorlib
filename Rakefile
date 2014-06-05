@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Mer 2014-06-04 16:27 svarrette>
+# Time-stamp: <Jeu 2014-06-05 10:19 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -16,39 +16,38 @@
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
 
-
 #.....................
 namespace :gem do
+	# Classical gem tasks offered within bundler  
 	require "bundler/gem_tasks"
 end # namespace gem
 
 
+#_____________ My own rake tasks ______________________
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-# lib = File.expand_path('../lib', __FILE__)
-# $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-
-
-# We run tests by default
-task :default => :test
+[ 'rspec.rake' ] .each do |tasks| 
+	load "falkorlib/tasks/#{tasks}"
+end
 
 #
 # Install all tasks found in tasks folder
 #
 # See .rake files there for complete documentation.
 #
-RAKE_TASKS_TO_LOAD = [
-                      #'debug_mail.rake',
-                      #'gem.rake',
-                      'spec_test.rake',
-                      #'unit_test.rake',
-                      #'yard.rake'
-                     ] 
+# RAKE_TASKS_TO_LOAD = [
+#                       #'debug_mail.rake',
+#                       #'gem.rake',
+#                       'spec_test.rake',
+#                       #'unit_test.rake',
+#                       #'yard.rake'
+#                      ] 
 
-Dir["tasks/*.rake"].each do |taskfile|
-	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
-	load taskfile
-end
+# Dir["tasks/*.rake"].each do |taskfile|
+# 	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
+# 	load taskfile
+# end
 
 
 
