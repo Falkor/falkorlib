@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Jeu 2014-06-05 14:01 svarrette>
+################################################################################
+# Time-stamp: <Jeu 2014-06-05 15:42 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -17,13 +18,7 @@ include FalkorLib::Common
 
 module FalkorLib
 
-    # class  Git
-    #   def initialize
-    #       @branches = ::Minigit::Capturing.branch.split("\n")
-    #   end
-
-    # end
-
+	# Management of Git operations
     module Git
         module_function
 
