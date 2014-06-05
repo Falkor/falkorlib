@@ -11,7 +11,7 @@ describe FalkorLib::Common do
         @print_test_conf = {
             :info => {
                 :color  => :green,
-                :prefix => "[INFO]",
+				:prefix => "[INFO]",
             },
             :warning => {
                 :color  => :cyan,
