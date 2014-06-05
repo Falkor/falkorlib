@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Jeu 2014-06-05 09:53 svarrette>
+# Time-stamp: <Jeu 2014-06-05 10:30 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -56,7 +56,8 @@ module FalkorLib
             g = MiniGit.new
             g.find_git_dir(path)[0]
         end
-
+        
+        # Create a new branch
         def create_branch(branch, path = Dir.pwd)
 	        g = MiniGit.new(path)
 	        g.branch "#{branch}"

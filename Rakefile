@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-05 10:19 svarrette>
+# Time-stamp: <Jeu 2014-06-05 10:55 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -18,48 +18,30 @@
 
 #.....................
 namespace :gem do
-	# Classical gem tasks offered within bundler  
-	require "bundler/gem_tasks"
+    # Classical gem tasks offered within bundler
+    require "bundler/gem_tasks"
+
+    desc "Open a console to test the gem"
+    task :console do |t|
+        require 'irb'
+        require 'irb/completion'
+        require 'falkorlib'
+        ARGV.clear
+        IRB.start
+    end
+
 end # namespace gem
 
 
-#_____________ My own rake tasks ______________________
+#__________________ My own rake tasks __________________
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-[ 'rspec.rake' ] .each do |tasks| 
-	load "falkorlib/tasks/#{tasks}"
+[ 'rspec', 'yard' ] .each do |tasks|
+    load "falkorlib/tasks/#{tasks}.rake"
 end
-
-#
-# Install all tasks found in tasks folder
-#
-# See .rake files there for complete documentation.
-#
-# RAKE_TASKS_TO_LOAD = [
-#                       #'debug_mail.rake',
-#                       #'gem.rake',
-#                       'spec_test.rake',
-#                       #'unit_test.rake',
-#                       #'yard.rake'
-#                      ] 
-
-# Dir["tasks/*.rake"].each do |taskfile|
-# 	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
-# 	load taskfile
-# end
-
-
 
 # desc "clean the directory"
 # task :clean => :clobber_package do
-# 	sh "rm -rf doc" if File.directory?("doc")
+#   sh "rm -rf doc" if File.directory?("doc")
 # end
-
-task :console do
-  require 'irb'
-  require 'irb/completion'
-  require 'my_gem' # You know what to do.
-  ARGV.clear
-  IRB.start
-end

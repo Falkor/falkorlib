@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-05 10:07 svarrette>
+# Time-stamp: <Jeu 2014-06-05 10:38 svarrette>
 #
 # @description Check the Git operation
 #
@@ -52,29 +52,29 @@ describe FalkorLib::Git do
             end
 
         end
-		
-		it "#branch? - check non-existing branch" do
-			br = FalkorLib::Git.branch?( dir )
-			br.should be_nil
+
+        it "#branch? - check non-existing branch" do
+            br = FalkorLib::Git.branch?( dir )
+            br.should be_nil
         end
 
-		it "#add - makes a first commit" do
-			afile = File.join(dir, 'a_file')
-			FileUtils.touch( afile )
-			FalkorLib::Git.add(afile)
-		end
+        it "#add - makes a first commit" do
+            afile = File.join(dir, 'a_file')
+            FileUtils.touch( afile )
+            FalkorLib::Git.add(afile)
+        end
 
         it "#branch? - check existing branch" do
             br = FalkorLib::Git.branch?( dir )
-			br.should == 'master'
+            br.should == 'master'
         end
 
         default_branches.each do |br|
-			it "#create_branch #list_branch - creates branch #{br}" do
+            it "#create_branch #list_branch - creates branch #{br}" do
                 FalkorLib::Git.create_branch( br, dir )
                 l = FalkorLib::Git.list_branch( dir )
-				l.should include "#{br}"
-			end
+                l.should include "#{br}"
+            end
         end
 
     end
