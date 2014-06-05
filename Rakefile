@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-05 11:15 svarrette>
+# Time-stamp: <Jeu 2014-06-05 11:33 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -16,26 +16,20 @@
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
 
+#.....................
 require 'rake/clean'
 
 CLEAN.add   'pkg'
 CLOBBER.add 'doc'
 
-
 #.....................
 namespace :gem do
-    # Classical gem tasks offered within bundler
-    require "bundler/gem_tasks"
-
-    desc "Open a console to test the gem"
-    task :console do |t|
-        require 'irb'
-        require 'irb/completion'
-        require 'falkorlib'
-        ARGV.clear
-        IRB.start
-    end
-
+	require 'rubygems/tasks'
+	Gem::Tasks.new do |tasks|
+		tasks.console.command = 'pry'
+		tasks.sign.checksum   = true
+		tasks.sign.pgp        = true
+	end
 end # namespace gem
 
 
