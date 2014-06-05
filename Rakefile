@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-05 10:55 svarrette>
+# Time-stamp: <Jeu 2014-06-05 11:15 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -15,6 +15,12 @@
 # Resources:
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
+
+require 'rake/clean'
+
+CLEAN.add   'pkg'
+CLOBBER.add 'doc'
+
 
 #.....................
 namespace :gem do
