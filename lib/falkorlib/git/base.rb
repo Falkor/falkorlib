@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Jeu 2014-06-05 13:42 svarrette>
+# Time-stamp: <Jeu 2014-06-05 14:01 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -48,7 +48,10 @@ module FalkorLib
 			        default_val = ENV['USER']
 			        default_val += '@domain.org' if userconf =~ /email/
 			        warn "Now putting a default value '#{default_val}' you could change later on"
-			        MiniGit[userconf] = default_val
+			        run %{
+                         git config --global #{userconf} "#{default_val}"
+                    }
+			        #MiniGit[userconf] = default_val
 		        end 
 	        end
 	        #puts "#init #{path}"

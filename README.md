@@ -13,6 +13,8 @@
 
 # FalkorLib
 
+[![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib)
+
 Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
 tasks. 
 
