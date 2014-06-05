@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2014-06-04 22:55 svarrette>
+# Time-stamp: <Jeu 2014-06-05 10:07 svarrette>
 #
 # @description Check the Git operation
 #
@@ -17,53 +17,67 @@ describe FalkorLib::Git do
 
     include FalkorLib::Common
     default_branches = [ 'devel', 'production' ]
-	
-	dir = Dir.mktmpdir
 
-    before :all do
-		puts "temp dir : #{dir}"
+    dir = Dir.mktmpdir
+
+    # before :all do
+    #   puts "temp dir : #{dir}"
+    # end
+    after :all do
+        FileUtils.remove_entry_secure dir
     end
-	after :all do 
-		FileUtils.remove_entry_secure dir
-	end 
 
-    #######################
-    context 'Test git init' do
+    #############################################################
+    context "Test git operations within temporary directory " do
 
-        it "fails on non-git directory #{dir}" do
-            #expect { FalkorLib::Git.init?(dir) }.to raise_error 
-			t = FalkorLib::Git.init?(dir)
+        it "#init? - fails on non-git directory" do
+            t = FalkorLib::Git.init?(dir)
             t.should be_false
         end
 
-        it "initialize a git repository #{dir}" do
-			FalkorLib::Git.init(dir)
-            #res = capture(:stdout) { FalkorLib::Git.init(dir) } #(dir) }
-            #puts res
-            b = FalkorLib::Git.init?(dir)
-            b.should be_true
+        it "#init - initialize a git repository" do
+            FalkorLib::Git.init(dir)
+            t = FalkorLib::Git.init?(dir)
+            t.should be_true
         end
 
-		
-
-
-    end
-
-
-    #############################################
-    context "Test git branch functions" do
-        it "should return the current branch (#{default_branches[0]})" do
-            br = FalkorLib::Git.branch?
-            br.should == "#{default_branches[0]}"
-        end
-        it "should list default branches (#{default_branches.join(',')})" do
-            a = FalkorLib::Git.get_branches
-            default_branches.each do |br|
-                a.should include(br)
+        it "#rootdir #gitdir - checks git dir and working tree" do
+            subdir = File.join(dir, 'some_dir')
+            Dir.mkdir( subdir )
+            Dir.chdir( subdir ) do
+                r = File.realpath( FalkorLib::Git.rootdir )
+                g = FalkorLib::Git.gitdir
+                r.should == File.realpath(dir)
+                g.should == File.realpath( File.join(dir, '.git')  )
             end
-        end
-    end
 
+        end
+		
+		it "#branch? - check non-existing branch" do
+			br = FalkorLib::Git.branch?( dir )
+			br.should be_nil
+        end
+
+		it "#add - makes a first commit" do
+			afile = File.join(dir, 'a_file')
+			FileUtils.touch( afile )
+			FalkorLib::Git.add(afile)
+		end
+
+        it "#branch? - check existing branch" do
+            br = FalkorLib::Git.branch?( dir )
+			br.should == 'master'
+        end
+
+        default_branches.each do |br|
+			it "#create_branch #list_branch - creates branch #{br}" do
+                FalkorLib::Git.create_branch( br, dir )
+                l = FalkorLib::Git.list_branch( dir )
+				l.should include "#{br}"
+			end
+        end
+
+    end
 
 
 

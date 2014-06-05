@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Mer 2014-06-04 22:54 svarrette>
+# Time-stamp: <Jeu 2014-06-05 09:53 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -11,6 +11,7 @@ require "falkorlib/common"
 
 #require "git"
 require "minigit"
+require "pathname"
 
 include FalkorLib::Common
 
@@ -38,10 +39,9 @@ module FalkorLib
 
         ## Initialize a git repository
         def init(path = Dir.pwd)
-	        puts "#init #{path}"
+	        #puts "#init #{path}"
 	        Dir.chdir( "#{path}" ) do
 		       %x[ pwd && git init ] unless FalkorLib.config.debug
-		       #run %{ git init } # unless FalkorLib.debug
 	        end 
         end
 
@@ -57,11 +57,16 @@ module FalkorLib
             g.find_git_dir(path)[0]
         end
 
+        def create_branch(branch, path = Dir.pwd)
+	        g = MiniGit.new(path)
+	        g.branch "#{branch}"
+        end
 
         ## Get an array of the local branches present (first element is always the
         ## current branch)
-        def get_branches()
-            res = MiniGit::Capturing.branch.split("\n")
+        def list_branch(path = Dir.pwd)
+	        cg = MiniGit::Capturing.new(path)
+            res = cg.branch.split("\n")
             # Eventually reorder to make the first element of the array the current branch
             i = res.find_index { |e| e =~ /^\*\s/ }
             unless (i.nil? || i == 0)
@@ -72,16 +77,23 @@ module FalkorLib
         end
 
         ## Get the current git branch
-        def branch?()
-            get_branches[0]
+        def branch?(path = Dir.pwd)
+            list_branch(path)[0]
         end
 
-        ## Add a file and commit
+        ## Add a file/whatever to Git and commit it 
         def add(path, msg = "")
-            dir = File.dirname(path)
-            run %{echo #{dir}}
+	        dir  = File.realpath File.dirname(path)
+	        root = rootdir(path)
+	        relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
+	        real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
+	        Dir.chdir( dir ) do
+		        run %{
+                  git add #{path}
+                  git commit -s -m "#{real_msg}" #{path}
+                }
+	        end 
         end
-
 
 
     end # module FalkorLib::Git
