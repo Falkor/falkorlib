@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Jeu 2014-06-05 13:37 svarrette>
+# Time-stamp: <Jeu 2014-06-05 13:42 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -42,7 +42,7 @@ module FalkorLib
 	        # FIXME for travis test: ensure the global git configurations
 			# 'user.email' and 'user.name' are set
 	        [ 'user.name', 'user.email' ].each do |userconf| 
-		        if MiniGit[userconf].empty?
+		        if MiniGit[userconf].nil?
 			        warn "The Git global configuration '#{userconf}' is not set so"
 			        warn "you should *seriously* consider setting them by running\n\t git config --global #{userconf} 'your_#{userconf.sub(/\./, '_')}'"
 			        default_val = ENV['USER']

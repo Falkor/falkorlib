@@ -1,21 +1,21 @@
 language: ruby
-bundler_args: --without=release doc
+#bundler_args: --without=release doc
 rvm:
-  - 1.8.7
-  - 1.9.2
-  - 1.9.3
-  - 2.0.0
   - 2.1.0
-  - ruby-head
-  - ree
-  - jruby-18mode
-  - jruby-19mode
-  - jruby-head
-notifications:
-  email:
-    recipients:
-      - sebastien.varrette@uni.lu
-    on_success: change
-    on_failure: always 
+#  - 1.8.7
+#  - 1.9.2
+#  - 1.9.3
+#  - 2.0.0
+#  - ruby-head
+#  - ree
+#  - jruby-18mode
+#  - jruby-19mode
+#  - jruby-head
+#notifications:
+#  email:
+#    recipients:
+#      - sebastien.varrette@uni.lu
+#    on_success: change
+#    on_failure: always 
 
 
