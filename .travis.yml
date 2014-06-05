@@ -1,21 +1,8 @@
 language: ruby
-bundler_args: --without=release doc
+bundler_args: "--without=release doc"
 rvm:
-  - 2.1.0
-#  - 1.8.7
-#  - 1.9.2
-#  - 1.9.3
-#  - 2.0.0
-#  - ruby-head
-#  - ree
-#  - jruby-18mode
-#  - jruby-19mode
-#  - jruby-head
-#notifications:
-#  email:
-#    recipients:
-#      - sebastien.varrette@uni.lu
-#    on_success: change
-#    on_failure: always 
-
-
+- 2.1.0
+notifications:
+  hipchat:
+    rooms:
+      secure: E0V9xQtCyPSB+SZ5n+ztdM5tzJ7d1eR+XR1gIBfAwe0JYnRb735B1v0Z3CVBmosKpv16KEoKUDjum1vHGk8fnOOcxoHx+TtTCF1TVpuBtKzXqG6t4YZAYjkGSIBUM1Zd7kXLlsdmdwRToGmKRqblQHutnm0LkyII/CAwaO+UeY8=

@@ -94,9 +94,6 @@ Gem::Specification.new do |s|
 	#s.files         = `git ls-files`.split("\n")
 	#s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
 	#s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  
-
-
 
     # The path in the gem for executable scripts (optional)
     #
@@ -148,6 +145,7 @@ Gem::Specification.new do |s|
     s.add_development_dependency("yard",   "~> 0.8")
     #s.add_development_dependency("minitest",   "~> 5.3")
     s.add_development_dependency("rubygems-tasks",   "~> 0.2")
+    s.add_development_dependency("travis",        "~> 1.6")
     s.add_development_dependency("travis-lint",   "~> 1.8")
 	
     #s.add_development_dependency("bluecloth",      "~> 2.2.0")
