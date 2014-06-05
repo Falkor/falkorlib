@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-05 15:42 svarrette>
+# Time-stamp: <Jeu 2014-06-05 22:54 svarrette>
 #
 # Interface for the main Git operations
 ################################################################################
@@ -104,6 +104,15 @@ module FalkorLib
                   git commit -s -m "#{real_msg}" #{path}
                 }
 	        end 
+        end
+
+        ## Check if a git directory is in dirty mode
+        # git diff --shortstat 2> /dev/null | tail -n1
+        def dirty?(path = Dir.pwd)
+	        g = MiniGit.new(path)
+	        a = g.capturing.diff :shortstat => true
+	        #ap a
+	        ! a.empty?
         end
 
 

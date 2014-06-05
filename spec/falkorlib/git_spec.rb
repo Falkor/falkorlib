@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-05 13:31 svarrette>
+# Time-stamp: <Jeu 2014-06-05 22:54 svarrette>
 #
 # @description Check the Git operation
 #
@@ -18,7 +18,8 @@ describe FalkorLib::Git do
     include FalkorLib::Common
     default_branches = [ 'devel', 'production' ]
 
-    dir = Dir.mktmpdir
+    dir   = Dir.mktmpdir
+	afile = File.join(dir, 'a_file')
 
     # before :all do
     #   puts "temp dir : #{dir}"
@@ -59,7 +60,6 @@ describe FalkorLib::Git do
         end
 
         it "#add - makes a first commit" do
-            afile = File.join(dir, 'a_file')
             FileUtils.touch( afile )
             FalkorLib::Git.add(afile)
         end
@@ -69,6 +69,11 @@ describe FalkorLib::Git do
             br.should == 'master'
         end
 
+		it "#dirty? - check non-dirty git directory" do
+			b = FalkorLib::Git.dirty?( dir )
+			b.should be_false
+		end 		
+
         default_branches.each do |br|
             it "#create_branch #list_branch - creates branch #{br}" do
                 FalkorLib::Git.create_branch( br, dir )
@@ -76,6 +81,13 @@ describe FalkorLib::Git do
                 l.should include "#{br}"
             end
         end
+
+		it "#dirty? - check dirty git directory" do
+			run %{ echo "toto" > #{afile} }
+			b = FalkorLib::Git.dirty?( dir )
+			b.should be_true
+		end 
+
 
     end
 

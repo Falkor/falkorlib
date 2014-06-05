@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-05 13:38 svarrette>
+# Time-stamp: <Jeu 2014-06-05 16:37 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -17,7 +17,6 @@
 ##############################################################################
 
 task :default => [ :build, :rspec ]
-
 #.....................
 require 'rake/clean'
 
@@ -34,12 +33,11 @@ Gem::Tasks.new do |tasks|
 end
 #end # namespace gem
 
-
 #__________________ My own rake tasks __________________
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-[ 'rspec', 'yard' ] .each do |tasks|
+[ 'rspec', 'yard', 'git' ] .each do |tasks|
     load "falkorlib/tasks/#{tasks}.rake"
 end
 
