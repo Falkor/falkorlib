@@ -1,10 +1,10 @@
-##############################################################################
-# git_tasks : FalkorLib rake tasks to pilot Git [flow] operations
-# .           See http://rake.rubyforge.org/
-# Time-stamp: <Ven 2014-06-06 15:34 svarrette>
+# -*- encoding: utf-8 -*-
+################################################################################
+# Time-stamp: <Ven 2014-06-06 17:05 svarrette>
+################################################################################
 #
-# Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
-##############################################################################
+# FalkorLib rake tasks to pilot Git [flow] operations
+#
 
 require 'rake'
 require 'falkorlib'
@@ -24,4 +24,6 @@ module FalkorLib #:nodoc:
     end # class FalkorLib::GitTasks
 end # module FalkorLib
 
+
+# Now install them ;)
 FalkorLib::GitTasks.new.install_tasks

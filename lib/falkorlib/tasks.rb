@@ -1,10 +1,10 @@
-##############################################################################
-# tasks : Default FalkorLib rake tasks
-# .           See http://rake.rubyforge.org/
-# Time-stamp: <Ven 2014-06-06 10:20 svarrette>
+# -*- encoding: utf-8 -*-
+################################################################################
+# Time-stamp: <Ven 2014-06-06 17:05 svarrette>
+################################################################################
 #
-# Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
-##############################################################################
+# Default FalkorLib rake tasks
+#
 
 require 'rake'
 require 'yaml'
