@@ -1,9 +1,11 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 15:55 svarrette>
+# Time-stamp: <Ven 2014-06-06 19:51 svarrette>
 ################################################################################
 
 require "falkorlib"
+require 'open3'
+
 
 module FalkorLib #:nodoc:
 
@@ -104,13 +106,30 @@ module FalkorLib #:nodoc:
             $?.success?
         end
 
-        ## Execute a given command - exit if status != 0
+        ## Execute a given command and return exit code
         def execute(cmd)
-            sh %{#{cmd}} do |ok, res|
-                if ! ok
-                    error("The command '#{cmd}' failed with exit status #{res.exitstatus}")
-                end
+	        puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
+	        stdout, stderr, exit_status = Open3.capture3( cmd )
+	        unless stdout.empty?
+		        stdout.each_line do |line|
+			        print "** [out] #{line}"
+		        end
+	        end 
+	        unless stderr.empty?
+		        stderr.each_line do |line|
+			        print red("** [err] #{line}")        
+		        end
+	        end 
+	        exit_status
+        end
+
+        ## Execute a given command - exit if status != 0
+        def exec_or_exit(cmd)
+	        status = execute(cmd)
+	        if (status.to_i != 0)
+		        error("The command '#{cmd}' failed with exit status #{status.to_i}")
             end
+	        res
         end
 
         ## "Nice" way to present run commands

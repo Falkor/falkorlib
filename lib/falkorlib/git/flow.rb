@@ -1,28 +1,79 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 15:33 svarrette>
+# Time-stamp: <Ven 2014-06-06 19:20 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
-require 'falkorlib/common'
+require "falkorlib"
+require "falkorlib/common"
+require "falkorlib/git/base"
 
-module FalkorLib #:nodoc:
-    module Config #:nodoc:
+include FalkorLib::Common
 
-	    # Specific defaults for FalkorLib::GitFlow 
+module FalkorLib
+    module Config
+
+        # Default configuration for Gitflow
         module GitFlow
-	        # git flow defaults
+            # git flow defaults
             DEFAULTS = {
-                :master     => 'production',
-                :develop    => 'master',
-                :feature    => 'feature/',
-                :release    => 'release/',
-                :hotfix     => 'hotfix/',
-                :support    => 'support/',
-                :versiontag => "v",
+                :branches => {
+                    :master     => 'production',
+                    :develop    => 'master',
+                },
+                :prefix => {
+                    :feature    => 'feature/',
+                    :release    => 'release/',
+                    :hotfix     => 'hotfix/',
+                    :support    => 'support/',
+                    :versiontag => "v",
+                }
             }
         end
     end
+
+
+    # Management of [git flow](https://github.com/nvie/gitflow) operations I'm
+    # using everywhere
+    module GitFlow
+
+        module_function
+
+        ## Initialize a git-flow repository
+        def init(path = Dir.pwd)
+            FalkorLib::Git.init(path)
+            error "you shall install git-flow: see https://github.com/nvie/gitflow/wiki/Installation" unless command?('git-flow')
+            remotes = FalkorLib::Git.remotes(path)
+
+            if remotes.include?( 'origin' )
+                info "=> configure remote (tracked) branches"
+                FalkorLib.config.gitflow[:branches].each do |branch|
+                    run %{
+                      git fetch origin
+                      git branch --set-upstream #{branch} origin/#{branch}
+                    }
+                end
+            end
+
+            info "=> initialize git flow configs"
+            FalkorLib.config.gitflow[:branches].each do |t,branch|
+		        execute "git config gitflow.branch.#{t} #{branch}"
+            end
+            FalkorLib.config.gitflow[:prefix].each do |t,prefix|
+                execute "git config gitflow.prefix.#{t} #{prefix}"
+            end
+        end
+    end
+
+
+
+
+
+
+
+
+
+
 
     # class GitFlow < ::Git::Base
 

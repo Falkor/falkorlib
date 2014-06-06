@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Ven 2014-06-06 07:39 svarrette>
+# Time-stamp: <Ven 2014-06-06 19:51 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -77,51 +77,51 @@ namespace :git do
             ###########   git:subtrees:init  ###########
             desc "Initialize the Git subtrees defined in FalkorLib.config.git.subtrees"
             task :init do |t|
-				#ap FalkorLib.config.git
+                #ap FalkorLib.config.git
                 Dir.chdir(git_root_dir) do
                     FalkorLib.config.git[:subtrees].each do |dir,conf|
-						next if conf[:url].nil?
-						url    = conf[:url]
-						remote = dir
-						branch = conf[:branch].nil? ? 'master' : conf[:branch]
-						remotes = FalkorLib::Git.remotes
-						unless remotes.include?( dir )
-							info "Initialize Git remote '#{remote}' from URL '#{url}'"
-							run %{
+                        next if conf[:url].nil?
+                        url    = conf[:url]
+                        remote = dir
+                        branch = conf[:branch].nil? ? 'master' : conf[:branch]
+                        remotes = FalkorLib::Git.remotes
+                        unless remotes.include?( dir )
+                            info "Initialize Git remote '#{remote}' from URL '#{url}'"
+                            run %{
                                git remote add -f #{dir} #{url}
                             }
-						end
-						unless File.directory?( File.join(git_root_dir, dir) )
-							info "initialize Git subtree '#{dir}'"
-							run %{
+                        end
+                        unless File.directory?( File.join(git_root_dir, dir) )
+                            info "initialize Git subtree '#{dir}'"
+                            run %{
                                git subtree add --prefix #{dir} --squash #{remote}/#{branch}
                             }
-						end 
+                        end
                     end
                 end
             end # task :init
 
-			###########   git:subtrees:diff   ###########
-			desc "Show difference between local subtree(s) and their remotes"
-			task :diff do |t|
-				Dir.chdir(git_root_dir) do
+            ###########   git:subtrees:diff   ###########
+            desc "Show difference between local subtree(s) and their remotes"
+            task :diff do |t|
+                Dir.chdir(git_root_dir) do
                     FalkorLib.config.git[:subtrees].each do |dir,conf|
-						next if conf[:url].nil?
-						url    = conf[:url]
-						remote = dir
-						branch = conf[:branch].nil? ? 'master' : conf[:branch]
-						remotes = FalkorLib::Git.remotes
-						current_branch = FalkorLib::Git.branch?
-						if  remotes.include?( remotes )
-							info "Git diff on subtree '#{dir}' with remote #{remote}/#{branch}"
-							run %{
-                               git diff #{remote}/#{branch} #{current_branch}:#{dir} 
+                        next if conf[:url].nil?
+                        url    = conf[:url]
+                        remote = dir
+                        branch = conf[:branch].nil? ? 'master' : conf[:branch]
+                        remotes = FalkorLib::Git.remotes
+                        current_branch = FalkorLib::Git.branch?
+                        if  remotes.include?( remotes )
+                            info "Git diff on subtree '#{dir}' with remote #{remote}/#{branch}"
+                            run %{
+                               git diff #{remote}/#{branch} #{current_branch}:#{dir}
                             }
-						end 
+                        end
 
-					end 
-				end 
-			end # task :diff 
+                    end
+                end
+            end # task :diff
 
 
         end # namespace git:subtrees
@@ -132,12 +132,11 @@ namespace :git do
     task :up do
         info "Updating your local repository"
         cmd = "git pull origin"
-        sh %{#{cmd}} do |ok, res|
-            if ! ok
-                warn("The command '#{cmd}' failed with exit status #{res.exitstatus}")
-                warn("This may be due to the fact that you're not connected to the internet")
-                really_continue?('no')
-            end
+        status = execute( cmd )
+        if (status.to_i != 0)
+            warn("The command '#{cmd}' failed with exit status #{res.exitstatus}")
+            warn("This may be due to the fact that you're not connected to the internet")
+            really_continue?('no')
         end
     end
 
