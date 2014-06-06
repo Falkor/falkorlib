@@ -1,7 +1,9 @@
 # -*- encoding: utf-8 -*-
-# Time-stamp: <Mar 2014-06-03 23:40 svarrette>
-#
+################################################################################
+# Time-stamp: <Ven 2014-06-06 15:57 svarrette>
+################################################################################
 # FalkorLib Configuration
+#
 # Resources:
 #  * https://github.com/markbates/cover_me/blob/master/lib/cover_me/config.rb
 ################################################################################
@@ -10,7 +12,7 @@ require "falkorlib"
 require "configatron"
 require "configatron/store"
 
-module FalkorLib
+module FalkorLib #:nodoc:
 
     class << self
         # Yields up a configuration object when given a block.
@@ -33,16 +35,13 @@ module FalkorLib
             @config ||= Configatron::Store.new(options = FalkorLib::Config.default)
         end
 
-        # def test_config
-        #     $".each do |path|
-        #         next unless path.include?('falkorlib/git.rb')
-        #         puts path
-        #     end
-        # end
 
     end
 
+
+
     module Config
+        # Defaults global settings
         DEFAULTS = {
             :debug => false,
             :root  => Dir.pwd
@@ -50,13 +49,15 @@ module FalkorLib
 
         module_function
 
-        ## Build the default configuration hash, to be used to initiate the default  
+        ## Build the default configuration hash, to be used to initiate the default.
+        # The hash is built depending on the loaded files. 
         def default
             res = FalkorLib::Config::DEFAULTS
-	        $LOADED_FEATURES.each do |path| 
-		        res[:gitflow] = FalkorLib::Config::GitFlow::DEFAULTS if path.include?('lib/falkorlib/git.rb')
-	        end 
-	        res
+            $LOADED_FEATURES.each do |path|
+                res[:git] = FalkorLib::Config::Git::DEFAULTS         if path.include?('lib/falkorlib/git.rb')
+                res[:gitflow] = FalkorLib::Config::GitFlow::DEFAULTS if path.include?('lib/falkorlib/git.rb')
+            end
+            res
         end
 
     end

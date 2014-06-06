@@ -1,22 +1,33 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-05 22:54 svarrette>
-#
-# Interface for the main Git operations
+# Time-stamp: <Ven 2014-06-06 15:52 svarrette>
 ################################################################################
+# Interface for the main Git operations
+#
 # On purpose, I try to avoid using the Git library to avoid instanciate the Git
 # class and thus managing the working directory
 
 require "falkorlib"
 require "falkorlib/common"
 
-#require "git"
 require "minigit"
 require "pathname"
 
 include FalkorLib::Common
 
-module FalkorLib
+module FalkorLib  #:nodoc:
+	module Config
+
+		# Default configuration for Git 
+		module Git 
+			# Git defaults for FalkorLib
+			DEFAULTS = {
+				:submodulesdir => '.submodules',
+				:submodules => {},
+				:subtrees   => {}
+			}
+		end
+	end
 
 	# Management of Git operations
     module Git
@@ -115,6 +126,12 @@ module FalkorLib
 	        ! a.empty?
         end
 
+        ## List of Git remotes
+        def remotes(path = Dir.pwd)
+	        g = MiniGit.new(path)
+	        g.capturing.remote.split()
+        end 
+        
 
     end # module FalkorLib::Git
 end # module FalkorLib

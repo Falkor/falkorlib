@@ -1,11 +1,17 @@
+# -*- encoding: utf-8 -*-
+################################################################################
+# Time-stamp: <Ven 2014-06-06 15:33 svarrette>
+################################################################################
+# Management of Git Flow operations
+
 require 'falkorlib/common'
-#require 'git'
 
-module FalkorLib
+module FalkorLib #:nodoc:
+    module Config #:nodoc:
 
-	# Default configuration for Git Flow
-    module Config
+	    # Specific defaults for FalkorLib::GitFlow 
         module GitFlow
+	        # git flow defaults
             DEFAULTS = {
                 :master     => 'production',
                 :develop    => 'master',

@@ -1,12 +1,13 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
         Time-stamp: <Jeu 2014-06-05 11:58 svarrette
-                      _____     _ _              _ _ _
-                     |  ___|_ _| | | _____  _ __| (_) |__
-                     | |_ / _` | | |/ / _ \| '__| | | '_ \
-                     |  _| (_| | |   < (_) | |  | | | |_) |
-                     |_|  \__,_|_|_|\_\___/|_|  |_|_|_.__/
-        
+                    _____     _ _              _     _ _
+                   |  ___|_ _| | | _____  _ __| |   (_) |__
+                   | |_ / _` | | |/ / _ \| '__| |   | | '_ \
+                   |  _| (_| | |   < (_) | |  | |___| | |_) |
+                   |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
+
+       
         Copyright (c) 2012-2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
         https://github.com/Falkor/falkorlib
 
@@ -18,9 +19,13 @@
 Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
 tasks. 
 
+* [Official Gem site](https://rubygems.org/gems/falkorlib)
+* [GitHub](https://github.com/Falkor/falkorlib)
+
 ## Installation
 
-Add this line to your application's `Gemfile`:
+You'll typically want to install FalkorLib using [Bundler](http://bundler.io/).
+To do this, simply add this line to your application's `Gemfile`:
 
 	gem 'falkorlib'
 	
@@ -38,9 +43,20 @@ Or install it yourself as:
 
 This library features two aspect
 
-* a set of toolbox functions I'm using everywhere in my Ruby developments, structures in various modules below the `FalkorLib` module
+* a set of toolbox functions I'm using everywhere in my Ruby developments, structures in various modules below the `FalkorLib` module: 
+  * Module: `FalkorLib::Common`: all my toolbox functions I'm using everywhere
+
+
 * some [rake](https://github.com/jimweirich/rake) tasks to facilitate common operations. 
 
+## `FalkorLib` Ruby Modules / Classes
+
+[Online documentation](https://rubygems.org/gems/falkorlib) is a available. 
+Yet to get the latest version, you might want to run 
+
+	$> rake yard
+
+This will generate the documentation in `doc/api/` folder. 
 
 
 
