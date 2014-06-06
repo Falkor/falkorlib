@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 15:57 svarrette>
+# Time-stamp: <Ven 2014-06-06 16:15 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -34,10 +34,7 @@ module FalkorLib #:nodoc:
         def configuration
             @config ||= Configatron::Store.new(options = FalkorLib::Config.default)
         end
-
-
     end
-
 
 
     module Config

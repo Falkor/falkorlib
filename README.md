@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-        Time-stamp: <Jeu 2014-06-05 11:58 svarrette
+        Time-stamp: <Ven 2014-06-06 16:59 svarrette>
                     _____     _ _              _     _ _
                    |  ___|_ _| | | _____  _ __| |   (_) |__
                    | |_ / _` | | |/ / _ \| '__| |   | | '_ \
@@ -43,22 +43,80 @@ Or install it yourself as:
 
 This library features two aspect
 
-* a set of toolbox functions I'm using everywhere in my Ruby developments, structures in various modules below the `FalkorLib` module: 
-  * Module: `FalkorLib::Common`: all my toolbox functions I'm using everywhere
+* A set of toolbox functions / components I'm using everywhere in my Ruby developments, more specifically a set of modules: 
+  * `FalkorLib::Common`: Recipe for all my toolbox and versatile Ruby functions I'm using everywhere. 
+    You'll typically want to include the `FalkorLib::Common` module to bring the corresponding definitions into your scope. Example:
+       
+			require 'falkorlib'
+			include FalkorLib::Common
+			
+			info 'exemple of information text'
+			really_continue?
+			run %{ echo 'this is an executed command' }
+			
+			Falkor.config.debug = true
+			run %{ echo 'this is a simulated command that *will not* be executed' }
+			error "that's an error text, let's exit with status code 1"all my toolbox printing functions I'm using everywhere 
+    
+    
+  * `FalkorLib::Config`: all configuration aspects, implemented using [configatron](https://github.com/Falkor/falkorlib). `FalkorLib.config` canbe used to customized the defaults settings, for instance by; 
+    
+    		FalkorLib.config do |c|
+            	c.debug = true
+        	end
+  	
+   	 
+  * `FalkorLib::Git`: all git operations
+  * `FalkorLib::Version`: versioning management 
 
+* Some [rake](https://github.com/jimweirich/rake) tasks to facilitate common operations.
+  In general you can simply embedded my tasks by adding the following header in your `Rakefile`:
+  
+  		# In Rakefile
+		require "falkorlib/<object>_tasks"
+  
+  or 
+  
+  		#In Rakefile 
+  		require "falkorlib/tasks/<object>"
 
-* some [rake](https://github.com/jimweirich/rake) tasks to facilitate common operations. 
-
-## `FalkorLib` Ruby Modules / Classes
+### `FalkorLib` Ruby Modules / Classes Documentation
 
 [Online documentation](https://rubygems.org/gems/falkorlib) is a available. 
 Yet to get the latest version, you might want to run 
 
-	$> rake yard
+	$> rake yard:doc
 
 This will generate the documentation in `doc/api/` folder. 
 
+Statistics on the documentation generation (in particular *non*-documented components) can be obtained by 
 
+	$> rake yard:stats 
+
+
+### Overview of the implemented Rake tasks
+
+You can find the list of implemented Rake tasks (detailed below) in the `lib/falkorlib/*_tasks.rb` files
+
+For a given task object `<obj>` (*git* tasks for instance as proposed in `lib/falkorlib/git_tasks.rb`), you can specialize the corresponding configuration by using the block construction of `FalkorLib.config do |c| ... end` **before** requiring the task file:
+
+	# In Rakefile
+	require 'falkorlib'
+	
+	# Configuration for the 'toto' tasks
+	FalkorLib.config.toto do |c|
+		toto.foo = bar   # see `rake falkorlib:conf` to print the current configuration of FalkorLib
+	end 
+	
+	require "falkorlib/tasks/toto"    # OR require "falkorlib/toto_tasks"
+
+
+## Proposed Rake tasks
+
+
+* **Gem Management**: see `lib/falkorlib/tasks/gem.rake`
+* **Git Management**
+* ... TODO: complete list		
 
 
 ## Implementation details
@@ -105,52 +163,38 @@ Then, to make your local copy of the repository ready to use my git-flow workflo
 
       $> rake setup # Not yet implemented!
 
+### Working in a separate project
 
- 
+To illustrate the usage of the library as a regular user would do, you are advised to dedicate a directory for your tests. Here is for instance the layout of my testing directory:
+
+	$> cd FalkorLibTests
+	$> tree .
+	.
+	├── Gemfile
+	├── Gemfile.lock
+	├── Rakefile
+	└── test
+    	└── tester.rb  # in a subdirectory on purpose
+
+	$> cat cat Gemfile 
+	source "https://rubygems.org"
+	gem 'falkorlib', :path => '~/git/github.com/Falkor/falkorlib'   # or whichever path that works for you
+
+Adapt the `Rakefile` and `tester.rb` file to reflect your tests.
 
 
-### Building the gem from the source
+### RSpec tests
 
-Get the source of this library by cloning the repository as follows: 
+I try to define a set of unitary tests to validate the different function of my library using [Rspec](http://rspec.info/)
 
-	$> git clone git://github.com/Falkor/falkorlib.git
+You can run these tests by issuing:
 
-You'll end in the `devel` branch. The precise branching model is explained in
-the sequel. 
+	$> rake rspec
+	
+By conventions, you will find all the currently implemented tests in the `spec/` directory, in files having the `_spec.rb` suffix. This is expected from the `rspec` task of the Rakefile (see `lib/falkorlib/tasks/rspec.rake`) for details.   
 
-If you use [RVM](http://beginrescueend.com/), you perhaps wants to create a
-separate gemset so that we can create and install this gem in a clean
-environment. To do that, proceed as follows:
 
-    $> rvm gemset create falkorlib
-    $> rvm gemset use falkorlib
-
-Install bundler if it's not yet done: 
-
-    $> gem install builder
-
-Then install the required dependent gems as follows: 
-
-    $> bundle install 
-
-### Gem installation 
-
-Add this line to your application's Gemfile:
-
-    gem 'falkorlib'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install falkorlib
-
-## Usage
-
-TODO: Write usage instructions here
-
+**Important** Kindly stick to this convention, and feature tests for all definitions/classes/modules you might want to add to `FalkorLib`.
 
 
 ## Contributing
@@ -183,4 +227,5 @@ You should become familiar (if not yet) with Git. Consider these resources:
 
 ### Links
 
-https://github.com/Falkor/falkorlib
+* [Official Gem site](https://rubygems.org/gems/falkorlib)
+* [GitHub](https://github.com/Falkor/falkorlib)
