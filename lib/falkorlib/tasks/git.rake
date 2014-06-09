@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Ven 2014-06-06 19:51 svarrette>
+# Time-stamp: <Mar 2014-06-10 00:52 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -15,7 +15,7 @@ require 'falkorlib/git'
 namespace :git do
 
     include FalkorLib::Common
-    git_root_dir = FalkorLib::Git.rootdir
+    git_root_dir = FalkorLib::Git.rootdir #if FalkorLib::Git.init?
 
     ###########   git:fetch   ###########
     desc "Fetch the latest changes"
@@ -77,28 +77,7 @@ namespace :git do
             ###########   git:subtrees:init  ###########
             desc "Initialize the Git subtrees defined in FalkorLib.config.git.subtrees"
             task :init do |t|
-                #ap FalkorLib.config.git
-                Dir.chdir(git_root_dir) do
-                    FalkorLib.config.git[:subtrees].each do |dir,conf|
-                        next if conf[:url].nil?
-                        url    = conf[:url]
-                        remote = dir
-                        branch = conf[:branch].nil? ? 'master' : conf[:branch]
-                        remotes = FalkorLib::Git.remotes
-                        unless remotes.include?( dir )
-                            info "Initialize Git remote '#{remote}' from URL '#{url}'"
-                            run %{
-                               git remote add -f #{dir} #{url}
-                            }
-                        end
-                        unless File.directory?( File.join(git_root_dir, dir) )
-                            info "initialize Git subtree '#{dir}'"
-                            run %{
-                               git subtree add --prefix #{dir} --squash #{remote}/#{branch}
-                            }
-                        end
-                    end
-                end
+				FalkorLib::Git.subtrees_init(git_root_dir)
             end # task :init
 
             ###########   git:subtrees:diff   ###########

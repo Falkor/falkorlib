@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 15:52 svarrette>
+# Time-stamp: <Mar 2014-06-10 01:03 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -16,54 +16,54 @@ require "pathname"
 include FalkorLib::Common
 
 module FalkorLib  #:nodoc:
-	module Config
+    module Config
 
-		# Default configuration for Git 
-		module Git 
-			# Git defaults for FalkorLib
-			DEFAULTS = {
-				:submodulesdir => '.submodules',
-				:submodules => {},
-				:subtrees   => {}
-			}
-		end
-	end
+        # Default configuration for Git
+        module Git
+            # Git defaults for FalkorLib
+            DEFAULTS = {
+                :submodulesdir => '.submodules',
+                :submodules => {},
+                :subtrees   => {}
+            }
+        end
+    end
 
-	# Management of Git operations
+    # Management of Git operations
     module Git
         module_function
 
         ## Check if a git directory has been initialized
         def init?(path = Dir.pwd)
-	        begin
-	            g = MiniGit.new(path)
-		    rescue Exception
-	            return false
+            begin
+                g = MiniGit.new(path)
+            rescue Exception
+                return false
             end
-	        return true
+            return true
         end
 
         ## Initialize a git repository
         def init(path = Dir.pwd)
-	        # FIXME for travis test: ensure the global git configurations
-			# 'user.email' and 'user.name' are set
-	        [ 'user.name', 'user.email' ].each do |userconf| 
-		        if MiniGit[userconf].nil?
-			        warn "The Git global configuration '#{userconf}' is not set so"
-			        warn "you should *seriously* consider setting them by running\n\t git config --global #{userconf} 'your_#{userconf.sub(/\./, '_')}'"
-			        default_val = ENV['USER']
-			        default_val += '@domain.org' if userconf =~ /email/
-			        warn "Now putting a default value '#{default_val}' you could change later on"
-			        run %{
+            # FIXME for travis test: ensure the global git configurations
+            # 'user.email' and 'user.name' are set
+            [ 'user.name', 'user.email' ].each do |userconf|
+                if MiniGit[userconf].nil?
+                    warn "The Git global configuration '#{userconf}' is not set so"
+                    warn "you should *seriously* consider setting them by running\n\t git config --global #{userconf} 'your_#{userconf.sub(/\./, '_')}'"
+                    default_val = ENV['USER']
+                    default_val += '@domain.org' if userconf =~ /email/
+                    warn "Now putting a default value '#{default_val}' you could change later on"
+                    run %{
                          git config --global #{userconf} "#{default_val}"
                     }
-			        #MiniGit[userconf] = default_val
-		        end 
-	        end
-	        #puts "#init #{path}"
-	        Dir.chdir( "#{path}" ) do
-		       %x[ pwd && git init ] unless FalkorLib.config.debug
-	        end 
+                    #MiniGit[userconf] = default_val
+                end
+            end
+            #puts "#init #{path}"
+            Dir.chdir( "#{path}" ) do
+                %x[ pwd && git init ] unless FalkorLib.config.debug
+            end
         end
 
         # Return the Git working tree from the proposed path (current directory by default)
@@ -77,17 +77,17 @@ module FalkorLib  #:nodoc:
             g = MiniGit.new
             g.find_git_dir(path)[0]
         end
-        
+
         # Create a new branch
         def create_branch(branch, path = Dir.pwd)
-	        g = MiniGit.new(path)
-	        g.branch "#{branch}"
+            g = MiniGit.new(path)
+            g.branch "#{branch}"
         end
 
         ## Get an array of the local branches present (first element is always the
         ## current branch)
         def list_branch(path = Dir.pwd)
-	        cg = MiniGit::Capturing.new(path)
+            cg = MiniGit::Capturing.new(path)
             res = cg.branch.split("\n")
             # Eventually reorder to make the first element of the array the current branch
             i = res.find_index { |e| e =~ /^\*\s/ }
@@ -103,35 +103,75 @@ module FalkorLib  #:nodoc:
             list_branch(path)[0]
         end
 
-        ## Add a file/whatever to Git and commit it 
+        ## Add a file/whatever to Git and commit it
         def add(path, msg = "")
-	        dir  = File.realpath File.dirname(path)
-	        root = rootdir(path)
-	        relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
-	        real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
-	        Dir.chdir( dir ) do
-		        run %{
+            dir  = File.realpath File.dirname(path)
+            root = rootdir(path)
+            relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
+            real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
+            Dir.chdir( dir ) do
+                run %{
                   git add #{path}
                   git commit -s -m "#{real_msg}" #{path}
                 }
-	        end 
+            end
         end
 
         ## Check if a git directory is in dirty mode
         # git diff --shortstat 2> /dev/null | tail -n1
         def dirty?(path = Dir.pwd)
-	        g = MiniGit.new(path)
-	        a = g.capturing.diff :shortstat => true
-	        #ap a
-	        ! a.empty?
+            g = MiniGit.new(path)
+            a = g.capturing.diff :shortstat => true
+            #ap a
+            ! a.empty?
         end
 
         ## List of Git remotes
         def remotes(path = Dir.pwd)
-	        g = MiniGit.new(path)
-	        g.capturing.remote.split()
-        end 
-        
+            g = MiniGit.new(path)
+            g.capturing.remote.split()
+        end
 
+        ## Initialize git sibtrees from the configuration
+        def subtrees_init(path = Dir.pwd)
+	        exit_status = 0
+            if FalkorLib.config.git[:subtrees].empty?
+	            FalkorLib::Git.subtrees_warn
+            else
+                git_root_dir = rootdir(path)
+                Dir.chdir(git_root_dir) do
+                    FalkorLib.config.git[:subtrees].each do |dir,conf|
+                        next if conf[:url].nil?
+                        url    = conf[:url]
+                        remote = dir
+                        branch = conf[:branch].nil? ? 'master' : conf[:branch]
+                        remotes = FalkorLib::Git.remotes
+				        puts "remotes = " + remotes.to_yaml
+                        unless remotes.include?( dir )
+                            info "Initialize Git remote '#{remote}' from URL '#{url}'"
+	                        execute "git remote add -f #{dir} #{url}"
+                        end
+                        unless File.directory?( File.join(git_root_dir, dir) )
+                            info "initialize Git subtree '#{dir}'"
+	                        exit_status = execute "git subtree add --prefix #{dir} --squash #{remote}/#{branch}"                            
+                        end
+                    end
+                end
+            end
+	        exit_status
+        end
+        
+        # Raise a warning message if s
+        def subtrees_warn
+	        warn "You shall setup 'FalkorLib.config.git[:subtrees]' to configure subtrees as follows:"
+	        warn "     FalkorLib.config.git do |c|"
+	        warn "       c[:subtrees] = {"
+	        warn "          '<subdir>' => {"
+	        warn "             :url    => '<giturl>',"
+	        warn "             :branch => 'develop'   # if different from master"
+	        warn "          },"
+	        warn "        }"
+	        warn "     end"
+        end 
     end # module FalkorLib::Git
 end # module FalkorLib

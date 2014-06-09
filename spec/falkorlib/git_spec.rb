@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-05 22:54 svarrette>
+# Time-stamp: <Mar 2014-06-10 01:05 svarrette>
 #
 # @description Check the Git operation
 #
@@ -19,7 +19,7 @@ describe FalkorLib::Git do
     default_branches = [ 'devel', 'production' ]
 
     dir   = Dir.mktmpdir
-	afile = File.join(dir, 'a_file')
+    afile = File.join(dir, 'a_file')
 
     # before :all do
     #   puts "temp dir : #{dir}"
@@ -69,10 +69,10 @@ describe FalkorLib::Git do
             br.should == 'master'
         end
 
-		it "#dirty? - check non-dirty git directory" do
-			b = FalkorLib::Git.dirty?( dir )
-			b.should be_false
-		end 		
+        it "#dirty? - check non-dirty git directory" do
+            b = FalkorLib::Git.dirty?( dir )
+            b.should be_false
+        end
 
         default_branches.each do |br|
             it "#create_branch #list_branch - creates branch #{br}" do
@@ -82,11 +82,29 @@ describe FalkorLib::Git do
             end
         end
 
-		it "#dirty? - check dirty git directory" do
-			run %{ echo "toto" > #{afile} }
-			b = FalkorLib::Git.dirty?( dir )
-			b.should be_true
-		end 
+        it "#subtrees_init - initialize soem Git Subtrees" do
+            FalkorLib.config.git do |c|
+                c[:subtrees] = {
+                    'easybuild/easyblocks' => {
+                        :url    => 'https://github.com/ULHPC/easybuild-easyblocks.git',
+                        :branch => 'develop'
+                    },
+                }
+            end
+	        b = FalkorLib::Git.subtrees_init( dir )
+	        b.should == 0
+
+        end
+
+
+
+        # shall be the last check
+        it "#dirty? - check dirty git directory" do
+            run %{ echo "toto" > #{afile} }
+            b = FalkorLib::Git.dirty?( dir )
+            b.should be_true
+        end
+
 
 
     end
