@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-06-10 11:26 svarrette>
+# Time-stamp: <Mar 2014-06-10 16:37 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -64,8 +64,12 @@ module FalkorLib  #:nodoc:
             # concept guides. See 'git help <command>' or 'git help <concept>'
             # to read about a specific subcommand or concept
             l = cmd_list.split("\n\n")
-            return false if l[2].nil?
-            return l[2].split.include?(cmd)
+	        l.shift # useless first part
+	        #ap l
+	        subl = l.each_index.select{|i| l[i] =~ /^\s\s+/ } # find sublines that starts with at least two whitespaces
+	        #ap subl
+	        return false if subl.empty?
+	        subl.any? { |i| l[i].split.include?(cmd) }
         end
 
         ## Initialize a git repository
@@ -158,7 +162,7 @@ module FalkorLib  #:nodoc:
         end
 
         ## Initialize git sibtrees from the configuration
-        def subtrees_init(path = Dir.pwd)
+        def subtree_init(path = Dir.pwd)
             raise ArgumentError, "Git 'subtree' command is not available" unless FalkorLib::Git.command? "subtree"
             if FalkorLib.config.git[:subtrees].empty?
                 FalkorLib::Git.subtrees_warn
@@ -173,8 +177,7 @@ module FalkorLib  #:nodoc:
                     remote = dir
                     branch = conf[:branch].nil? ? 'master' : conf[:branch]
                     remotes = FalkorLib::Git.remotes
-                    puts "remotes = " + remotes.to_yaml
-                    unless remotes.include?( dir )
+                    unless remotes.include?( remote )
                         info "Initialize Git remote '#{remote}' from URL '#{url}'"
 	                    exit_status = execute "git remote add -f #{dir} #{url}"
                     end
@@ -186,6 +189,31 @@ module FalkorLib  #:nodoc:
 
             end
             exit_status
+        end
+
+        ## Show difference between local subtree(s) and their remotes"
+        def subtree_diff(path = Dir.pwd)
+	        raise ArgumentError, "Git 'subtree' command is not available" unless FalkorLib::Git.command? "subtree"
+            if FalkorLib.config.git[:subtrees].empty?
+                FalkorLib::Git.subtrees_warn
+                return 1
+            end
+	        exit_status = 0
+	        git_root_dir = rootdir(path)
+	        Dir.chdir(git_root_dir) do
+		        FalkorLib.config.git[:subtrees].each do |dir,conf|
+			        next if conf[:url].nil?
+			        url    = conf[:url]
+			        remote = dir
+			        branch = conf[:branch].nil? ? 'master' : conf[:branch]
+			        remotes = FalkorLib::Git.remotes
+			        raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
+			        raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory? ( File.join(git_root_dir, dir) )
+			        info "Git diff on subtree '#{dir}' with remote '#{remote}/#{branch}'"
+			        exit_status = execute "git diff #{remote}/#{branch} #{FalkorLib::Git.branch?( git_root_dir )}:#{dir}"
+		        end
+	        end
+	        exit_status
         end
 
         # Raise a warning message if s

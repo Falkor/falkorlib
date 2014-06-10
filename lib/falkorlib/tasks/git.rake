@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Mar 2014-06-10 00:52 svarrette>
+# Time-stamp: <Mar 2014-06-10 11:41 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -76,31 +76,15 @@ namespace :git do
         namespace :subtrees do
             ###########   git:subtrees:init  ###########
             desc "Initialize the Git subtrees defined in FalkorLib.config.git.subtrees"
-            task :init do |t|
-				FalkorLib::Git.subtrees_init(git_root_dir)
-            end # task :init
+            task :init do 
+				FalkorLib::Git.subtree_init(git_root_dir)
+            end # task git:subtree:init
 
             ###########   git:subtrees:diff   ###########
             desc "Show difference between local subtree(s) and their remotes"
-            task :diff do |t|
-                Dir.chdir(git_root_dir) do
-                    FalkorLib.config.git[:subtrees].each do |dir,conf|
-                        next if conf[:url].nil?
-                        url    = conf[:url]
-                        remote = dir
-                        branch = conf[:branch].nil? ? 'master' : conf[:branch]
-                        remotes = FalkorLib::Git.remotes
-                        current_branch = FalkorLib::Git.branch?
-                        if  remotes.include?( remotes )
-                            info "Git diff on subtree '#{dir}' with remote #{remote}/#{branch}"
-                            run %{
-                               git diff #{remote}/#{branch} #{current_branch}:#{dir}
-                            }
-                        end
-
-                    end
-                end
-            end # task :diff
+            task :diff do 
+				FalkorLib::Git.subtree_diff(git_root_dir)
+            end # task git:subtree:diff
 
 
         end # namespace git:subtrees

@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mar 2014-06-10 11:28 svarrette>
+# Time-stamp: <Mar 2014-06-10 16:42 svarrette>
 #
 # @description Check the Git operation
 #
@@ -93,7 +93,7 @@ describe FalkorLib::Git do
         end
 
         if FalkorLib::Git.command? 'subtree'
-            it "#subtrees_init - initialize soem Git Subtrees" do
+            it "#subtree_init - initialize some Git Subtrees" do
                 FalkorLib.config.git do |c|
                     c[:subtrees] = {
                         'easybuild/easyblocks' => {
@@ -102,9 +102,14 @@ describe FalkorLib::Git do
                         },
                     }
                 end
-                b = FalkorLib::Git.subtrees_init( dir )
+                b = FalkorLib::Git.subtree_init( dir )
                 b.should == 0
             end
+
+	        it "#subtree_diff" do 
+				b = FalkorLib::Git.subtree_diff( dir )
+				b.should == 0				
+			end
         end
 
 
