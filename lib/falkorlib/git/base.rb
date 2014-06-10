@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-06-10 16:37 svarrette>
+# Time-stamp: <Mar 2014-06-10 23:37 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -113,6 +113,13 @@ module FalkorLib  #:nodoc:
             g.branch "#{branch}"
         end
 
+        ## Fetch the latest changes
+        def fetch(path = Dir.pwd)
+	        Dir.chdir( path ) do 
+		        execute "git fetch --all -v"
+	        end
+        end
+
         ## Get an array of the local branches present (first element is always the
         ## current branch)
         def list_branch(path = Dir.pwd)
@@ -161,7 +168,7 @@ module FalkorLib  #:nodoc:
             g.capturing.remote.split()
         end
 
-        ## Initialize git sibtrees from the configuration
+        ## Initialize git subtrees from the configuration
         def subtree_init(path = Dir.pwd)
             raise ArgumentError, "Git 'subtree' command is not available" unless FalkorLib::Git.command? "subtree"
             if FalkorLib.config.git[:subtrees].empty?
@@ -215,6 +222,33 @@ module FalkorLib  #:nodoc:
 	        end
 	        exit_status
         end
+
+        # Pull the latest changes, assuming the git repository is not dirty
+        def subtree_up(path = Dir.pwd)
+	        error "Unable to pull subtree(s): Dirty Git repository" if FalkorLib::Git.dirty?
+	        exit_status = 0
+	        git_root_dir = rootdir(path)
+	        Dir.chdir(git_root_dir) do
+		        FalkorLib.config.git[:subtrees].each do |dir,conf|
+			        next if conf[:url].nil?
+			        url    = conf[:url]
+			        remote = dir
+			        branch = conf[:branch].nil? ? 'master' : conf[:branch]
+			        remotes = FalkorLib::Git.remotes
+			        info "Pulling changes into subtree '#{dir}' using remote '#{remote}/#{branch}'"
+			        raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
+			        info "\t\\__ fetching remote '#{remotes.join(',')}'"
+			        FalkorLib::Git.fetch( git_root_dir )
+			        raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory? ( File.join(git_root_dir, dir) )
+			        info "\t\\__ pulling changes"
+			        exit_status = execute "git subtree pull --prefix #{dir} --squash #{remote} #{branch}"
+		        end
+	        end
+	        exit_status
+
+        end
+        alias :subtree_pull :subtree_up 
+
 
         # Raise a warning message if s
         def subtrees_warn

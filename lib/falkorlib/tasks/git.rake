@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Mar 2014-06-10 11:41 svarrette>
+# Time-stamp: <Mar 2014-06-10 23:33 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -21,9 +21,7 @@ namespace :git do
     desc "Fetch the latest changes"
     task :fetch do |t|
         info "Fetching latest changes on remotes"
-        run %{
-           git fetch --all -v
-        }
+		FalkorLib::Git.fetch()
     end # task fetch
 
     #################   git:push   ##################################
@@ -84,6 +82,12 @@ namespace :git do
             desc "Show difference between local subtree(s) and their remotes"
             task :diff do 
 				FalkorLib::Git.subtree_diff(git_root_dir)
+            end # task git:subtree:diff
+
+            ###########   git:subtrees:up   ###########
+            desc "Pull the latest changes from the remote to the local subtree(s)"
+            task :up do 
+				FalkorLib::Git.subtree_up(git_root_dir)
             end # task git:subtree:diff
 
 
