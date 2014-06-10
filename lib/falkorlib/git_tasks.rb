@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 17:05 svarrette>
+# Time-stamp: <Mar 2014-06-10 10:31 svarrette>
 ################################################################################
 #
 # FalkorLib rake tasks to pilot Git [flow] operations
@@ -25,5 +25,21 @@ module FalkorLib #:nodoc:
 end # module FalkorLib
 
 
-# Now install them ;)
-FalkorLib::GitTasks.new.install_tasks
+if FalkorLib::Git.init?
+	# Now install them ;)
+	FalkorLib::GitTasks.new.install_tasks
+else 
+	warn "Git is not initialized for this directory."
+	warn "==> consider running 'git init' to be able to access the git Rake tasks"
+	#.....................
+	namespace :git do
+		###########  git:init   ###########
+		desc "Initialize Git repository"
+		task :init do 
+			FalkorLib::Git.init
+		end  
+
+	end # namespace git
+
+
+end

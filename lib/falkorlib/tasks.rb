@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 17:05 svarrette>
+# Time-stamp: <Mar 2014-06-10 10:32 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -18,9 +18,7 @@ namespace :falkorlib do
 	task :conf do
 		puts FalkorLib.config.to_yaml
 	end 
-
-end # namespace falkorlib
-
+end # namespace falkorlib<
 
 
 # Empty task debug 

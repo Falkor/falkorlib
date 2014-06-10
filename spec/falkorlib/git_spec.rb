@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mar 2014-06-10 01:05 svarrette>
+# Time-stamp: <Mar 2014-06-10 11:28 svarrette>
 #
 # @description Check the Git operation
 #
@@ -82,25 +82,36 @@ describe FalkorLib::Git do
             end
         end
 
-        it "#subtrees_init - initialize soem Git Subtrees" do
-            FalkorLib.config.git do |c|
-                c[:subtrees] = {
-                    'easybuild/easyblocks' => {
-                        :url    => 'https://github.com/ULHPC/easybuild-easyblocks.git',
-                        :branch => 'develop'
-                    },
-                }
-            end
-	        b = FalkorLib::Git.subtrees_init( dir )
-	        b.should == 0
+        it "#command? - check non-availability of git command 'toto'" do
+            c = FalkorLib::Git.command?('toto')
+            c.should be_false
+        end
 
+        it "#command? - check availability of git command 'init'" do
+            c = FalkorLib::Git.command?('init')
+            c.should be_true
+        end
+
+        if FalkorLib::Git.command? 'subtree'
+            it "#subtrees_init - initialize soem Git Subtrees" do
+                FalkorLib.config.git do |c|
+                    c[:subtrees] = {
+                        'easybuild/easyblocks' => {
+                            :url    => 'https://github.com/ULHPC/easybuild-easyblocks.git',
+                            :branch => 'develop'
+                        },
+                    }
+                end
+                b = FalkorLib::Git.subtrees_init( dir )
+                b.should == 0
+            end
         end
 
 
 
         # shall be the last check
         it "#dirty? - check dirty git directory" do
-            run %{ echo "toto" > #{afile} }
+			execute "echo 'toto' > #{afile}"
             b = FalkorLib::Git.dirty?( dir )
             b.should be_true
         end

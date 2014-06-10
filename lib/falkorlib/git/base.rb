@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-06-10 01:03 svarrette>
+# Time-stamp: <Mar 2014-06-10 11:26 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -41,6 +41,31 @@ module FalkorLib  #:nodoc:
                 return false
             end
             return true
+        end
+
+        ## Check the availability of a given git command
+        def command?(cmd, path = Dir.pwd)
+            cg = MiniGit::Capturing.new(path)
+            cmd_list = cg.help :a => true
+            # typical run:
+            # usage: git [--version] [--help] [-C <path>] [-c name=value]
+            #            [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+            #            [-p|--paginate|--no-pager] [--no-replace-objects] [--bare]
+            #            [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+            #            <command> [<args>]
+            #
+            # available git commands in '/usr/local/Cellar/git/1.8.5.2/libexec/git-core'
+            #
+            #   add   [...]   \
+            #   [...]          | The part we are interested in, delimited by '\n\n' sequence
+            #   [...]         /
+            #
+            # 'git help -a' and 'git help -g' lists available subcommands and some
+            # concept guides. See 'git help <command>' or 'git help <concept>'
+            # to read about a specific subcommand or concept
+            l = cmd_list.split("\n\n")
+            return false if l[2].nil?
+            return l[2].split.include?(cmd)
         end
 
         ## Initialize a git repository
@@ -134,44 +159,46 @@ module FalkorLib  #:nodoc:
 
         ## Initialize git sibtrees from the configuration
         def subtrees_init(path = Dir.pwd)
-	        exit_status = 0
+            raise ArgumentError, "Git 'subtree' command is not available" unless FalkorLib::Git.command? "subtree"
             if FalkorLib.config.git[:subtrees].empty?
-	            FalkorLib::Git.subtrees_warn
-            else
-                git_root_dir = rootdir(path)
-                Dir.chdir(git_root_dir) do
-                    FalkorLib.config.git[:subtrees].each do |dir,conf|
-                        next if conf[:url].nil?
-                        url    = conf[:url]
-                        remote = dir
-                        branch = conf[:branch].nil? ? 'master' : conf[:branch]
-                        remotes = FalkorLib::Git.remotes
-				        puts "remotes = " + remotes.to_yaml
-                        unless remotes.include?( dir )
-                            info "Initialize Git remote '#{remote}' from URL '#{url}'"
-	                        execute "git remote add -f #{dir} #{url}"
-                        end
-                        unless File.directory?( File.join(git_root_dir, dir) )
-                            info "initialize Git subtree '#{dir}'"
-	                        exit_status = execute "git subtree add --prefix #{dir} --squash #{remote}/#{branch}"                            
-                        end
+                FalkorLib::Git.subtrees_warn
+                return 1
+            end
+	        exit_status = 0
+            git_root_dir = rootdir(path)
+            Dir.chdir(git_root_dir) do
+                FalkorLib.config.git[:subtrees].each do |dir,conf|
+                    next if conf[:url].nil?
+                    url    = conf[:url]
+                    remote = dir
+                    branch = conf[:branch].nil? ? 'master' : conf[:branch]
+                    remotes = FalkorLib::Git.remotes
+                    puts "remotes = " + remotes.to_yaml
+                    unless remotes.include?( dir )
+                        info "Initialize Git remote '#{remote}' from URL '#{url}'"
+	                    exit_status = execute "git remote add -f #{dir} #{url}"
+                    end
+                    unless File.directory?( File.join(git_root_dir, dir) )
+                        info "initialize Git subtree '#{dir}'"
+                        exit_status = execute "git subtree add --prefix #{dir} --squash #{remote}/#{branch}"
                     end
                 end
+
             end
-	        exit_status
+            exit_status
         end
-        
+
         # Raise a warning message if s
         def subtrees_warn
-	        warn "You shall setup 'FalkorLib.config.git[:subtrees]' to configure subtrees as follows:"
-	        warn "     FalkorLib.config.git do |c|"
-	        warn "       c[:subtrees] = {"
-	        warn "          '<subdir>' => {"
-	        warn "             :url    => '<giturl>',"
-	        warn "             :branch => 'develop'   # if different from master"
-	        warn "          },"
-	        warn "        }"
-	        warn "     end"
-        end 
+            warn "You shall setup 'FalkorLib.config.git[:subtrees]' to configure subtrees as follows:"
+            warn "     FalkorLib.config.git do |c|"
+            warn "       c[:subtrees] = {"
+            warn "          '<subdir>' => {"
+            warn "             :url    => '<giturl>',"
+            warn "             :branch => 'develop'   # if different from master"
+            warn "          },"
+            warn "        }"
+            warn "     end"
+        end
     end # module FalkorLib::Git
 end # module FalkorLib
