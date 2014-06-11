@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mar 2014-06-10 16:42 svarrette>
+# Time-stamp: <Wed 2014-06-11 23:16 svarrette>
 #
 # @description Check the Git operation
 #
@@ -25,7 +25,7 @@ describe FalkorLib::Git do
     #   puts "temp dir : #{dir}"
     # end
     after :all do
-        FileUtils.remove_entry_secure dir
+		FileUtils.remove_entry_secure dir
     end
 
     #############################################################
@@ -96,30 +96,38 @@ describe FalkorLib::Git do
             it "#subtree_init - initialize some Git Subtrees" do
                 FalkorLib.config.git do |c|
                     c[:subtrees] = {
-                        'easybuild/easyblocks' => {
-                            :url    => 'https://github.com/ULHPC/easybuild-easyblocks.git',
-                            :branch => 'develop'
+                        'falkor/lib' => {
+                            :url    => 'https://github.com/Falkor/falkorlib.git',
+                            :branch => 'devel'
                         },
                     }
                 end
                 b = FalkorLib::Git.subtree_init( dir )
                 b.should == 0
+				puts FalkorLib::Git.dirty?( dir )
             end
 
-	        it "#subtree_diff" do 
+            it "#subtree_up" do
+                b = FalkorLib::Git.subtree_up( dir )
+                b.should == 0
+				puts FalkorLib::Git.dirty?( dir )
+            end
+
+	        it "#subtree_diff" do
 				b = FalkorLib::Git.subtree_diff( dir )
-				b.should == 0				
-			end
+				b.should == 0
+				puts FalkorLib::Git.dirty?( dir )
+            end
+
+
         end
 
-
-
-        # shall be the last check
-        it "#dirty? - check dirty git directory" do
-			execute "echo 'toto' > #{afile}"
-            b = FalkorLib::Git.dirty?( dir )
-            b.should be_true
-        end
+        # # shall be the last check
+        # it "#dirty? - check dirty git directory" do
+        #   execute "echo 'toto' > #{afile}"
+        #     b = FalkorLib::Git.dirty?( dir )
+        #     b.should be_true
+        # end
 
 
 

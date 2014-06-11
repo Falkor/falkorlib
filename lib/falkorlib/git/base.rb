@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-06-10 23:37 svarrette>
+# Time-stamp: <Wed 2014-06-11 23:16 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -225,7 +225,7 @@ module FalkorLib  #:nodoc:
 
         # Pull the latest changes, assuming the git repository is not dirty
         def subtree_up(path = Dir.pwd)
-	        error "Unable to pull subtree(s): Dirty Git repository" if FalkorLib::Git.dirty?
+	        error "Unable to pull subtree(s): Dirty Git repository" if FalkorLib::Git.dirty?( path )
 	        exit_status = 0
 	        git_root_dir = rootdir(path)
 	        Dir.chdir(git_root_dir) do
@@ -245,7 +245,6 @@ module FalkorLib  #:nodoc:
 		        end
 	        end
 	        exit_status
-
         end
         alias :subtree_pull :subtree_up 
 
