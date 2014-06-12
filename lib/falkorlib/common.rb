@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-12 10:08 svarrette>
+# Time-stamp: <Jeu 2014-06-12 12:01 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -113,12 +113,14 @@ module FalkorLib #:nodoc:
 	        unless stdout.empty?
 		        stdout.each_line do |line|
 			        print "** [out] #{line}"
+			        $stdout.flush
 		        end
 	        end 
 	        unless stderr.empty?
 		        stderr.each_line do |line|
 			        print red("** [err] #{line}")        
-		        end
+			        $stderr.flush
+		        end		        
 	        end 
 	        exit_status
         end
@@ -137,6 +139,7 @@ module FalkorLib #:nodoc:
         def run(cmds)
 	        exit_status = 0
             puts bold("[Running]\n#{cmds.gsub(/^\s*/, '   ')}")
+	        $stdout.flush
             #puts cmds.split(/\n */).inspect
             cmds.split(/\n */).each do |cmd|
                 next if cmd.empty?

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-12 10:11 svarrette>
+# Time-stamp: <Jeu 2014-06-12 11:53 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -177,12 +177,9 @@ module FalkorLib  #:nodoc:
 			        # TODO: Check if it contains all submodules of the configuration
 		        end 
 	        end
-	        ap FalkorLib.config.git
+	        #ap FalkorLib.config.git
 	        Dir.chdir(git_root_dir) do
-		        exit_status = run %{
-                   git submodule init
-                   git submodule update
-                }
+		        exit_status = FalkorLib::Git.submodule_update( git_root_dir )
 		        FalkorLib.config.git[:submodules].each do |subdir,conf|
 			        next if conf[:url].nil?
 			        url = conf[:url]
@@ -197,6 +194,31 @@ module FalkorLib  #:nodoc:
 			        end 
 		        end 
 	        end
+	        exit_status
+        end
+
+        ## Update the Git submodules to the **local** registered version
+        def submodule_update(path = Dir.pwd)
+	        exit_status = 1
+	        git_root_dir = rootdir(path)
+	        Dir.chdir(git_root_dir) do
+		        exit_status = run %{
+                   git submodule init
+                   git submodule update
+                }
+	        end 
+	        exit_status
+        end
+
+        ## Upgrade the Git submodules to the latest HEAD version from the remote
+        def submodule_upgrade(path = Dir.pwd)
+	        exit_status = 1
+	        git_root_dir = rootdir(path)
+	        Dir.chdir(git_root_dir) do
+		        exit_status = run %{
+                   git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); git submodule update --recursive; git clean -dfx'
+                }
+	        end 
 	        exit_status
         end
 
