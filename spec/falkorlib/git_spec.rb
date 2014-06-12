@@ -2,9 +2,9 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-12 12:23 svarrette>
+# Time-stamp: <Jeu 2014-06-12 14:16 svarrette>
 #
-# @description Check the Git operation
+# @description Check the Git operations
 #
 # Copyright (c) 2013 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -20,10 +20,10 @@ describe FalkorLib::Git do
 
     dir   = Dir.mktmpdir
     afile = File.join(dir, 'a_file')
-    
+
     before :all do
         $stdout.sync = true
-    end 
+    end
 
     after :all do
         FileUtils.remove_entry_secure dir
@@ -105,16 +105,16 @@ describe FalkorLib::Git do
             b = FalkorLib::Git.submodule_init( dir )
             b.should == 0
         end
-		
-		it "#submodules_update" do
-			b = FalkorLib::Git.submodule_update( dir )
-			b.should == 0
-		end
 
-		it "#submodules_upgrade" do
-			b = FalkorLib::Git.submodule_upgrade( dir )
-			b.should == 0
-		end
+        it "#submodules_update" do
+            b = FalkorLib::Git.submodule_update( dir )
+            b.should == 0
+        end
+
+        it "#submodules_upgrade" do
+            b = FalkorLib::Git.submodule_upgrade( dir )
+            b.should == 0
+        end
 
 
         if FalkorLib::Git.command? 'subtree'
