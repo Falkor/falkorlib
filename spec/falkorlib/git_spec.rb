@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-12 12:17 svarrette>
+# Time-stamp: <Jeu 2014-06-12 12:23 svarrette>
 #
 # @description Check the Git operation
 #
@@ -20,10 +20,10 @@ describe FalkorLib::Git do
 
     dir   = Dir.mktmpdir
     afile = File.join(dir, 'a_file')
-	
-	before :all do
-		$stdout.sync = true
-	end 
+    
+    before :all do
+        $stdout.sync = true
+    end 
 
     after :all do
         FileUtils.remove_entry_secure dir
