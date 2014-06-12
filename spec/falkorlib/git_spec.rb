@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2014-06-11 23:16 svarrette>
+# Time-stamp: <Jeu 2014-06-12 10:08 svarrette>
 #
 # @description Check the Git operation
 #
@@ -21,11 +21,8 @@ describe FalkorLib::Git do
     dir   = Dir.mktmpdir
     afile = File.join(dir, 'a_file')
 
-    # before :all do
-    #   puts "temp dir : #{dir}"
-    # end
     after :all do
-		FileUtils.remove_entry_secure dir
+        FileUtils.remove_entry_secure dir
     end
 
     #############################################################
@@ -92,6 +89,19 @@ describe FalkorLib::Git do
             c.should be_true
         end
 
+        it "#submodules_init" do
+            FalkorLib.config.git do |c|
+                c[:submodules] = {
+                    'falkorgit' => {
+                        :url    => 'https://github.com/Falkor/falkorlib.git',
+                        :branch => 'devel'
+                    }
+                }
+            end
+            b = FalkorLib::Git.submodule_init( dir )
+            b.should == 0
+        end
+
         if FalkorLib::Git.command? 'subtree'
             it "#subtree_init - initialize some Git Subtrees" do
                 FalkorLib.config.git do |c|
@@ -104,19 +114,17 @@ describe FalkorLib::Git do
                 end
                 b = FalkorLib::Git.subtree_init( dir )
                 b.should == 0
-				puts FalkorLib::Git.dirty?( dir )
             end
 
             it "#subtree_up" do
                 b = FalkorLib::Git.subtree_up( dir )
                 b.should == 0
-				puts FalkorLib::Git.dirty?( dir )
             end
 
-	        it "#subtree_diff" do
-				b = FalkorLib::Git.subtree_diff( dir )
-				b.should == 0
-				puts FalkorLib::Git.dirty?( dir )
+            it "#subtree_diff" do
+                b = FalkorLib::Git.subtree_diff( dir )
+                b.should == 0
+                puts FalkorLib::Git.dirty?( dir )
             end
 
 

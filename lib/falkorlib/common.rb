@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 19:51 svarrette>
+# Time-stamp: <Jeu 2014-06-12 10:08 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -135,12 +135,15 @@ module FalkorLib #:nodoc:
         ## "Nice" way to present run commands
         ## Ex: run %{ hostname -f }
         def run(cmds)
+	        exit_status = 0
             puts bold("[Running]\n#{cmds.gsub(/^\s*/, '   ')}")
             #puts cmds.split(/\n */).inspect
             cmds.split(/\n */).each do |cmd|
                 next if cmd.empty?
                 system("#{cmd}") unless FalkorLib.config.debug
+		        exit_status = $?
             end
+	        exit_status
         end
 
         ###############################

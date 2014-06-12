@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2014-06-11 23:16 svarrette>
+# Time-stamp: <Jeu 2014-06-12 10:11 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -167,12 +167,45 @@ module FalkorLib  #:nodoc:
             g = MiniGit.new(path)
             g.capturing.remote.split()
         end
+        
+        ## Initialize git subtrees from the configuration
+        def submodule_init(path = Dir.pwd)
+	        exit_status  = 1
+	        git_root_dir = rootdir(path)
+	        if File.exists?("#{git_root_dir}/.gitmodules")
+		        unless FalkorLib.config.git[:submodules].empty?
+			        # TODO: Check if it contains all submodules of the configuration
+		        end 
+	        end
+	        ap FalkorLib.config.git
+	        Dir.chdir(git_root_dir) do
+		        exit_status = run %{
+                   git submodule init
+                   git submodule update
+                }
+		        FalkorLib.config.git[:submodules].each do |subdir,conf|
+			        next if conf[:url].nil?
+			        url = conf[:url]
+			        dir = "#{FalkorLib.config.git[:submodulesdir]}/#{subdir}" 
+			        branch = conf[:branch].nil? ? 'master' : conf[:branch]
+			        unless File.directory?( dir ) 
+				        info "Adding Git submodule '#{dir}' from '#{url}'"
+				        exit_status = run %{ 
+                           git submodule add -b #{branch} #{url} #{dir}
+                           git commit -s -m "Add Git submodule '#{dir}' from '#{url}'" .gitmodules #{dir}
+                        }
+			        end 
+		        end 
+	        end
+	        exit_status
+        end
+
 
         ## Initialize git subtrees from the configuration
         def subtree_init(path = Dir.pwd)
             raise ArgumentError, "Git 'subtree' command is not available" unless FalkorLib::Git.command? "subtree"
             if FalkorLib.config.git[:subtrees].empty?
-                FalkorLib::Git.subtrees_warn
+	            FalkorLib::Git.config_warn(:subtrees)
                 return 1
             end
 	        exit_status = 0
@@ -202,7 +235,7 @@ module FalkorLib  #:nodoc:
         def subtree_diff(path = Dir.pwd)
 	        raise ArgumentError, "Git 'subtree' command is not available" unless FalkorLib::Git.command? "subtree"
             if FalkorLib.config.git[:subtrees].empty?
-                FalkorLib::Git.subtrees_warn
+                FalkorLib::Git.config_warn(:subtrees)
                 return 1
             end
 	        exit_status = 0
@@ -248,18 +281,21 @@ module FalkorLib  #:nodoc:
         end
         alias :subtree_pull :subtree_up 
 
-
         # Raise a warning message if s
-        def subtrees_warn
-            warn "You shall setup 'FalkorLib.config.git[:subtrees]' to configure subtrees as follows:"
+        def config_warn(type = :subtrees)
+	        warn "You shall setup 'FalkorLib.config.git[#{type.to_sym}]' to configure #{type} as follows:"
             warn "     FalkorLib.config.git do |c|"
-            warn "       c[:subtrees] = {"
+	        warn "       c[#{type.to_sym}] = {"
             warn "          '<subdir>' => {"
             warn "             :url    => '<giturl>',"
             warn "             :branch => 'develop'   # if different from master"
             warn "          },"
             warn "        }"
             warn "     end"
+	        if type == :submodules
+		        warn "This will configure the Git submodule into FalkorLib.config.git.submodulesdir i.e. '#{ FalkorLib.config.git.submodulesdir}'"
+	        end 
         end
+
     end # module FalkorLib::Git
 end # module FalkorLib

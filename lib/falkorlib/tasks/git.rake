@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Mar 2014-06-10 23:33 svarrette>
+# Time-stamp: <Jeu 2014-06-12 00:14 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -38,6 +38,19 @@ namespace :git do
         end
 
     end
+
+	unless FalkorLib.config.git[:submodules].empty?
+		#.....................
+		namespace :submodules do
+			###########   init   ###########
+			desc "Initialize the Git subtrees defined in FalkorLib.config.git.submodules"
+			task :init do 
+				FalkorLib::Git.submodule_init(git_root_dir)
+			end # task submodules:init 
+
+
+		end # namespace submodules
+	end 
 
     if File.exists?("#{git_root_dir}/.gitmodules")
         #.....................
