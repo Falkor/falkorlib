@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-12 14:16 svarrette>
+# Time-stamp: <Jeu 2014-06-12 14:17 svarrette>
 #
 # @description Check the Git operations
 #
@@ -145,14 +145,12 @@ describe FalkorLib::Git do
 
         end
 
-        # # shall be the last check
-        # it "#dirty? - check dirty git directory" do
-        #   execute "echo 'toto' > #{afile}"
-        #     b = FalkorLib::Git.dirty?( dir )
-        #     b.should be_true
-        # end
-
-
+        # shall be the last check
+        it "#dirty? - check dirty git directory" do
+          execute "echo 'toto' > #{afile}"
+            b = FalkorLib::Git.dirty?( dir )
+            b.should be_true
+        end
 
     end
 

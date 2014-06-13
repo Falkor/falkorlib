@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-12 11:53 svarrette>
+# Time-stamp: <Jeu 2014-06-12 17:21 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -124,7 +124,8 @@ module FalkorLib  #:nodoc:
         ## current branch)
         def list_branch(path = Dir.pwd)
             cg = MiniGit::Capturing.new(path)
-            res = cg.branch.split("\n")
+            res = cg.branch :a => true
+	        res = res.split("\n")
             # Eventually reorder to make the first element of the array the current branch
             i = res.find_index { |e| e =~ /^\*\s/ }
             unless (i.nil? || i == 0)
@@ -138,6 +139,41 @@ module FalkorLib  #:nodoc:
         def branch?(path = Dir.pwd)
             list_branch(path)[0]
         end
+
+        ## Grab a remote branch
+        def grab(branch, path = Dir.pwd, remote = 'origin')
+	        exit_status = 1
+	        error "no branch provided" if branch.nil?
+	        remotes  = FalkorLib::Git.remotes(path)
+	        branches = FalkorLib::Git.list_branch(path)
+	        if branches.include? "remotes/#{remote}/#{branch}"
+		        info "Grab the branch '#{remote}/#{branch}'"
+		        exit_status = execute "git branch --set-upstream #{branch} #{remote}/#{branch}"
+	        else 
+		        warning "the remote branch '#{remote}/#{branch}' cannot be found" 
+	        end 
+	        exit_status
+        end
+
+        ## Publish a branch on the remote
+        def publish(branch, path = Dir.pwd, remote = 'origin')
+	        exit_status = 1
+	        error "no branch provided" if branch.nil?
+	        remotes  = FalkorLib::Git.remotes(path)
+	        branches = FalkorLib::Git.list_branch(path)
+	        if branches.include? "remotes/#{remote}/#{branch}"
+		        warning "the  remote branch '#{remote}/#{branch}' already exists"
+	        else 
+		        info "Publish the branch '#{branch}' on the remote '#{remote}'"
+		        exit_status = run %{ 
+                          git push #{remote} #{branch}:refs/heads/#{branch}
+                          git fetch #{remote}
+                          git branch --set-upstream-to #{remote}/#{branch} #{branch}
+                }
+	        end 
+	        exit_status
+        end
+        
 
         ## Add a file/whatever to Git and commit it
         def add(path, msg = "")

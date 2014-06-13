@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-06-10 10:32 svarrette>
+# Time-stamp: <Jeu 2014-06-12 16:36 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -8,6 +8,9 @@
 
 require 'rake'
 require 'yaml'
+
+#Needed for rake/gem '= 0.9.2.2'
+Rake::TaskManager.record_task_metadata = true
 
 FalkorLib.config.debug = ARGV.include?('DEBUG')
 
