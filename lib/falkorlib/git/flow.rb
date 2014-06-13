@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-13 11:01 svarrette>
+# Time-stamp: <Ven 2014-06-13 12:01 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -45,38 +45,63 @@ module FalkorLib
             error "you shall install git-flow: see https://github.com/nvie/gitflow/wiki/Installation" unless command?('git-flow')
             remotes = FalkorLib::Git.remotes(path)
             branches = FalkorLib::Git.list_branch(path)
-            if remotes.include?( 'origin' )
-                info "=> configure remote (tracked) branches"
-                exit_status = FalkorLib::Git.fetch(path)
-                FalkorLib.config.gitflow[:branches].each do |type,branch|
-                    if branches.include? "remotes/origin/#{branch}"
-                        exit_status = FalkorLib::Git.grab(branch, path)
-                    else
+            Dir.chdir( FalkorLib::Git.rootdir( path ) ) do
+                if remotes.include?( 'origin' )
+                    info "=> configure remote (tracked) branches"
+                    exit_status = FalkorLib::Git.fetch(path)
+                    FalkorLib.config.gitflow[:branches].each do |type,branch|
+                        if branches.include? "remotes/origin/#{branch}"
+                            exit_status = FalkorLib::Git.grab(branch, path)
+                        else
+                            unless branches.include? branch
+                                info "creating the branch '#{branch}'"
+                                FalkorLib::Git.create_branch( branch, path )
+                            end
+                            exit_status = FalkorLib::Git.publish(branch, path )
+                        end
+                    end
+                else
+                    FalkorLib.config.gitflow[:branches].each do |type, branch|
                         unless branches.include? branch
                             info "creating the branch '#{branch}'"
                             FalkorLib::Git.create_branch( branch, path )
                         end
-                        exit_status = FalkorLib::Git.publish(branch, path )
                     end
                 end
-            else
-                FalkorLib.config.gitflow[:branches].each do |type, branch|
-                    unless branches.include? branch
-                        info "creating the branch '#{branch}'"
-                        FalkorLib::Git.create_branch( branch, path )
-                    end
+                info "Initialize git flow configs"
+                FalkorLib.config.gitflow[:branches].each do |t,branch|
+                    execute "git config gitflow.branch.#{t} #{branch}"
                 end
-            end 
-            info "Initialize git flow configs"
-	        FalkorLib.config.gitflow[:branches].each do |t,branch|
-		        execute "git config gitflow.branch.#{t} #{branch}"
-	        end 
-            FalkorLib.config.gitflow[:prefix].each do |t,prefix|
-                execute "git config gitflow.prefix.#{t} #{prefix}"
+                FalkorLib.config.gitflow[:prefix].each do |t,prefix|
+                    execute "git config gitflow.prefix.#{t} #{prefix}"
+                end
             end
         end
 
-        
+        ## generic function to run any of the gitflow commands 
+        def command(name, type = 'feature', action = 'start', path = Dir.pwd, optional_args = '')
+            error "Invalid git-flow type '#{type}'" unless ['feature', 'release', 'hotfix', 'support'].include?(type)
+            error "Invalid action '#{action}'" unless ['start', 'finish'].include?(action)
+            error "You must provide a name" if name == ''
+            error "The name '#{name}' cannot contain spaces" if name =~ /\s+/
+	        exit_status = 1
+	        Dir.chdir( FalkorLib::Git.rootdir(path) ) do
+		        exit_status = execute "git flow #{type} #{action} #{optional_args} #{name}"
+	        end 
+	        exit_status
+        end
+
+        ## git flow {feature, hotfix, release, support} start <name>
+        def start (type, name, path = Dir.pwd, optional_args = '')
+	        command(name, type, 'start', path, optional_args)
+        end
+
+        ## git flow {feature, hotfix, release, support} finish <name>
+        def finish (type, name, path = Dir.pwd, optional_args = '')
+	        command(name, type, 'finish', path, optional_args)
+        end
+
+
     end # module FalkorLib::GitFlow
 
 end
