@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Ven 2014-06-13 12:02 svarrette>
+# Time-stamp: <Ven 2014-06-13 14:49 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -34,9 +34,10 @@ namespace :git do
 
             #########   git:{feature,hotfix,support}:start ##########################
             desc "Start a new #{op} operation on the repository using the git-flow framework"
-            task :start do |t|
-                name = ask("Name of the #{op} (the git branch will be 'feature/<name>')")
-                info t.comment
+            task :start, [:name] do |t, args|
+				#args.with_default[:name => '']
+				name = args.name == 'name' ? ask("Name of the #{op} (the git branch will be 'feature/<name>')") : args.name
+				info t.comment + " with name '#{op}/#{name}'"
                 really_continue?
                 Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
                 info "=> prepare new '#{op}' using git flow"

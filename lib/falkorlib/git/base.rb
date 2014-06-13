@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-13 11:09 svarrette>
+# Time-stamp: <Ven 2014-06-13 20:35 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -42,6 +42,16 @@ module FalkorLib  #:nodoc:
             end
             return true
         end
+
+        ## Check if the repositories already holds some commits
+        def has_commits?(path)
+	        res = false
+	        Dir.chdir(path) do
+		        stdout, stderr, exit_status = Open3.capture3( "git rev-parse HEAD" ) 
+		        res = (exit_status == 0)
+	        end
+	        res
+        end 
 
         ## Check the availability of a given git command
         def command?(cmd, path = Dir.pwd)
@@ -109,8 +119,17 @@ module FalkorLib  #:nodoc:
 
         # Create a new branch
         def create_branch(branch, path = Dir.pwd)
-            g = MiniGit.new(path)
+	        #ap method(__method__).parameters.map { |arg| arg[1] }
+	        g = MiniGit.new(path)
+	        error "not yet any commit performed -- You shall do one" unless has_commits?(path) 
             g.branch "#{branch}"
+        end
+
+        # Delete a branch. 
+        def delete_branch(branch, path = Dir.pwd, opts = { :force => false })
+            g = MiniGit.new(path)
+	        error "'#{branch}' is not a valid existing branch" unless list_branch(path).include?( branch )
+	        g.branch (opts[:force] ? :D : :d) => "#{branch}"
         end
 
         ## Fetch the latest changes

@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-12 14:17 svarrette>
+# Time-stamp: <Ven 2014-06-13 20:20 svarrette>
 #
 # @description Check the Git operations
 #
@@ -52,8 +52,12 @@ describe FalkorLib::Git do
                 r.should == File.realpath(dir)
                 g.should == File.realpath( File.join(dir, '.git')  )
             end
-
         end
+
+		it "#has_commits? - not yet any commits" do
+			b = FalkorLib::Git.has_commits?( dir )
+			b.should be_false
+		end
 
         it "#branch? - check non-existing branch" do
             br = FalkorLib::Git.branch?( dir )
@@ -64,6 +68,12 @@ describe FalkorLib::Git do
             FileUtils.touch( afile )
             FalkorLib::Git.add(afile)
         end
+
+		it "#has_commits? - no some commits have been done" do
+			b = FalkorLib::Git.has_commits?( dir )
+			b.should be_true
+		end
+
 
         it "#branch? - check existing branch" do
             br = FalkorLib::Git.branch?( dir )
@@ -83,6 +93,14 @@ describe FalkorLib::Git do
             end
         end
 
+        default_branches.each do |br|
+            it "#delete_branch #list_branch - deletes branch #{br}" do
+				FalkorLib::Git.delete_branch( br, dir) #, :force => true )
+                l = FalkorLib::Git.list_branch( dir )
+                l.should_not include "#{br}"
+            end
+        end
+
         it "#command? - check non-availability of git command 'toto'" do
             c = FalkorLib::Git.command?('toto')
             c.should be_false
@@ -93,6 +111,7 @@ describe FalkorLib::Git do
             c.should be_true
         end
 
+        # ---------- Submodules ---------------
         it "#submodules_init" do
             FalkorLib.config.git do |c|
                 c[:submodules] = {
@@ -116,7 +135,7 @@ describe FalkorLib::Git do
             b.should == 0
         end
 
-
+		# ---------- Subtrees ---------------
         if FalkorLib::Git.command? 'subtree'
             it "#subtree_init - initialize some Git Subtrees" do
                 FalkorLib.config.git do |c|
@@ -141,9 +160,10 @@ describe FalkorLib::Git do
                 b.should == 0
                 puts FalkorLib::Git.dirty?( dir )
             end
-
-
         end
+
+
+
 
         # shall be the last check
         it "#dirty? - check dirty git directory" do
