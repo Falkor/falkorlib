@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-18 17:38 svarrette>
+# Time-stamp: <Mer 2014-06-18 21:59 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -197,19 +197,28 @@ module FalkorLib  #:nodoc:
             exit_status
         end
 
+        ## List the files currently version
+        def list_files(path = Dir.pwd)
+	        g = MiniGit.new(path)
+	        g.capturing.ls_files.split
+        end 
+
+
 
         ## Add a file/whatever to Git and commit it
         def add(path, msg = "")
+	        exit_status = 0
             dir  = File.realpath File.dirname(path)
             root = rootdir(path)
             relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
             real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
             Dir.chdir( dir ) do
-                run %{
+		        exit_status = run %{
                   git add #{path}
                   git commit -s -m "#{real_msg}" #{path}
                 }
             end
+	        exit_status.to_i
         end
 
         ## Check if a git directory is in dirty mode

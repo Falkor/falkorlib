@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2014-06-18 21:02 svarrette>
+# Time-stamp: <Mer 2014-06-18 22:06 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -21,12 +21,12 @@ describe FalkorLib::Versioning do
     afile = File.join(dir, 'a_file')
     versionfile     = FalkorLib.config[:versioning][:source]['file'][:filename]
     default_version = FalkorLib.config[:versioning][:default]
-	workingversion = {
-		:default => '1.2.3',
-		:patch   => '1.2.4',
-		:minor   => '1.3.0',
-		:major   => '2.0.0'
- 	} 
+    workingversion = {
+        :default => '1.2.3',
+        :patch   => '1.2.4',
+        :minor   => '1.3.0',
+        :major   => '2.0.0'
+    }
 
     after :all do
         FileUtils.remove_entry_secure dir
@@ -44,23 +44,94 @@ describe FalkorLib::Versioning do
             v.should == default_version
         end
 
-		it "#get_version -- should get the '#{workingversion[:default]}' version set in the file #{versionfile}" do
-			execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
-			v = FalkorLib::Versioning.get_version(dir)
-			v.should == workingversion[:default]
-		end
+        it "#get_version -- should get the '#{workingversion[:default]}' version set in the file #{versionfile}" do
+            execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
+            v = FalkorLib::Versioning.get_version(dir)
+            v.should == workingversion[:default]
+        end
 
-		FalkorLib.config[:versioning][:levels].reverse.each do |level| 
-			it "#bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]}" do
+        it "#set_version -- set version #{default_version} in version file #{versionfile}" do
+            STDIN.should_receive(:gets).and_return('no')
+            v = FalkorLib::Versioning.set_version(default_version, dir)
+            v.should == 0
+            v = FalkorLib::Versioning.get_version(dir)
+            v.should == default_version
+        end
+
+        FalkorLib.config[:versioning][:levels].reverse.each do |level|
+            it "#set_version #bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]}" do
+                # restore version file
+                execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
+                v  = FalkorLib::Versioning.get_version(dir)
+                v.should == workingversion[:default]
+                v2 = FalkorLib::Versioning.bump(v, level.to_sym)
+                v2.should == workingversion[level.to_sym]
+                STDIN.should_receive(:gets).and_return('no')
+                d = FalkorLib::Versioning.set_version(v2, dir)
+                d.should == 0
+                v3 = FalkorLib::Versioning.get_version(dir)
+                v3.should == v2
+            end
+        end
+
+        it "should do something" do
+
+        end
+
+
+        it "#set_version --  restore versionfile and add it to git" do
+            STDIN.should_receive(:gets).and_return('Yes')
+            t =  FalkorLib::Versioning.set_version(workingversion[:default], dir)
+            t.should == 0
+        end
+
+        FalkorLib.config[:versioning][:levels].reverse.each do |level|
+            it "#set_version #bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]} with git commit" do
+				if FalkorLib::Versioning.get_version(dir) != workingversion[:default]
+					t =  FalkorLib::Versioning.set_version(workingversion[:default], dir)
+					t.should == 0
+				end 
 				v  = FalkorLib::Versioning.get_version(dir)
-				v2 = FalkorLib::Versioning.bump(v, level.to_sym)
-				v2.should == workingversion[level.to_sym]
-				#v.should == fileversion
-			end
-		end
+                v.should == workingversion[:default]
+                v2 = FalkorLib::Versioning.bump(v, level.to_sym)
+                v2.should == workingversion[level.to_sym]
+                d = FalkorLib::Versioning.set_version(v2, dir)
+                d.should == 0
+                v3 = FalkorLib::Versioning.get_version(dir)
+                v3.should == v2
+            end
+
+        end
 
 
-		
+        # it "should restore versionfile and add it to " do
+        #   execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
+        #   t = FalkorLib::Git.add("#{dir}/#{versionfile}", "add version file initialized to #{workingversion[:default]}")
+        #   t.should == 0
+        # end
+
+
+        # FalkorLib.config[:versioning][:levels].reverse.each do |level|
+        #   it "#set_version #bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]} with git commits" do
+        #       # restore version file
+        #       execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
+        #       t = FalkorLib::Git.add("#{dir}/#{versionfile}", "restore version file to #{workingversion[:default]}")
+        #       t.should == 0
+        #       v  = FalkorLib::Versioning.get_version(dir)
+        #       v.should == workingversion[:default]
+        #       v2 = FalkorLib::Versioning.bump(v, level.to_sym)
+        #       v2.should == workingversion[level.to_sym]
+        #       STDIN.should_receive(:gets).and_return('Yes')
+        #       d = FalkorLib::Versioning.set_version(v2, dir)
+        #       d.should == 0
+        #       v3 = FalkorLib::Versioning.get_version(dir)
+        #       v3.should == v2
+        #   end
+        # end
+
+
+
+
 
 
     end

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-18 17:58 svarrette>
+# Time-stamp: <Mer 2014-06-18 22:02 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -44,42 +44,56 @@ module FalkorLib #:nodoc:
         ## get the current version
         def get_version(rootdir = Dir.pwd)
             version = FalkorLib.config[:versioning][:default]
-	        type    = FalkorLib.config[:versioning][:type]
-	        source  = FalkorLib.config[:versioning][:source][ type ]
-	        case type
+            type    = FalkorLib.config[:versioning][:type]
+            source  = FalkorLib.config[:versioning][:source][ type ]
+            case type
             when 'file'
-	            versionfile = File.join( rootdir, source[:filename] )
-		        version = File.read( versionfile ).chomp if File.exist? ( versionfile )
+                versionfile = File.join( rootdir, source[:filename] )
+                version = File.read( versionfile ).chomp if File.exist? ( versionfile )
             when 'gem'
-		        getmethod = source[:getmethod ]
-		        version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
-	        end
-	        version
+                getmethod = source[:getmethod ]
+                version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
+            end
+            version
         end
 
-        ## Set the version 
+        ## Set the version
         def set_version(version, rootdir = Dir.pwd)
-	        exit_status = 0
-	        type    = FalkorLib.config[:versioning][:type]
-	        source  = FalkorLib.config[:versioning][:source][ type ]
-	        case type
+            exit_status = 0
+            type    = FalkorLib.config[:versioning][:type]
+            source  = FalkorLib.config[:versioning][:source][ type ]
+            filelist = FalkorLib::Git.list_files( rootdir )
+            tocommit = ""
+            case type
             when 'file'
-	            versionfile = File.join( rootdir, source[:filename] )
-		        exit_status = File.open(versionfile, 'w') {|f| f.puts version } if File.exist? ( versionfile )
+                versionfile = File.join( rootdir, source[:filename] )
+                File.open(versionfile, 'w') {|f| f.puts version } if File.exist? ( versionfile )
+	            tocommit = source[:filename]
             when 'gem'
-		        getmethod = source[:getmethod ]
-		        version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
-	        end
-        end 
+                #getmethod = source[:getmethod ]
+                #version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
+            end
+            Dir.chdir( rootdir ) do
+		        unless filelist.include?(  tocommit )
+			        warning "The version file #{source[:filename]} is not part of the Git repository"
+                    answer = ask("Adding the file to the repository? (Y|n)", 'Yes')
+	                next if answer =~ /n.*/i
+			        exit_status = FalkorLib::Git.add(File.join(rootdir, tocommit), "Adding the version file '#{tocommit}', inialized to the '#{version}' version" )
+			        next 
+		        end 
+		        exit_status = execute "git commit -s -m \"bump to version '#{version}'\" #{tocommit}"
+		        #ap exit_status
+            end
+	        exit_status
+        end
 
 
 
-        
+
         ## Return a new version number based on
         # @param oldversion the old version (format: x.y.z)
         # @param level      the level of bumping (either :major, :minor, :patch)
         def bump(oldversion, level)
-	        puts "oldversion : #{oldversion} - level = #{level}"
             major = minor = patch = 0
             if oldversion =~ /^(\d+)\.(\d+)\.(\d+)$/
                 major = $1.to_i

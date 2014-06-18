@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Ven 2014-06-13 20:20 svarrette>
+# Time-stamp: <Mer 2014-06-18 21:46 svarrette>
 #
 # @description Check the Git operations
 #
@@ -64,10 +64,22 @@ describe FalkorLib::Git do
             br.should be_nil
         end
 
+		it "#list_files -- should not list any files" do
+			l = FalkorLib::Git.list_files( dir )
+			l.should be_empty
+		end
+
         it "#add - makes a first commit" do
             FileUtils.touch( afile )
-            FalkorLib::Git.add(afile)
+            t = FalkorLib::Git.add(afile)
+			t.should == 0
         end
+
+		it "#list_files -- should list a single files" do
+			l = FalkorLib::Git.list_files( dir )
+			l.should include 'a_file'
+		end
+
 
 		it "#has_commits? - no some commits have been done" do
 			b = FalkorLib::Git.has_commits?( dir )
