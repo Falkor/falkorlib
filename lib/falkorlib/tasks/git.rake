@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Mer 2014-06-18 18:03 svarrette>
+# Time-stamp: <Mer 2014-06-18 22:29 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -26,35 +26,29 @@ namespace :git do
         FalkorLib::Git.fetch()
     end # task fetch
 
-    #unless remotes.include?( 'origin')
-    ############  git:up   ########################################
-    desc "Update your local copy of the repository from GIT server"
-    task :up do
-        info "Updating your local repository"
-        cmd = "git pull origin"
-        status = execute( cmd )
-        if (status.to_i != 0)
-            warn("The command '#{cmd}' failed with exit status #{res.exitstatus}")
-            warn("This may be due to the fact that you're not connected to the internet")
-            really_continue?('no')
-        end
-    end
+    [ 'up', 'push' ].each do |op|
 
-
-    #################   git:push   ##################################
-    desc "Push your modifications onto the remote branches"
-    task :push => :up do |t|
-        info t.full_comment
-        cmd = "git push origin"
-        sh %{#{cmd}} do |ok, res|
-            if ! ok
+        description = case op
+                      when 'up';   "Update your local copy of the repository from GIT server"
+                      when 'push'; "Push your modifications onto the remote branches"
+                      end
+		###########  git:{up,push}  ###########
+        desc "#{description}"
+        task op.to_sym do |t|
+            info t.comment
+            if remotes.empty? || ! remotes.include?( 'origin' )
+                warn "No git remote configured... Exiting #{t}"
+                next
+            end
+            cmd = ( op == 'up') ? 'pull' : op 
+			status = execute( "git #{cmd} origin" )
+            if (status.to_i != 0)
                 warn("The command '#{cmd}' failed with exit status #{res.exitstatus}")
                 warn("This may be due to the fact that you're not connected to the internet")
                 really_continue?('no')
             end
-        end
+        end 
     end
-    #end
 
     unless FalkorLib.config.git[:submodules].empty?
         #.....................

@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2014-06-18 22:06 svarrette>
+# Time-stamp: <Mer 2014-06-18 22:08 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -100,42 +100,7 @@ describe FalkorLib::Versioning do
                 v3 = FalkorLib::Versioning.get_version(dir)
                 v3.should == v2
             end
-
         end
 
-
-        # it "should restore versionfile and add it to " do
-        #   execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
-        #   t = FalkorLib::Git.add("#{dir}/#{versionfile}", "add version file initialized to #{workingversion[:default]}")
-        #   t.should == 0
-        # end
-
-
-        # FalkorLib.config[:versioning][:levels].reverse.each do |level|
-        #   it "#set_version #bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]} with git commits" do
-        #       # restore version file
-        #       execute "echo #{workingversion[:default]} > #{dir}/#{versionfile}"
-        #       t = FalkorLib::Git.add("#{dir}/#{versionfile}", "restore version file to #{workingversion[:default]}")
-        #       t.should == 0
-        #       v  = FalkorLib::Versioning.get_version(dir)
-        #       v.should == workingversion[:default]
-        #       v2 = FalkorLib::Versioning.bump(v, level.to_sym)
-        #       v2.should == workingversion[level.to_sym]
-        #       STDIN.should_receive(:gets).and_return('Yes')
-        #       d = FalkorLib::Versioning.set_version(v2, dir)
-        #       d.should == 0
-        #       v3 = FalkorLib::Versioning.get_version(dir)
-        #       v3.should == v2
-        #   end
-        # end
-
-
-
-
-
-
     end
-
-
-
 end
