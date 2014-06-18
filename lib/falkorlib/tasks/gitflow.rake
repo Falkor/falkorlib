@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Mer 2014-06-18 22:37 svarrette>
+# Time-stamp: <Mer 2014-06-18 23:39 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -81,8 +81,8 @@ namespace :version do
 				version = FalkorLib::Versioning.get_version
 				release_version = FalkorLib::Versioning.bump(version, level.to_sym)
 				info t.comment + " (from version '#{version}' to '#{release_version}')"
-				really_continue?
-				Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
+				#really_continue?
+				#Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
 				#info "=> prepare release using git flow" 
 				# git_flow_start('release', release_version)
 				# # Now you should be in the new branch
