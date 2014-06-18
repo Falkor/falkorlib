@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 00:08 svarrette>
+# Time-stamp: <Jeu 2014-06-19 00:35 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -84,52 +84,40 @@ module FalkorLib #:nodoc:
             exit_status = 0
             type    = FalkorLib.config[:versioning][:type]
             source  = FalkorLib.config[:versioning][:source][ type ]
+	        versionfile = File.join( rootdir, source[:filename] ) unless source[:filename].nil?
             filelist = FalkorLib::Git.list_files( rootdir )
             major, minor, patch =  major(version), minor(version), patch(version)
-            tocommit = ""
+            #tocommit = ""
             case type
             when 'file'
-                versionfile = File.join( rootdir, source[:filename] )
                 File.open(versionfile, 'w') {|f| f.puts version } if File.exist? ( versionfile )
-                tocommit = source[:filename]
             when 'gem'
-                puts "gem mode - " + major + minor + patch
-                versionfile =  File.join( rootdir, source[:filename] )
-                File.open(versionfile, "rw") do |f|
+	            File.open(versionfile, 'r+') do |f|
                     text = f.read
-			        text.gsub!(/^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/, 
-			                   $1 + "MAJOR, MINOR, PATCH = #{major}, #{minor}, #{patch}")
+			        text.gsub!(/^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(.*)$/, 
+			                   '\1' + "MAJOR, MINOR, PATCH = #{major}, #{minor}, #{patch}" + '\5')
                     f.rewind
                     f.write(text)
                 end
-
-
-                # File.open(versionfile + '.new', 'w') do |out|
-                #     File.open(versionfile, 'r').each do |line|
-                #         newline = line.gsub(/^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/) do |m|
-                #             newline = $1 + "MAJOR, MINOR, PATCH = #{major}, #{minor}, #{patch}"
-                #         end
-                #         out.print newline
-                #     end
-                # end
-
-
-                exit 1
-                #getmethod = source[:getmethod ]
-                #version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
+	            #exit 1
             end
             Dir.chdir( rootdir ) do
-                next if tocommit.empty?
-                unless filelist.include?(  tocommit )
+                next if source[:filename].nil?
+		        ap filelist
+		        #exit 1
+                unless filelist.include?(  source[:filename] )
                     warning "The version file #{source[:filename]} is not part of the Git repository"
                     answer = ask("Adding the file to the repository? (Y|n)", 'Yes')
                     next if answer =~ /n.*/i
-                    exit_status = FalkorLib::Git.add(File.join(rootdir, tocommit), "Adding the version file '#{tocommit}', inialized to the '#{version}' version" )
+                    exit_status = FalkorLib::Git.add(versionfile, "Adding the version file '#{source[:filename]}', inialized to the '#{version}' version" )
                     next
                 end
-                exit_status = execute "git commit -s -m \"bump to version '#{version}'\" #{tocommit}"
-                #ap exit_status
+		        exit_status = execute "git commit -s -m \"bump to version '#{version}'\" #{versionfile}"
+                
+		        #ap exit_status
             end
+	        puts "exit_status = "
+	        ap exit_status
             exit_status
         end
 
