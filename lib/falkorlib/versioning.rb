@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 00:35 svarrette>
+# Time-stamp: <Jeu 2014-06-19 00:48 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -90,8 +90,10 @@ module FalkorLib #:nodoc:
             #tocommit = ""
             case type
             when 'file'
-                File.open(versionfile, 'w') {|f| f.puts version } if File.exist? ( versionfile )
+	            info "writing version changes in #{source[:filename]}"
+	            File.open(versionfile, 'w') {|f| f.puts version } if File.exist? ( versionfile )
             when 'gem'
+	            info "=> writing version changes in #{source[:filename]}"
 	            File.open(versionfile, 'r+') do |f|
                     text = f.read
 			        text.gsub!(/^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(.*)$/, 
@@ -103,8 +105,6 @@ module FalkorLib #:nodoc:
             end
             Dir.chdir( rootdir ) do
                 next if source[:filename].nil?
-		        ap filelist
-		        #exit 1
                 unless filelist.include?(  source[:filename] )
                     warning "The version file #{source[:filename]} is not part of the Git repository"
                     answer = ask("Adding the file to the repository? (Y|n)", 'Yes')
@@ -112,9 +112,10 @@ module FalkorLib #:nodoc:
                     exit_status = FalkorLib::Git.add(versionfile, "Adding the version file '#{source[:filename]}', inialized to the '#{version}' version" )
                     next
                 end
-		        exit_status = execute "git commit -s -m \"bump to version '#{version}'\" #{versionfile}"
-                
-		        #ap exit_status
+		        execute "git diff #{source[:filename]}"
+		        answer = ask("Commit the changes of the version file to the repository? (Y|n)", 'Yes')
+		        next if answer =~ /n.*/i
+		        exit_status = execute "echo git commit -s -m \"bump to version '#{version}'\" #{versionfile}"
             end
 	        puts "exit_status = "
 	        ap exit_status
