@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2014-06-18 22:08 svarrette>
+# Time-stamp: <Jeu 2014-06-19 00:54 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -88,6 +88,7 @@ describe FalkorLib::Versioning do
         FalkorLib.config[:versioning][:levels].reverse.each do |level|
             it "#set_version #bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]} with git commit" do
 				if FalkorLib::Versioning.get_version(dir) != workingversion[:default]
+					STDIN.should_receive(:gets).and_return('Yes')
 					t =  FalkorLib::Versioning.set_version(workingversion[:default], dir)
 					t.should == 0
 				end 
@@ -95,6 +96,7 @@ describe FalkorLib::Versioning do
                 v.should == workingversion[:default]
                 v2 = FalkorLib::Versioning.bump(v, level.to_sym)
                 v2.should == workingversion[level.to_sym]
+				STDIN.should_receive(:gets).and_return('Yes')
                 d = FalkorLib::Versioning.set_version(v2, dir)
                 d.should == 0
                 v3 = FalkorLib::Versioning.get_version(dir)
