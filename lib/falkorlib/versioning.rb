@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 00:48 svarrette>
+# Time-stamp: <Jeu 2014-06-19 00:52 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -113,13 +113,12 @@ module FalkorLib #:nodoc:
                     next
                 end
 		        execute "git diff #{source[:filename]}"
-		        answer = ask("Commit the changes of the version file to the repository? (Y|n)", 'Yes')
+		        answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
 		        next if answer =~ /n.*/i
-		        exit_status = execute "echo git commit -s -m \"bump to version '#{version}'\" #{versionfile}"
+		        execute "git commit -s -m \"bump to version '#{version}'\" #{source[:filename]}"
+		        exit_status = $?.to_i
             end
-	        puts "exit_status = "
-	        ap exit_status
-            exit_status
+	        exit_status
         end
 
 
