@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-13 20:35 svarrette>
+# Time-stamp: <Mer 2014-06-18 17:38 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -221,6 +221,15 @@ module FalkorLib  #:nodoc:
             ! a.empty?
         end
 
+        ## Get the last tag commit, or nil if no tag can be found
+        def last_tag_commit(path = Dir.pwd)
+	        res = nil
+	        g = MiniGit.new(path)
+	        # git rev-list --tags --max-count=1)
+            a = g.capturing.rev_list :tags => true, :max_count => 1
+	        a	        
+        end # last_tag_commit
+
         ## List of Git remotes
         def remotes(path = Dir.pwd)
             g = MiniGit.new(path)
@@ -362,7 +371,7 @@ module FalkorLib  #:nodoc:
         end
         alias :subtree_pull :subtree_up
 
-        # Raise a warning message if s
+        # Raise a warning message if subtree/submodule section is not present
         def config_warn(type = :subtrees)
             warn "You shall setup 'FalkorLib.config.git[#{type.to_sym}]' to configure #{type} as follows:"
             warn "     FalkorLib.config.git do |c|"
@@ -377,6 +386,11 @@ module FalkorLib  #:nodoc:
                 warn "This will configure the Git submodule into FalkorLib.config.git.submodulesdir i.e. '#{ FalkorLib.config.git.submodulesdir}'"
             end
         end
+
+        
+        
+
+
 
     end # module FalkorLib::Git
 end # module FalkorLib

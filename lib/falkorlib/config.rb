@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 16:15 svarrette>
+# Time-stamp: <Mer 2014-06-18 17:17 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -53,6 +53,7 @@ module FalkorLib #:nodoc:
             $LOADED_FEATURES.each do |path|
                 res[:git] = FalkorLib::Config::Git::DEFAULTS         if path.include?('lib/falkorlib/git.rb')
                 res[:gitflow] = FalkorLib::Config::GitFlow::DEFAULTS if path.include?('lib/falkorlib/git.rb')
+		        res[:versioning] = FalkorLib::Config::Versioning::DEFAULTS if path.include?('lib/falkorlib/versioning.rb')
             end
             res
         end
