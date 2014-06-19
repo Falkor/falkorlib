@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-19 18:51 svarrette>
+# Time-stamp: <Jeu 2014-06-19 22:20 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -23,15 +23,15 @@ require 'rake/clean'
 CLEAN.add   'pkg'
 CLOBBER.add 'doc'
 
-#.....................
-#namespace :gem do
-require 'rubygems/tasks'
-Gem::Tasks.new do |tasks|
-    tasks.console.command = 'pry'
-    tasks.sign.checksum   = true
-    tasks.sign.pgp        = true
-end
-#end # namespace gem
+# #.....................
+# #namespace :gem do
+# require 'rubygems/tasks'
+# Gem::Tasks.new do |tasks|
+#     tasks.console.command = 'pry'
+#     tasks.sign.checksum   = true
+#     tasks.sign.pgp        = true
+# end
+# #end # namespace gem
 
 #__________________ My own rake tasks __________________
 lib = File.expand_path('../lib', __FILE__)
@@ -54,7 +54,7 @@ end
 
 
 
-[ 'rspec', 'yard', 'git', 'gitflow' ] .each do |tasks|
+[ 'rspec', 'yard', 'gem', 'git', 'gitflow' ] .each do |tasks|
     load "falkorlib/tasks/#{tasks}.rake"
 end
 
