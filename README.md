@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-        Time-stamp: <Jeu 2014-06-19 21:55 svarrette>
+        Time-stamp: <Ven 2014-06-20 00:01 svarrette>
                     _____     _ _              _     _ _
                    |  ___|_ _| | | _____  _ __| |   (_) |__
                    | |_ / _` | | |/ / _ \| '__| |   | | '_ \
@@ -14,6 +14,7 @@
 
 # FalkorLib
 
+| FalkorLib         |
 | ----------------- |
 | [MIT][license]    |
 | [![Gem Version](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib) |
