@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Jeu 2014-06-19 23:30 svarrette>
+# Time-stamp: <Jeu 2014-06-19 23:32 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -36,7 +36,8 @@ Gem::Tasks.new(
                :release => true
                ) do |t|
 	t.scm.tag.format = 'gem-release-%s',
-	t.sign.pgp = true
+	t.scm.tag.sign = true#,
+	#sign.pgp = true
 end
 
 
