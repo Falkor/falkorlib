@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 17:36 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:03 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -39,7 +39,7 @@ namespace :git do
             really_continue?
             Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
             info "=> prepare new 'feature' using git flow"
-            FalkorLib::GitFlow.start(op, name)
+            FalkorLib::GitFlow.start('feature', name)
             # Now you should be in the new branch
         end
 
@@ -47,13 +47,13 @@ namespace :git do
         desc "Finalize the feature operation"
         task :finish do |t|
             branch = FalkorLib::Git.branch?
-            expected_branch_prefix = FalkorLib.config.gitflow[:prefix][op.to_sym]
+            expected_branch_prefix = FalkorLib.config.gitflow[:prefix][:feature]
             if branch !~ /^#{expected_branch_prefix}/
                 error "You are not in the expected branch (with prefix '#{expected_branch_prefix}')"
             end
             name = branch.sub(/^#{expected_branch_prefix}/, '')
             info t.comment
-            FalkorLib::GitFlow.finish(op, name)
+            FalkorLib::GitFlow.finish('feature', name)
             unless FalkorLib::Git.remotes.empty?
                 info "=> about to update remote tracked branches"
                 really_continue?
