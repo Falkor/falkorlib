@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-06-14 00:10 svarrette>
+# Time-stamp: <Jeu 2014-06-19 17:51 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -97,7 +97,10 @@ module FalkorLib
             error "The name '#{name}' cannot contain spaces" if name =~ /\s+/
             exit_status = 1
             Dir.chdir( FalkorLib::Git.rootdir(path) ) do
-                exit_status = execute "git flow #{type} #{action} #{optional_args} #{name}"
+		        cmd = "git flow #{type} #{action} #{optional_args} #{name}"
+		        puts bold("[Running] #{cmd}")
+		        exit_status = %x< #{cmd} >
+			        #exit_status = execute "git flow #{type} #{action} #{optional_args} #{name}"
             end
             exit_status
         end
