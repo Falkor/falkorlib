@@ -35,7 +35,7 @@ Gem::Tasks.new(
                :build   => false,
                :release => true
                ) do |t|
-	t.scm.tag  = false
+	t.scm.tag.format = "gem-release-%s",
 	t.sign.pgp = true
 end
 
