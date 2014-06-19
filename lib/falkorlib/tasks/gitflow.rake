@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 18:03 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:21 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -39,7 +39,8 @@ namespace :git do
             really_continue?
             Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
             info "=> prepare new 'feature' using git flow"
-            FalkorLib::GitFlow.start('feature', name)
+            o = FalkorLib::GitFlow.start('feature', name)
+			error "Git flow feature operation failed" unless o == 0
             # Now you should be in the new branch
         end
 
@@ -53,8 +54,9 @@ namespace :git do
             end
             name = branch.sub(/^#{expected_branch_prefix}/, '')
             info t.comment
-            FalkorLib::GitFlow.finish('feature', name)
-            unless FalkorLib::Git.remotes.empty?
+            o = FalkorLib::GitFlow.finish('feature', name)
+            error "Git flow feature operation failed" unless o == 0
+			unless FalkorLib::Git.remotes.empty?
                 info "=> about to update remote tracked branches"
                 really_continue?
                 Rake::Task['git:push'].invoke

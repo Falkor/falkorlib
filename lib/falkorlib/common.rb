@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-12 12:01 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:10 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -106,8 +106,8 @@ module FalkorLib #:nodoc:
             $?.success?
         end
 
-        ## Execute a given command and return exit code
-        def execute(cmd)
+        ## Execute a given command, return exit code and print nicely stdout and stderr
+        def nice_execute(cmd)
 	        puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
 	        stdout, stderr, exit_status = Open3.capture3( cmd )
 	        unless stdout.empty?
@@ -124,6 +124,16 @@ module FalkorLib #:nodoc:
 	        end 
 	        exit_status
         end
+
+        # Simpler version that use the system call
+        def execute(cmd)
+	        puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
+	        system(cmd)
+	        $?
+        end
+         
+        
+
 
         ## Execute a given command - exit if status != 0
         def exec_or_exit(cmd)

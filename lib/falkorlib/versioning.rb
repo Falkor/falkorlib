@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 00:52 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:30 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -112,11 +112,20 @@ module FalkorLib #:nodoc:
                     exit_status = FalkorLib::Git.add(versionfile, "Adding the version file '#{source[:filename]}', inialized to the '#{version}' version" )
                     next
                 end
-		        execute "git diff #{source[:filename]}"
+		        run %{ 
+                   git diff #{source[:filename]} 
+                }
 		        answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
 		        next if answer =~ /n.*/i
-		        execute "git commit -s -m \"bump to version '#{version}'\" #{source[:filename]}"
-		        exit_status = $?.to_i
+		        exit_status = run %{ 
+                   git commit -s -m "bump to version '#{version}'" #{source[:filename]} 
+                }.to_i
+		        if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
+			        run %{ 
+                       bundle 
+                       git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
+                    } if command?( 'bundle' )
+		        end 
             end
 	        exit_status
         end
