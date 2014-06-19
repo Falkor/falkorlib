@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 01:03 svarrette>
+# Time-stamp: <Jeu 2014-06-19 17:19 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -97,20 +97,19 @@ namespace :version do
 				release_version = FalkorLib::Versioning.bump(version, level.to_sym)
 				info t.comment + " (from version '#{version}' to '#{release_version}')"
 				really_continue?
-				#Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
-				#info "=> prepare release using git flow" 
-				# git_flow_start('release', release_version)
-				# # Now you should be in the new branch
-				# current_branch = git_branch?()
-				# expected_branch = GITFLOW_CONFIG[:prefix][:release] + release_version
-				# if (current_branch == expected_branch)
-				FalkorLib::Versioning.set_version(release_version)
-				# 	set_version(release_version)
-				# 	sh "git commit -s -m \"bump to version '#{release_version}'\" #{VERSIONFILE}"
-				# 	warning "The version number has already been bumped, run 'rake release:finish' to release the current version of the repository into the 'production' environment"
-				# else
-				# 	error "You are in the '#{branch}' branch and not the expected one, i.e. #{expected_branch}"
-				# end
+				Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
+				info "=> prepare release using git flow"
+				o = FalkorLib::GitFlow.start('release', release_version)
+				# Now you should be in the new branch
+				current_branch = FalkorLib::Git.branch?
+				expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + release_version
+				if (current_branch == expected_branch)
+					FalkorLib::Versioning.set_version(release_version)
+					warning "The version number has already been bumped"
+					warning "==> run 'rake release:finish' to finalize the release and merge the current version of the repository into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch"
+				else
+					error "You are in the '#{branch}' branch and not the expected one, i.e. #{expected_branch}"
+				end
 			end
 		end
 	end # namespace version:bump
