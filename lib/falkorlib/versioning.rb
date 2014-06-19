@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 18:30 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:41 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -117,9 +117,10 @@ module FalkorLib #:nodoc:
                 }
 		        answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
 		        next if answer =~ /n.*/i
-		        exit_status = run %{ 
+		        run %{ 
                    git commit -s -m "bump to version '#{version}'" #{source[:filename]} 
-                }.to_i
+                }
+		        exit_status = $?.to_i
 		        if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
 			        run %{ 
                        bundle 
