@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    falkorlib (0.2.4)
+    falkorlib (0.2.5)
       awesome_print (~> 1.2)
       configatron (~> 3.2)
       git_remote_branch (~> 0)
