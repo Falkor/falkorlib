@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 17:35 svarrette>
+# Time-stamp: <Jeu 2014-06-19 17:36 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -28,7 +28,7 @@ namespace :git do
     end # namespace git::flow
 
     #.....................
-    namespace feature do
+    namespace :feature do
 
         #########   git:feature:start ##########################
         desc "Start a new feature operation on the repository using the git-flow framework"
