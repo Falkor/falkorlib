@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 18:43 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:47 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -125,12 +125,10 @@ namespace :version do
 		error "Git flow release process failed" unless o == 0
 		info("=> about to update remote tracked branches")
 		really_continue?
-		run %{
-           git checkout #{FalkorLib.config[:gitflow][:branches][:master]}
-           git push origin
-           git checkout #{FalkorLib.config[:gitflow][:branches][:develop]}
-           git push origin
-        }
+		FalkorLib.config[:gitflow][:branches].each do |type, branch|
+			run %{ git checkout #{branch} }
+			Rake::Task['git:push'].invoke
+		end
 		#Rake::Task['git:push'].invoke
 	end # task version:release 
 
