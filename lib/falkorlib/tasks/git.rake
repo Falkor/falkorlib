@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Mer 2014-06-18 22:29 svarrette>
+# Time-stamp: <Jeu 2014-06-19 17:57 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -41,9 +41,10 @@ namespace :git do
                 next
             end
             cmd = ( op == 'up') ? 'pull' : op 
+			ap remotes
 			status = execute( "git #{cmd} origin" )
             if (status.to_i != 0)
-                warn("The command '#{cmd}' failed with exit status #{res.exitstatus}")
+                warn("The command '#{cmd}' failed with exit status #{status.exitstatus}")
                 warn("This may be due to the fact that you're not connected to the internet")
                 really_continue?('no')
             end
