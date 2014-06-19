@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 22:14 svarrette>
+# Time-stamp: <Ven 2014-06-20 00:10 svarrette>
 ################################################################################
 #
 # FalkorLib rake tasks to pilot Gem operations
@@ -19,6 +19,8 @@ module FalkorLib #:nodoc:
         # Install the gem  tasks for Rake
         def install_tasks
             load 'falkorlib/tasks/gem.rake'
+            load 'falkorlib/tasks/yard.rake'
+            load 'falkorlib/tasks/rspec.rake'
         end
     end # class FalkorLib::GemTasks
 end # module FalkorLib

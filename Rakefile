@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Jeu 2014-06-19 22:20 svarrette>
+# Time-stamp: <Ven 2014-06-20 00:10 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -23,16 +23,6 @@ require 'rake/clean'
 CLEAN.add   'pkg'
 CLOBBER.add 'doc'
 
-# #.....................
-# #namespace :gem do
-# require 'rubygems/tasks'
-# Gem::Tasks.new do |tasks|
-#     tasks.console.command = 'pry'
-#     tasks.sign.checksum   = true
-#     tasks.sign.pgp        = true
-# end
-# #end # namespace gem
-
 #__________________ My own rake tasks __________________
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -52,11 +42,12 @@ FalkorLib.config.gitflow do |c|
 	} 
 end
 
+require "falkorlib/tasks/git"    # OR require "falkorlib/git_tasks"
+require "falkorlib/tasks/gem"    # OR require "falkorlib/gem_tasks"
 
-
-[ 'rspec', 'yard', 'gem', 'git', 'gitflow' ] .each do |tasks|
-    load "falkorlib/tasks/#{tasks}.rake"
-end
+# [ 'rspec', 'yard' ] .each do |tasks|
+#     load "falkorlib/tasks/#{tasks}.rake"
+# end
 
 # desc "clean the directory"
 # task :clean => :clobber_package do
