@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Mer 2014-06-18 17:54 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:51 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -39,9 +39,20 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "falkorlib"
 
+# Adapt the versioning aspects
 FalkorLib.config.versioning do |c|
 	c[:type] = 'gem'
 end
+
+# Adapt the Git flow aspects
+FalkorLib.config.gitflow do |c|
+	c[:branches] = { 
+		:master  => 'production',
+		:develop => 'devel'
+	} 
+end
+
+
 
 [ 'rspec', 'yard', 'git', 'gitflow' ] .each do |tasks|
     load "falkorlib/tasks/#{tasks}.rake"
