@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Thu 2012-09-27 15:49 svarrette>
+# Time-stamp: <Mer 2014-06-18 17:54 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -15,28 +15,39 @@
 # Resources:
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
-# We run tests by default
-task :default => :test
 
-#
-# Install all tasks found in tasks folder
-#
-# See .rake files there for complete documentation.
-#
-RAKE_TASKS_TO_LOAD = [
-                      'debug_mail.rake',
-                      'gem.rake',
-                      'spec_test.rake',
-                      'unit_test.rake',
-                      'yard.rake'
-                     ] 
+task :default => [ :build, :rspec ]
+#.....................
+require 'rake/clean'
 
-Dir["tasks/*.rake"].each do |taskfile|
-	next unless RAKE_TASKS_TO_LOAD.include?(taskfile.gsub(/.*tasks\//, ''))
-	load taskfile
+CLEAN.add   'pkg'
+CLOBBER.add 'doc'
+
+#.....................
+#namespace :gem do
+require 'rubygems/tasks'
+Gem::Tasks.new do |tasks|
+    tasks.console.command = 'pry'
+    tasks.sign.checksum   = true
+    tasks.sign.pgp        = true
+end
+#end # namespace gem
+
+#__________________ My own rake tasks __________________
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require "falkorlib"
+
+FalkorLib.config.versioning do |c|
+	c[:type] = 'gem'
 end
 
-desc "clean the directory"
-task :clean => :clobber_package do
-	sh "rm -rf doc" if File.directory?("doc")
+[ 'rspec', 'yard', 'git', 'gitflow' ] .each do |tasks|
+    load "falkorlib/tasks/#{tasks}.rake"
 end
+
+# desc "clean the directory"
+# task :clean => :clobber_package do
+#   sh "rm -rf doc" if File.directory?("doc")
+# end

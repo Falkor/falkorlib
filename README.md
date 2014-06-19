@@ -1,31 +1,129 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-        Time-stamp: <Thu 2012-09-27 16:24 svarrette>
+        Time-stamp: <Ven 2014-06-06 16:59 svarrette>
+                    _____     _ _              _     _ _
+                   |  ___|_ _| | | _____  _ __| |   (_) |__
+                   | |_ / _` | | |/ / _ \| '__| |   | | '_ \
+                   |  _| (_| | |   < (_) | |  | |___| | |_) |
+                   |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
 
--------------------------------------------
-* File:   	 `README.md`
-* Author:  	 Sebastien Varrette (<mailto:Sebastien.Varrette@uni.lu>)
-* Copyright: Copyright (c) 2012 [Sebastien Varrette](mailto:<Sebastien.Varrette@uni.lu>) [www](http://varrette.gforge.uni.lu) 
-* License:   MIT -- see `LICENCE.md`
+       
+        Copyright (c) 2012-2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
+        https://github.com/Falkor/falkorlib
 
--------------------
 
 # FalkorLib
+
+[![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib)
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
 tasks. 
 
+* [Official Gem site](https://rubygems.org/gems/falkorlib)
+* [GitHub](https://github.com/Falkor/falkorlib)
+
 ## Installation
 
-## Pre-requisite
+You'll typically want to install FalkorLib using [Bundler](http://bundler.io/).
+To do this, simply add this line to your application's `Gemfile`:
 
-The Git branching model for this repository follows the guidelines of
-[gitflow](http://nvie.com/posts/a-successful-git-branching-model/) and is
-detailed below. Therefore, you should have `git-flow` installed on your machine
-following the
-[git-flow installation guide](https://github.com/nvie/gitflow/wiki/Installation). 
+	gem 'falkorlib'
+	
+And then execute:
 
-### Building the gem from the source
+	$> bundle
+
+Or install it yourself as:
+
+	$> gem install falkorlib
+
+**Note** you probably wants to do the above within an isolated environment. See below for some explanation on this setup. 
+
+## Usage 
+
+This library features two aspect
+
+* A set of toolbox functions / components I'm using everywhere in my Ruby developments, more specifically a set of modules: 
+  * `FalkorLib::Common`: Recipe for all my toolbox and versatile Ruby functions I'm using everywhere. 
+    You'll typically want to include the `FalkorLib::Common` module to bring the corresponding definitions into your scope. Example:
+       
+			require 'falkorlib'
+			include FalkorLib::Common
+			
+			info 'exemple of information text'
+			really_continue?
+			run %{ echo 'this is an executed command' }
+			
+			Falkor.config.debug = true
+			run %{ echo 'this is a simulated command that *will not* be executed' }
+			error "that's an error text, let's exit with status code 1"all my toolbox printing functions I'm using everywhere 
+    
+    
+  * `FalkorLib::Config`: all configuration aspects, implemented using [configatron](https://github.com/Falkor/falkorlib). `FalkorLib.config` canbe used to customized the defaults settings, for instance by; 
+    
+    		FalkorLib.config do |c|
+            	c.debug = true
+        	end
+  	
+   	 
+  * `FalkorLib::Git`: all git operations
+  * `FalkorLib::Version`: versioning management 
+
+* Some [rake](https://github.com/jimweirich/rake) tasks to facilitate common operations.
+  In general you can simply embedded my tasks by adding the following header in your `Rakefile`:
+  
+  		# In Rakefile
+		require "falkorlib/<object>_tasks"
+  
+  or 
+  
+  		#In Rakefile 
+  		require "falkorlib/tasks/<object>"
+
+### `FalkorLib` Ruby Modules / Classes Documentation
+
+[Online documentation](https://rubygems.org/gems/falkorlib) is a available. 
+Yet to get the latest version, you might want to run 
+
+	$> rake yard:doc
+
+This will generate the documentation in `doc/api/` folder. 
+
+Statistics on the documentation generation (in particular *non*-documented components) can be obtained by 
+
+	$> rake yard:stats 
+
+
+### Overview of the implemented Rake tasks
+
+You can find the list of implemented Rake tasks (detailed below) in the `lib/falkorlib/*_tasks.rb` files
+
+For a given task object `<obj>` (*git* tasks for instance as proposed in `lib/falkorlib/git_tasks.rb`), you can specialize the corresponding configuration by using the block construction of `FalkorLib.config do |c| ... end` **before** requiring the task file:
+
+	# In Rakefile
+	require 'falkorlib'
+	
+	# Configuration for the 'toto' tasks
+	FalkorLib.config.toto do |c|
+		toto.foo = bar   # see `rake falkorlib:conf` to print the current configuration of FalkorLib
+	end 
+	
+	require "falkorlib/tasks/toto"    # OR require "falkorlib/toto_tasks"
+
+
+## Proposed Rake tasks
+
+
+* **Gem Management**: see `lib/falkorlib/tasks/gem.rake`
+* **Git Management**
+* ... TODO: complete list		
+
+
+## Implementation details
+
+If you want to contribute to the code, you shall be aware of the way I organize this gem and implementation details.   
+
+### [RVM](https://rvm.io/) setup
 
 Get the source of this library by cloning the repository as follows: 
 
@@ -49,26 +147,8 @@ Then install the required dependent gems as follows:
 
     $> bundle install 
 
-### Gem installation 
 
-Add this line to your application's Gemfile:
-
-    gem 'falkorlib'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install falkorlib
-
-## Usage
-
-TODO: Write usage instructions here
-
-
-## Git Branching Model
+### Git Branching Model
 
 The Git branching model for this repository follows the guidelines of [gitflow](http://nvie.com/posts/a-successful-git-branching-model/). 
 In particular, the central repository holds two main branches with an infinite lifetime: 
@@ -83,7 +163,39 @@ Then, to make your local copy of the repository ready to use my git-flow workflo
 
       $> rake setup # Not yet implemented!
 
-Note that it assumes you have installed `grb`
+### Working in a separate project
+
+To illustrate the usage of the library as a regular user would do, you are advised to dedicate a directory for your tests. Here is for instance the layout of my testing directory:
+
+	$> cd FalkorLibTests
+	$> tree .
+	.
+	├── Gemfile
+	├── Gemfile.lock
+	├── Rakefile
+	└── test
+    	└── tester.rb  # in a subdirectory on purpose
+
+	$> cat cat Gemfile 
+	source "https://rubygems.org"
+	gem 'falkorlib', :path => '~/git/github.com/Falkor/falkorlib'   # or whichever path that works for you
+
+Adapt the `Rakefile` and `tester.rb` file to reflect your tests.
+
+
+### RSpec tests
+
+I try to define a set of unitary tests to validate the different function of my library using [Rspec](http://rspec.info/)
+
+You can run these tests by issuing:
+
+	$> rake rspec
+	
+By conventions, you will find all the currently implemented tests in the `spec/` directory, in files having the `_spec.rb` suffix. This is expected from the `rspec` task of the Rakefile (see `lib/falkorlib/tasks/rspec.rake`) for details.   
+
+
+**Important** Kindly stick to this convention, and feature tests for all definitions/classes/modules you might want to add to `FalkorLib`.
+
 
 ## Contributing
 
@@ -115,4 +227,5 @@ You should become familiar (if not yet) with Git. Consider these resources:
 
 ### Links
 
-https://github.com/Falkor/falkorlib
+* [Official Gem site](https://rubygems.org/gems/falkorlib)
+* [GitHub](https://github.com/Falkor/falkorlib)

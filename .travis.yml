@@ -1,8 +1,15 @@
 language: ruby
-bundler_args: --without=release doc
+cache: bundler
+bundler_args: "--without=release doc"
 rvm:
-  - 1.9.2
-  - 1.9.3
-  - ruby-head
-  - jruby-19mode
-  - jruby-head
+ - 1.9.2
+ - 1.9.3
+ - 2.0.0
+ - 2.1.1
+ - 2.1.2
+ - ruby-head
+ - rbx-2.2.7
+notifications:
+  hipchat:
+    rooms:
+      secure: E0V9xQtCyPSB+SZ5n+ztdM5tzJ7d1eR+XR1gIBfAwe0JYnRb735B1v0Z3CVBmosKpv16KEoKUDjum1vHGk8fnOOcxoHx+TtTCF1TVpuBtKzXqG6t4YZAYjkGSIBUM1Zd7kXLlsdmdwRToGmKRqblQHutnm0LkyII/CAwaO+UeY8=

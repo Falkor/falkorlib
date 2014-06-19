@@ -5,6 +5,7 @@ doc/api
 .yardoc
 .bundle
 .rvmrc
+.ruby-*
 *~
 tmp/
 *.noespec

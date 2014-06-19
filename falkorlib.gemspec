@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
     # The license(s) for the library.  Each license must be a short name, no
     # more than 64 characters.
     #
-    # s.licences = %w{}
+	s.licenses    = ['MIT']
 
     # The rubyforge project this gem lives under (optional)
     #
@@ -90,13 +90,18 @@ Gem::Specification.new do |s|
     #
     s.test_files = Dir["test/**/*"] + Dir["spec/**/*"]
 
+	# Alternative: 
+	#s.files         = `git ls-files`.split("\n")
+	#s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+	#s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+
     # The path in the gem for executable scripts (optional)
     #
-    s.bindir = "bin"
+    #s.bindir = "bin"
 
     # Executables included in the gem.
     #
-    s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
+    #s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
 
     ################################################################### REQUIREMENTS & INSTALL
     # Remember the gem version requirements operators and schemes:
@@ -117,8 +122,15 @@ Gem::Specification.new do |s|
     #   "~> 2.2"                (shortcut for ">= 2.2.0", "< 3.0")
     #   "~> 2.2.0"              (shortcut for ">= 2.2.0", "< 2.3.0")
     #
-	s.add_dependency("rake", "~> 0.9.2")
-	s.add_dependency("git_remote_branch")
+	#s.add_dependency("rake", ">= 10.1.0")
+	s.add_runtime_dependency 'rake', '~> 10.1', '>= 10.1.0'
+	s.add_runtime_dependency 'git_remote_branch', '~> 0'
+	#s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
+	s.add_runtime_dependency('minigit', '~> 0')
+	s.add_runtime_dependency("term-ansicolor", "~> 1.3")
+	s.add_runtime_dependency("configatron",    "~> 3.2")
+	s.add_runtime_dependency("awesome_print", "~> 1.2")
+
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
@@ -126,12 +138,18 @@ Gem::Specification.new do |s|
     # One call to add_development_dependency('gem_name', 'gem version requirement')
     # for each development dependency. These gems are required for developers
     #
-    s.add_development_dependency("rake", "~> 0.9.2")
-    s.add_development_dependency("bundler", "~> 1.0")
-    s.add_development_dependency("rspec", "~> 2.7.0")
-    s.add_development_dependency("yard", "~> 0.7.2")
-    s.add_development_dependency("bluecloth", "~> 2.2.0")
-    s.add_development_dependency("wlang", "~> 0.10.2")
+    #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
+    s.add_development_dependency("bundler",        "~> 1.0")
+	s.add_development_dependency 'rspec', '~> 2.7', '>= 2.7.0'
+	s.add_development_dependency("pry",    "~> 0.9")
+    s.add_development_dependency("yard",   "~> 0.8")
+    #s.add_development_dependency("minitest",   "~> 5.3")
+    s.add_development_dependency("rubygems-tasks",   "~> 0.2")
+    s.add_development_dependency("travis",        "~> 1.6")
+    s.add_development_dependency("travis-lint",   "~> 1.8")
+	
+    #s.add_development_dependency("bluecloth",      "~> 2.2.0")
+    #s.add_development_dependency("wlang",          "~> 0.10.2")
 
 
     # The version of ruby required by this gem
