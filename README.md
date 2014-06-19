@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-        Time-stamp: <Ven 2014-06-20 00:01 svarrette>
+        Time-stamp: <Ven 2014-06-20 00:04 svarrette>
                     _____     _ _              _     _ _
                    |  ___|_ _| | | _____  _ __| |   (_) |__
                    | |_ / _` | | |/ / _ \| '__| |   | | '_ \
@@ -12,15 +12,10 @@
         https://github.com/Falkor/falkorlib
 
 
-# FalkorLib
-
-| FalkorLib         |
-| ----------------- |
-| [MIT][license]    |
-| [![Gem Version](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib) |
-| [![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib) |
-| [Official Gem site](https://rubygems.org/gems/falkorlib) |
-| [GitHub Homepage](https://github.com/Falkor/falkorlib) |
+| FalkorLib         | [![Gem Version](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib) |
+| ------------------ |------------------- |
+| [MIT Licence](MIT) | [![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib) |
+| [Official Gem site](https://rubygems.org/gems/falkorlib) | [GitHub Homepage](https://github.com/Falkor/falkorlib) |
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
 tasks. 
