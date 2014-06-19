@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 17:54 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:02 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -99,7 +99,9 @@ module FalkorLib
             Dir.chdir( FalkorLib::Git.rootdir(path) ) do
 		        cmd = "git flow #{type} #{action} #{optional_args} #{name}"
 		        puts bold("[Running] #{cmd}")
-		        exit_status = `#{cmd}`.to_i
+		        system(cmd)
+		        exit_status = $?
+		        #exit_status = `#{cmd}`.to_i
             end
             exit_status
         end
