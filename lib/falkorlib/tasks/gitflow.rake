@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 18:21 svarrette>
+# Time-stamp: <Jeu 2014-06-19 18:37 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -119,13 +119,19 @@ namespace :version do
 		version = FalkorLib::Versioning.get_version
 		branch  = FalkorLib::Git.branch?
 		expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + version
-		error "You are not in the '#{expected_branch}' branch but in the '#{branch}' one." if branch != expected_branch
+		error "You are not in the '#{expected_branch}' branch but in the '#{branch}' one. Did you forget to run 'rake version:bump:{patch,minor,major}' first?" if branch != expected_branch
 		info "=> Finalize the release of the version '#{version}' into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch/environment"
 		o = FalkorLib::GitFlow.finish('release', version, Dir.pwd, '-s')
 		error "Git flow release process failed" unless o == 0
 		info("=> about to update remote tracked branches")
 		really_continue?
-		Rake::Task['git:push'].invoke
+		run %{
+           git checkout FalkorLib.config[:gitflow][:branches][:master]
+           git push origin
+           git checkout FalkorLib.config[:gitflow][:branches][:develop]
+           git push origin
+        }
+		#Rake::Task['git:push'].invoke
 	end # task version:release 
 
 
