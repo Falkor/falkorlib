@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Ven 2014-06-20 08:27 svarrette>
+# Time-stamp: <Ven 2014-06-20 08:29 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -107,6 +107,7 @@ namespace :version do
 	                if (! FalkorLib.config[:versioning].nil?) && 
 			                FalkorLib.config[:versioning][:type] == 'gem'
 		                require "falkorlib/tasks/gem"
+		                Rake::Task['install'].invoke
 		                Rake::Task['build'].invoke
 
 	                end 
