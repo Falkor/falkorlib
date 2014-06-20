@@ -5,6 +5,7 @@
 [![Code Climate](https://codeclimate.com/github/Falkor/falkorlib.png)](https://codeclimate.com/github/Falkor/falkorlib)
 [![Inline docs ](http://inch-ci.org/github/Falkor/falkorlib.svg)](http://inch-ci.org/github/Falkor/falkorlib)
 [![Gittip](http://img.shields.io/gittip/Falkor.svg)](http://gittip.com/Falkor)
+
                     _____     _ _              _     _ _
                    |  ___|_ _| | | _____  _ __| |   (_) |__
                    | |_ / _` | | |/ / _ \| '__| |   | | '_ \
