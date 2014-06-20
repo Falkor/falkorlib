@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Ven 2014-06-20 10:36 svarrette>
+# Time-stamp: <Ven 2014-06-20 10:38 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -113,10 +113,9 @@ namespace :version do
                            bundle list > /dev/null
                            git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
                         }
-
-		                # require "falkorlib/tasks/gem"
-		                # Rake::Task['install'].invoke
-		                # Rake::Task['build'].invoke
+		                require "falkorlib/tasks/gem"
+		                info "Building the new version of the Gem"
+		                Rake::Task['build'].invoke
 	                end 
                     warning "The version number has already been bumped"
                     warning "==> run 'rake version:release' to finalize the release and merge the current version of the repository into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch"
