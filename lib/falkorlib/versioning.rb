@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 18:41 svarrette>
+# Time-stamp: <Ven 2014-06-20 14:16 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -121,18 +121,16 @@ module FalkorLib #:nodoc:
                    git commit -s -m "bump to version '#{version}'" #{source[:filename]} 
                 }
 		        exit_status = $?.to_i
-		        if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
-			        run %{ 
-                       bundle 
-                       git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
-                    } if command?( 'bundle' )
-		        end 
+		        # if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
+			    #     run %{
+                #        sleep 2 
+                #        bundle update falkorlib
+                #        git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
+                #     } if command?( 'bundle' )
+		        # end 
             end
 	        exit_status
         end
-
-
-
 
         ## Return a new version number based on
         # @param oldversion the old version (format: x.y.z)

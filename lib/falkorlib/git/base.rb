@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-18 21:59 svarrette>
+# Time-stamp: <Ven 2014-06-20 09:15 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -99,10 +99,16 @@ module FalkorLib  #:nodoc:
                     #MiniGit[userconf] = default_val
                 end
             end
-            #puts "#init #{path}"
-            Dir.chdir( "#{path}" ) do
-                %x[ pwd && git init ] unless FalkorLib.config.debug
-            end
+	        exit_status = 1
+	        Dir.chdir( path ) do 
+		        execute "git init" unless FalkorLib.config.debug 
+		        exit_status = $?.to_i
+	        end
+            # #puts "#init #{path}"
+            # Dir.chdir( "#{path}" ) do
+            #     %x[ pwd && git init ] unless FalkorLib.config.debug
+            # end
+	        exit_status
         end
 
         # Return the Git working tree from the proposed path (current directory by default)

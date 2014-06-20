@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-18 17:17 svarrette>
+# Time-stamp: <Ven 2014-06-20 12:04 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -37,7 +37,7 @@ module FalkorLib #:nodoc:
     end
 
 
-    module Config
+    module Config #:nodoc:
         # Defaults global settings
         DEFAULTS = {
             :debug => false,

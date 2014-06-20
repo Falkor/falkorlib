@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 18:53 svarrette>
+# Time-stamp: <Ven 2014-06-20 14:55 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -104,6 +104,16 @@ namespace :version do
                 expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + release_version
                 if (current_branch == expected_branch)
                     FalkorLib::Versioning.set_version(release_version)
+	                if (! FalkorLib.config[:versioning].nil?) && 
+			                FalkorLib.config[:versioning][:type] == 'gem' &&
+			                File.exists?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
+		                info "Updating Gemfile information"
+		                run %{
+                           # Update cache info 
+                           bundle list > /dev/null
+                           git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
+                        }
+	                end 
                     warning "The version number has already been bumped"
                     warning "==> run 'rake version:release' to finalize the release and merge the current version of the repository into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch"
                 else
@@ -131,6 +141,13 @@ namespace :version do
                git push origin
             }
 		end
+		if (! FalkorLib.config[:versioning].nil?) && 
+				FalkorLib.config[:versioning][:type] == 'gem'
+			warn "About to push the released new gem (version #{version}) to the gem server (rybygems.org)"
+			really_continue?
+			Rake::Task['gem:release'].invoke
+		end 
+
 		#Rake::Task['git:push'].invoke
 	end # task version:release 
 
