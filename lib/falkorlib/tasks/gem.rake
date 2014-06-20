@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Ven 2014-06-20 08:19 svarrette>
+# Time-stamp: <Ven 2014-06-20 08:20 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -21,6 +21,7 @@ end # namespace gem
 # I have to remain in the global tasks not embedded in a namespace
 Gem::Tasks::Install.new
 Gem::Tasks::Build::Gem.new(:sign => true)
+Gem::Tasks::Sign::Checksum.new 
 Gem::Tasks::Sign::PGP.new 
 
 # Enhance the build to sign the built gem

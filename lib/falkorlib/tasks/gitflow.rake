@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-19 18:53 svarrette>
+# Time-stamp: <Ven 2014-06-20 08:27 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -104,6 +104,12 @@ namespace :version do
                 expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + release_version
                 if (current_branch == expected_branch)
                     FalkorLib::Versioning.set_version(release_version)
+	                if (! FalkorLib.config[:versioning].nil?) && 
+			                FalkorLib.config[:versioning][:type] == 'gem'
+		                require "falkorlib/tasks/gem"
+		                Rake::Task['build'].invoke
+
+	                end 
                     warning "The version number has already been bumped"
                     warning "==> run 'rake version:release' to finalize the release and merge the current version of the repository into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch"
                 else
