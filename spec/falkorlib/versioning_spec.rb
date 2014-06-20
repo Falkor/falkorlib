@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-19 00:54 svarrette>
+# Time-stamp: <Ven 2014-06-20 08:56 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -38,7 +38,7 @@ describe FalkorLib::Versioning do
 
         it "#get_version -- get default version #{default_version}" do
             STDIN.should_receive(:gets).and_return('Yes')
-            i = FalkorLib::GitFlow.init(dir)
+            i = command?('git-flow') ? FalkorLib::GitFlow.init(dir) : FalkorLib::Git.init(dir)
             i.should == 0
             v = FalkorLib::Versioning.get_version(dir)
             v.should == default_version
