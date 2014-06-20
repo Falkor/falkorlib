@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-20 10:17 svarrette>
+# Time-stamp: <Ven 2014-06-20 11:18 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -131,9 +131,6 @@ module FalkorLib #:nodoc:
             end
 	        exit_status
         end
-
-
-
 
         ## Return a new version number based on
         # @param oldversion the old version (format: x.y.z)
