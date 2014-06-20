@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Ven 2014-06-20 11:36 svarrette>
+# Time-stamp: <Ven 2014-06-20 14:52 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -10,7 +10,7 @@
 require 'falkorlib'
 require 'falkorlib/tasks'
 require 'falkorlib/git'
-#require 'rubygems/tasks'
+require 'rubygems/tasks'
 
 #.....................
 namespace :gem do
@@ -18,10 +18,47 @@ namespace :gem do
 	
 	###########  gem:release   ###########
 	desc "Release the gem "
-	task :release do |t|
-		info t.comment
+	task :release => [ :build ] do |t|
+		pkgdir = Gem::Tasks::Project::PKG_DIR
+		Dir.glob("*.gemspec") do |gemspecfile|
+			spec = Gem::Specification::load(gemspecfile)
+			name    = spec.name
+			version = spec.version
+			gem     = File.join (pkgdir, "#{name}-#{version}.gem")
+			unless File.exists?(File.join (pkgdir, gemspecfile) )
+				warn "Unable to find the built gem '#{gem}'... Thus exiting."
+				next 
+			end 
+			info t.comment " '#{gem}'"
+			really_continue?
+			a = run %{
+              gem push #{gem} 
+            }
+			error "Unable to publish the gem '#{gem}'" if a.to_i != 0
+		end 
 		
 	end # task gem:release 
+
+	###########   info   ###########
+	desc "Informations on the gem"
+	task :info do |t|
+		require "rubygems"
+		Dir.glob("*.gemspec") do |gemspecfile|
+			spec = Gem::Specification::load(gemspecfile)
+			info t.comment + " '#{spec.name}' (version #{spec.version})"
+			puts <<-eos
+- Summary:     #{spec.summary}
+- Author:      #{spec.author} #{spec.email}
+- Licence:     #{spec.license}
+- Homepage:    #{spec.homepage}
+- Description: #{spec.description}
+eos
+		end 
+
+
+		
+	end # task info 
+
 
 
 end # namespace gem
