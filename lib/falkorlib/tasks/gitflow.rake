@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Ven 2014-06-20 10:33 svarrette>
+# Time-stamp: <Ven 2014-06-20 10:34 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -108,8 +108,9 @@ namespace :version do
 			                FalkorLib.config[:versioning][:type] == 'gem' &&
 			                File.exists?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
 		                info "Updating Gemfile information"
-		                run %{ 
-                           bundle info 2>/dev/null
+		                run %{
+                           # Update cache info 
+                           bundle list 2>/dev/null
                            git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
                         }
 
