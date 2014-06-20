@@ -1,6 +1,12 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-        Time-stamp: <Ven 2014-06-20 00:05 svarrette>
+[![Version     ](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib)
+[![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib)
+[![Code Climate](https://codeclimate.com/github/Falkor/falkorlib.png)](https://codeclimate.com/github/Falkor/falkorlib)
+[![Inline docs ](http://inch-ci.org/github/Falkor/falkorlib.svg)](http://inch-ci.org/github/Falkor/falkorlib)
+[![Gittip
+](http://img.shields.io/gittip/Falkor.svg)](http://gittip.com/Falkor)
+
                     _____     _ _              _     _ _
                    |  ___|_ _| | | _____  _ __| |   (_) |__
                    | |_ / _` | | |/ / _ \| '__| |   | | '_ \
@@ -10,13 +16,12 @@
        
         Copyright (c) 2012-2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 
-
-| FalkorLib         | [![Gem Version](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib) | [![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib) |
-| ------------------ | ------------------- | ------------------- |
-| [MIT Licence](MIT) | [Official Gem site](https://rubygems.org/gems/falkorlib) | [GitHub Homepage](https://github.com/Falkor/falkorlib) |
-
 Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
-tasks. 
+tasks.
+
+* [MIT Licence](Licence.md) 
+* [Official Gem site](https://rubygems.org/gems/falkorlib) 
+* [GitHub Homepage](https://github.com/Falkor/falkorlib) |
 
 ## Installation
 
