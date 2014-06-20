@@ -21,7 +21,7 @@ tasks.
 
 * [MIT Licence](Licence.md) 
 * [Official Gem site](https://rubygems.org/gems/falkorlib) 
-* [GitHub Homepage](https://github.com/Falkor/falkorlib) |
+* [GitHub Homepage](https://github.com/Falkor/falkorlib) 
 
 ## Installation
 

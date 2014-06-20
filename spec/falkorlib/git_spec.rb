@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2014-06-18 21:46 svarrette>
+# Time-stamp: <Ven 2014-06-20 09:15 svarrette>
 #
 # @description Check the Git operations
 #
@@ -38,7 +38,8 @@ describe FalkorLib::Git do
         end
 
         it "#init - initialize a git repository" do
-            FalkorLib::Git.init(dir)
+            c = FalkorLib::Git.init(dir)
+			c.should == 0
             t = FalkorLib::Git.init?(dir)
             t.should be_true
         end
