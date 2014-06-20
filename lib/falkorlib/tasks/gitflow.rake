@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Ven 2014-06-20 14:55 svarrette>
+# Time-stamp: <Ven 2014-06-20 15:03 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -141,6 +141,7 @@ namespace :version do
                git push origin
             }
 		end
+		run %{ git push origin --tags }
 		if (! FalkorLib.config[:versioning].nil?) && 
 				FalkorLib.config[:versioning][:type] == 'gem'
 			warn "About to push the released new gem (version #{version}) to the gem server (rybygems.org)"
