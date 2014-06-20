@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Jeu 2014-06-19 23:46 svarrette>
+# Time-stamp: <Ven 2014-06-20 08:19 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -25,7 +25,7 @@ Gem::Tasks::Sign::PGP.new
 
 # Enhance the build to sign the built gem
 Rake::Task['build'].enhance do
-  Rake::Task["sign"].invoke
+  Rake::Task["sign"].invoke if File.directory?(File.join(ENV['HOME'], '.gnupg') )
 end
 
 # Gem::Tasks.new(
