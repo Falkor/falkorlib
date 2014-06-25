@@ -325,11 +325,11 @@ rake git:subtrees:up          # Pull the latest changes from the remote to the l
 
 ### Gem Management
 
-See `lib/falkorlib/tasks/gem.rake`: you just have to add the followig line to
+See `lib/falkorlib/tasks/gem.rake`: you just have to add the following line to
 your Rakefile: 
 
 ```
-require "falkorlib/tasks/gem"
+require "falkorlib/tasks/gem"    # OR 
 ```
 
 Also, you can adapt the versioning scheme to target a gem management by altering the
