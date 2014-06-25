@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Jeu 2014-06-19 18:19 svarrette>
+# Time-stamp: <Mer 2014-06-25 14:26 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -32,7 +32,7 @@ namespace :git do
                       when 'up';   "Update your local copy of the repository from GIT server"
                       when 'push'; "Push your modifications onto the remote branches"
                       end
-		###########  git:{up,push}  ###########
+        ###########  git:{up,push}  ###########
         desc "#{description}"
         task op.to_sym do |t|
             info t.comment
@@ -40,23 +40,23 @@ namespace :git do
                 warn "No git remote configured... Exiting #{t}"
                 next
             end
-            cmd = ( op == 'up') ? 'pull' : op 
-			branch   = FalkorLib::Git.branch?
-			if FalkorLib::Git.list_branch.include? "remotes/origin/#{branch}"
-				status = run %{ 
+            cmd = ( op == 'up') ? 'pull' : op
+            branch   = FalkorLib::Git.branch?
+            if FalkorLib::Git.list_branch.include? "remotes/origin/#{branch}"
+                status = run %{
                       git #{cmd} origin
                 }
-				if (status.to_i != 0)
-					warn("The command '#{cmd}' failed with exit status #{status.to_i}")
-					warn("This may be due to the fact that you're not connected to the internet")
-					really_continue?('no')
-				end
-			else 
-				warn "The current branch '#{branch} is not currently tracked on the remote 'origin'."
-				warn "=> exiting"
-				next
-			end 
-        end 
+                if (status.to_i != 0)
+                    warn("The command '#{cmd}' failed with exit status #{status.to_i}")
+                    warn("This may be due to the fact that you're not connected to the internet")
+                    really_continue?('no')
+                end
+            else
+                warn "The current branch '#{branch} is not currently tracked on the remote 'origin'."
+                warn "=> exiting"
+                next
+            end
+        end
     end
 
     unless FalkorLib.config.git[:submodules].empty?
@@ -102,18 +102,19 @@ namespace :git do
                 FalkorLib::Git.subtree_init(git_root_dir)
             end # task git:subtree:init
 
-            ###########   git:subtrees:diff   ###########
-            desc "Show difference between local subtree(s) and their remotes"
-            task :diff do
-                FalkorLib::Git.subtree_diff(git_root_dir)
-            end # task git:subtree:diff
+            if FalkorLib::Git.subtree_init?(git_root_dir)
+                ###########   git:subtrees:diff   ###########
+                desc "Show difference between local subtree(s) and their remotes"
+                task :diff do
+                    FalkorLib::Git.subtree_diff(git_root_dir)
+                end # task git:subtree:diff
 
-            ###########   git:subtrees:up   ###########
-            desc "Pull the latest changes from the remote to the local subtree(s)"
-            task :up do
-                FalkorLib::Git.subtree_up(git_root_dir)
-            end # task git:subtree:diff
-
+                ###########   git:subtrees:up   ###########
+                desc "Pull the latest changes from the remote to the local subtree(s)"
+                task :up do
+                    FalkorLib::Git.subtree_up(git_root_dir)
+                end # task git:subtree:diff
+            end
 
         end # namespace git:subtrees
     end

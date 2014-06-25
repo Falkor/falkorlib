@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Ven 2014-06-20 09:15 svarrette>
+# Time-stamp: <Mer 2014-06-25 14:36 svarrette>
 #
 # @description Check the Git operations
 #
@@ -150,18 +150,30 @@ describe FalkorLib::Git do
 
 		# ---------- Subtrees ---------------
         if FalkorLib::Git.command? 'subtree'
+	        FalkorLib.config.git do |c|
+				c[:subtrees] = {
+					'falkor/lib' => {
+						:url    => 'https://github.com/Falkor/falkorlib.git',
+						:branch => 'devel'
+					},
+				}
+			end
+
+	        it "#subtree_init? -- should check that the subtree(s) have not been initialized" do
+				b = FalkorLib::Git.subtree_init?( dir )
+                b.should be_false
+			end
+
             it "#subtree_init - initialize some Git Subtrees" do
-                FalkorLib.config.git do |c|
-                    c[:subtrees] = {
-                        'falkor/lib' => {
-                            :url    => 'https://github.com/Falkor/falkorlib.git',
-                            :branch => 'devel'
-                        },
-                    }
-                end
+                
                 b = FalkorLib::Git.subtree_init( dir )
                 b.should == 0
             end
+
+	        it "#subtree_init? -- should check that the subtree(s) have been initialized" do
+				b = FalkorLib::Git.subtree_init?( dir )
+				b.should be_true
+			end
 
             it "#subtree_up" do
                 b = FalkorLib::Git.subtree_up( dir )
