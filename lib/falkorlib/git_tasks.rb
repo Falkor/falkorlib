@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-06-14 00:05 svarrette>
+# Time-stamp: <Jeu 2014-06-26 10:29 svarrette>
 ################################################################################
 #
 # FalkorLib rake tasks to pilot Git [flow] operations
@@ -42,15 +42,11 @@ else
         #.....................
         namespace :flow do
             ###########  git:flow:init   ###########
-            desc "Initialize Git-flow repository"
+            desc "Initialize the Git-flow repository"
             task :init do
                 FalkorLib::GitFlow.init
             end
         end # namespace git:flow
 
-
-
     end # namespace git
-
-
 end

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-25 13:30 svarrette>
+# Time-stamp: <Jeu 2014-06-26 10:45 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -93,7 +93,9 @@ module FalkorLib
 			        warn "Your git-flow confuguration does not hold the 'master' branch any more"
 			        warn "You probably want to get rid of it asap by running 'git branch -d master'"
 		        end 
-		        if devel_branch != 'master' && remotes.include?( 'origin' )
+		        if devel_branch != 'master' && 
+				        remotes.include?( 'origin' ) && 
+				        branches.include?( 'remotes/origin/master')
 			        warn "You might want to change the remote default branch to point to '#{devel_branch}"
 			        puts "=> On github: Settings > Default Branch > #{devel_branch}"
 			        puts "=> On the remote bare Git repository: 'git symbolic-ref HEAD refs/head/#{devel_branch}'"

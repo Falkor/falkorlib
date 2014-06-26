@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Mer 2014-06-25 14:55 svarrette>
+# Time-stamp: <Jeu 2014-06-26 10:33 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -18,6 +18,7 @@ namespace :git do
     git_root_dir = FalkorLib::Git.rootdir
     remotes = FalkorLib::Git.remotes
     #ap remotes
+
 
     ###########   git:fetch   ###########
     desc "Fetch the latest changes on remotes"
@@ -120,3 +121,5 @@ namespace :git do
     end
 
 end # namespace git
+
+task :setup => [ 'git:init' ]

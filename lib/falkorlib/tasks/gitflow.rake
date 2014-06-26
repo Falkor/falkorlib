@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Ven 2014-06-20 15:16 svarrette>
+# Time-stamp: <Jeu 2014-06-26 10:40 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -16,12 +16,17 @@ namespace :git do
     include FalkorLib::Common
     git_root_dir = FalkorLib::Git.rootdir
 
+	###########  git:init   ###########
+	desc "Initialize Git repository"
+	task :init => [ 'git:flow:init' ]
+
     #.....................
     namespace :flow do
 
         ###########   git:flow:init   ###########
         desc "Initialize your local clone of the repository for the git-flow management"
         task :init do |t|
+			info t.comment
             FalkorLib::GitFlow.init(git_root_dir)
         end # task init
 
