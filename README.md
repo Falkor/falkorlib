@@ -136,16 +136,11 @@ is installed on your system, you can bootstrap the above file by copy/pasting
 all the following command-lines in your terminal:  
 
 ```
-[ ! -f .ruby-version ] && echo '2.1.0' > .ruby-version;
-rvm install `cat .ruby-version`;
-[ ! -f .ruby-gemset ] && basename `pwd` > .ruby-gemset;
-cd .. && cd -;
-gem install bundler;
-bundle init;
-echo "gem 'falkorlib'" >> Gemfile; 
-bundle;
-[ ! -f Rakefile ] && echo "require 'falkorlib'" > Rakefile;
+bash <(curl --silent https://raw.githubusercontent.com/Falkor/falkorlib/devel/binscripts/bootstrap.sh)
 ```
+_Note_: you probably want to
+[take a look at that script content](https://github.com/Falkor/falkorlib/blob/devel/binscripts/bootstrap.sh)
+before running the above command.
 
 You can now complete your `Rakefile` depending on the tasks you wish to see. 
 Below is a detailed overview of the implemented rake tasks in `FalkorLib`.
@@ -329,7 +324,7 @@ See `lib/falkorlib/tasks/gem.rake`: you just have to add the following line to
 your Rakefile: 
 
 ```
-require "falkorlib/tasks/gem"    # OR 
+require "falkorlib/tasks/gem"    # OR require "falkorlib/gem_tasks"
 ```
 
 Also, you can adapt the versioning scheme to target a gem management by altering the
