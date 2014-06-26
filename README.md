@@ -37,15 +37,19 @@ Or install it yourself as:
 
 	$> gem install falkorlib
 
-**Note** you probably wants to do the above within an isolated environment. See below for some explanation on this setup. 
+**Note** you probably wants to do the above within an isolated environment. See
+  below for some explanation on this setup.  
 
 ## Usage 
 
-This library features two aspect
+This library features two aspects
 
-* A set of toolbox functions / components I'm using everywhere in my Ruby developments, more specifically a set of modules: 
-  * `FalkorLib::Common`: Recipe for all my toolbox and versatile Ruby functions I'm using everywhere. 
-    You'll typically want to include the `FalkorLib::Common` module to bring the corresponding definitions into your scope. Example:
+* A set of toolbox functions / components I'm using everywhere in my Ruby
+  developments, more specifically a set of modules:  
+  * `FalkorLib::Common`: Recipe for all my toolbox and versatile Ruby functions
+    I'm using everywhere.  
+    You'll typically want to include the `FalkorLib::Common` module to bring the
+    corresponding definitions into your scope. Example: 
        
 			require 'falkorlib'
 			include FalkorLib::Common
@@ -66,20 +70,22 @@ This library features two aspect
         	end
   	
    	 
-  * `FalkorLib::Git`: all git operations
-  * `FalkorLib::Version`: versioning management 
+  * `FalkorLib::Git`: all [git](http://git-scm.com/) operations
+  * `FalkorLib::GitFlow`: all [git-flow](http://nvie.com/posts/a-successful-git-branching-model/) operations
+  * `FalkorLib::Version`: for the [semantic versioning](http://semver.org/)
+    management of your project. 
 
 * Some [rake](https://github.com/jimweirich/rake) tasks to facilitate common operations.
   In general you can simply embedded my tasks by adding the following header in your `Rakefile`:
   
   		# In Rakefile
-		require "falkorlib/<object>_tasks"
+        require "falkorlib"
+        
+        ## Place-holder to customize the configuration of the <object> tasks, 
+        ## Typically by altering FalkorLib.config.<object>
+        
+		require "falkorlib/tasks/<object>" # OR require "falkorlib/<object>_tasks" 
   
-  or 
-  
-  		#In Rakefile 
-  		require "falkorlib/tasks/<object>"
-
 ### `FalkorLib` Ruby Modules / Classes Documentation
 
 [Online documentation](https://rubygems.org/gems/falkorlib) is a available. 
@@ -93,12 +99,15 @@ Statistics on the documentation generation (in particular *non*-documented compo
 
 	$> rake yard:stats 
 
-
 ### Overview of the implemented Rake tasks
 
-You can find the list of implemented Rake tasks (detailed below) in the `lib/falkorlib/*_tasks.rb` files
+You can find the list of implemented Rake tasks (detailed below) in the
+`lib/falkorlib/*_tasks.rb` files 
 
-For a given task object `<obj>` (*git* tasks for instance as proposed in `lib/falkorlib/git_tasks.rb`), you can specialize the corresponding configuration by using the block construction of `FalkorLib.config do |c| ... end` **before** requiring the task file:
+As mentioned above, for a given task object `<obj>` (*git* tasks for instance as
+proposed in `lib/falkorlib/git_tasks.rb`), you can specialize the corresponding
+configuration by using the block construction of `FalkorLib.config do |c|
+... end` **before** requiring the task file: 
 
 	# In Rakefile
 	require 'falkorlib'
