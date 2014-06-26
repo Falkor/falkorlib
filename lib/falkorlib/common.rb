@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 18:10 svarrette>
+# Time-stamp: <Jeu 2014-06-26 12:30 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -132,7 +132,15 @@ module FalkorLib #:nodoc:
 	        $?
         end
          
-        
+        ## Execute in a given directory
+        def execute_in_dir(path, cmd)
+	        exit_status = 0
+	        Dir.chdir(path) do
+		        exit_status = run %{ #{cmd} }
+	        end 
+	        exit_status
+        end # execute_in_dir
+
 
 
         ## Execute a given command - exit if status != 0

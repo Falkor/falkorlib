@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-25 14:30 svarrette>
+# Time-stamp: <Jeu 2014-06-26 12:35 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -282,27 +282,19 @@ module FalkorLib  #:nodoc:
 
         ## Update the Git submodules to the **local** registered version
         def submodule_update(path = Dir.pwd)
-            exit_status = 1
-            git_root_dir = rootdir(path)
-            Dir.chdir(git_root_dir) do
-                exit_status = run %{
+	        execute_in_dir(rootdir(path), 
+	                       %{
                    git submodule init
                    git submodule update
-                }
-            end
-            exit_status
+            })
         end
 
         ## Upgrade the Git submodules to the latest HEAD version from the remote
         def submodule_upgrade(path = Dir.pwd)
-            exit_status = 1
-            git_root_dir = rootdir(path)
-            Dir.chdir(git_root_dir) do
-                exit_status = run %{
+	         execute_in_dir(rootdir(path), 
+	                       %{
                    git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); git submodule update --recursive; git clean -dfx'
-                }
-            end
-            exit_status
+             })	        
         end
 
 
