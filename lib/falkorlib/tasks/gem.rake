@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Ven 2014-06-20 14:54 svarrette>
+# Time-stamp: <Ven 2014-06-20 15:00 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -29,15 +29,15 @@ namespace :gem do
                 warn "Unable to find the built gem '#{gem}'... Thus exiting."
                 next
             end
-            info t.comment " '#{gem}'"
+            info t.comment + " '#{gem}'"
             really_continue?
             a = run %{
               gem push #{gem}
             }
             error "Unable to publish the gem '#{gem}'" if a.to_i != 0
         end
-
     end # task gem:release
+	task :publish, :release
 
     ###########   info   ###########
     desc "Informations on the gem"

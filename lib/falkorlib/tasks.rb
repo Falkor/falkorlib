@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-12 16:36 svarrette>
+# Time-stamp: <Mer 2014-06-25 15:38 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -21,7 +21,25 @@ namespace :falkorlib do
 	task :conf do
 		puts FalkorLib.config.to_yaml
 	end 
-end # namespace falkorlib<
+end # namespace falkorlib
+
+
+#.....................
+namespace :bundle do
+	
+	###########   init   ###########
+	desc "Initialize your Bundler configuration from your Gemfile"
+	task :init do |t|
+		info "#{t.comment}"
+		run %{ bundle }
+	end # task init 
+
+
+end # namespace bundle
+
+###########   setup   ###########
+desc "Setup the repository"
+task :setup => [ 'bundle:init' ]
 
 
 # Empty task debug 

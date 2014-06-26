@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-20 09:15 svarrette>
+# Time-stamp: <Mer 2014-06-25 14:30 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -335,6 +335,17 @@ module FalkorLib  #:nodoc:
             end
             exit_status
         end
+
+        ## Check if the subtrees have been initialized.
+        ## Actually based on a naive check of sub-directory existence
+        def subtree_init?(path = Dir.pwd)
+	        res = true
+	        FalkorLib.config.git[:subtrees].keys.each do |dir| 
+		        res = res && File.directory?(File.join(path, dir)) 
+	        end
+	        res
+        end # subtree_init?
+
 
         ## Show difference between local subtree(s) and their remotes"
         def subtree_diff(path = Dir.pwd)
