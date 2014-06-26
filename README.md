@@ -3,6 +3,7 @@
 [![Version     ](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib)
 [![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib)
 [![Code Climate](https://codeclimate.com/github/Falkor/falkorlib.png)](https://codeclimate.com/github/Falkor/falkorlib)
+[![Test Coverage](https://codeclimate.com/github/Falkor/falkorlib/coverage.png)](https://codeclimate.com/github/Falkor/falkorlib)
 [![Inline docs ](http://inch-ci.org/github/Falkor/falkorlib.svg)](http://inch-ci.org/github/Falkor/falkorlib)
 [![Gittip](http://img.shields.io/gittip/Falkor.svg)](http://gittip.com/Falkor)
 
