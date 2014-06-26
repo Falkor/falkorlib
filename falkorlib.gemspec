@@ -149,7 +149,6 @@ Gem::Specification.new do |s|
     s.add_development_dependency("travis-lint",   "~> 1.8")
 	
 	s.add_development_dependency("codeclimate-test-reporter") #, group: :test, require: nil)
-
     #s.add_development_dependency("bluecloth",      "~> 2.2.0")
     #s.add_development_dependency("wlang",          "~> 0.10.2")
 
