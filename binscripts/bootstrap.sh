@@ -3,7 +3,7 @@
 # bootstrap.sh - Bootstrap a fresh new directory for using FalkorLib and its
 #    associated Rake tasks. 
 # Creation : 26 Jun 2014
-# Time-stamp: <Jeu 2014-06-26 11:22 svarrette>
+# Time-stamp: <Jeu 2014-06-26 11:23 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -25,7 +25,7 @@ gem install bundler;
 
 echo "=> setup the FalkorLib gem in the directory ${GEMSET}"
 bundle init;
-echo "gem 'falkorlib'" >> Gemfile; 
+[ ! -f Gemfile ] echo "gem 'falkorlib'" >> Gemfile; 
 bundle;
 if [ ! -f Rakefile ]; then 
 cat > Rakefile <<EOF
