@@ -1,3 +1,7 @@
+# 0.2.10 / Bootstrapping scipts
+
+* Enhanced setup tasks
+
 # 0.2.9 / First stable version
 
 * Management of git[flow] operations
