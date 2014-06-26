@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-26 20:50 svarrette>
+# Time-stamp: <Jeu 2014-06-26 23:05 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -149,7 +149,7 @@ module FalkorLib #:nodoc:
 	        if (status.to_i != 0)
 		        error("The command '#{cmd}' failed with exit status #{status.to_i}")
             end
-	        res
+	        status
         end
 
         ## "Nice" way to present run commands
