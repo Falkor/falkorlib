@@ -113,6 +113,23 @@ describe FalkorLib::Common do
             end
         end
    end
+
+	it "#nice_execute -- check stdout output" do
+		b = capture(:stdout) {
+			nice_execute("echo toto")
+		}
+		t = b.split("\n").should include '** [out] toto'
+	end
+
+	it "#nice_execute -- check stderr output" do
+		#$stderr.should_receive(:puts).with('** [err] toto')
+		b = capture(:stderr) {
+			nice_execute("echo 'toto' 1>&2")
+		}
+		
+		t = b.should == red("** [err] toto\n")
+	end
+
 	
 	#############################################
     context "Test (common) YAML functions" do

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-26 12:30 svarrette>
+# Time-stamp: <Jeu 2014-06-26 20:50 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -118,7 +118,7 @@ module FalkorLib #:nodoc:
 	        end 
 	        unless stderr.empty?
 		        stderr.each_line do |line|
-			        print red("** [err] #{line}")        
+			        $stderr.print red("** [err] #{line}")        
 			        $stderr.flush
 		        end		        
 	        end 

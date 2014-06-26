@@ -32,7 +32,7 @@ begin
     # Glob pattern to match files.
     #t.pattern = "spec/**/test_*.rb"
 	#t.pattern = "spec/**/*_spec.rb"
-		#t.pattern = "spec/**/git_spec.rb"
+		t.pattern = "spec/**/common_spec.rb"
 
     # Whether or not to fail Rake when an error occurs (typically when
     # examples fail).
