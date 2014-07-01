@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-20 14:16 svarrette>
+# Time-stamp: <Mar 2014-07-01 11:13 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -26,7 +26,7 @@ module FalkorLib #:nodoc:
                         :filename  => 'lib/falkorlib/version.rb',
                         :getmethod => 'FalkorLib::Version.to_s',
                         #:setmethod => 'FalkorLib::Version.set',
-                        :pattern   => '^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)'
+                        #:pattern   => '^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)'
                     },
                     'tag' => {
                         :suffix => 'v'
