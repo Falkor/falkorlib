@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-19 18:10 svarrette>
+# Time-stamp: <Jeu 2014-06-26 23:05 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -118,7 +118,7 @@ module FalkorLib #:nodoc:
 	        end 
 	        unless stderr.empty?
 		        stderr.each_line do |line|
-			        print red("** [err] #{line}")        
+			        $stderr.print red("** [err] #{line}")        
 			        $stderr.flush
 		        end		        
 	        end 
@@ -132,7 +132,15 @@ module FalkorLib #:nodoc:
 	        $?
         end
          
-        
+        ## Execute in a given directory
+        def execute_in_dir(path, cmd)
+	        exit_status = 0
+	        Dir.chdir(path) do
+		        exit_status = run %{ #{cmd} }
+	        end 
+	        exit_status
+        end # execute_in_dir
+
 
 
         ## Execute a given command - exit if status != 0
@@ -141,7 +149,7 @@ module FalkorLib #:nodoc:
 	        if (status.to_i != 0)
 		        error("The command '#{cmd}' failed with exit status #{status.to_i}")
             end
-	        res
+	        status
         end
 
         ## "Nice" way to present run commands

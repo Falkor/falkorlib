@@ -113,7 +113,57 @@ describe FalkorLib::Common do
             end
         end
    end
-	
+
+	it "#nice_execute -- check stdout output" do
+		b = capture(:stdout) {
+			nice_execute("echo toto")
+		}
+		b.split("\n").should include '** [out] toto'
+	end
+
+	it "#nice_execute -- check stderr output" do
+		b = capture(:stderr) {
+			nice_execute("echo 'toto' 1>&2")
+		}		
+		b.should == red("** [err] toto\n")
+	end
+
+	it "#execute" do
+		b = execute("echo toto")
+		b.to_i.should == 0
+	end
+
+	it "#not_implemented" do
+		b = capture(:stderr) {
+			expect { not_implemented }.to raise_error (SystemExit)
+		}
+		b.should =~ /NOT YET IMPLEMENTED/ 
+	end
+
+	it "#exec_or_exit - should exit" do
+		expect { exec_or_exit "false" }.to raise_error (SystemExit)
+	end
+	it "#exec_or_exit - should NOT exit" do
+		expect { exec_or_exit "true" }.not_to raise_error (SystemExit)
+	end
+
+	it "#execute_in_dir -- should execute the command in /tmp" do
+		b = execute_in_dir('/tmp', "pwd | grep -Fq '/tmp'")
+		b.should == 0
+	end
+
+
+	it "#run -- exucute successfully multiple commands" do
+		b = run %{
+            echo toto
+            echo tata
+        }
+		b.to_i.should == 0
+	end
+
+
+
+
 	#############################################
     context "Test (common) YAML functions" do
 
