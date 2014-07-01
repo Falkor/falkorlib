@@ -19,7 +19,7 @@ module FalkorLib #:nodoc:
         # MAJOR: Defines the major version
         # MINOR: Defines the minor version
         # PATCH: Defines the patch version
-	    MAJOR, MINOR, PATCH = 0, 2, 10  
+	    MAJOR, MINOR, PATCH = 0, 2, 11  
 	    
 	    module_function
 	    
