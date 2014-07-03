@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 #########################################
-# gitflow_spec.rb
+# versioning_gem_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mar 2014-07-01 12:26 svarrette>
+# Time-stamp: <Mar 2014-07-01 17:29 svarrette>
 #
-# @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
+# @description Check the versioning operations on Gems
 #
 # Copyright (c) 2013 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
