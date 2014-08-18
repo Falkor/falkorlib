@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Lun 2014-08-18 21:22 svarrette>
+# Time-stamp: <Lun 2014-08-18 22:46 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -23,7 +23,7 @@ namespace :git do
     ###########   git:fetch   ###########
     #desc "Fetch the latest changes on remotes"
     task :fetch do |t|
-        info t.comment
+        info "Fetch the latest changes on remotes" # t.comment
         FalkorLib::Git.fetch()
     end # task fetch
 
@@ -81,7 +81,7 @@ namespace :git do
             ########### git:submodules:update ###########
             #desc "Update the git submodules from '#{git_root_dir}'"
             task :update do |t|
-                info t.comment
+                info "Update the git submodules from '#{git_root_dir}'"  # t.comment
                 FalkorLib::Git.submodule_update( git_root_dir )
             end
 
