@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Lun 2014-08-18 21:17 svarrette>
+# Time-stamp: <Lun 2014-08-18 21:22 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -36,7 +36,7 @@ namespace :git do
         ###########  git:{up,push}  ###########
         #desc "#{description}"
         task op.to_sym do |t|
-            info t.comment
+			info description # t.comment
             if remotes.empty? || ! remotes.include?( 'origin' )
                 warn "No git remote configured... Exiting #{t}"
                 next
