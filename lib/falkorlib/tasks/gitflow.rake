@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Jeu 2014-06-26 10:40 svarrette>
+# Time-stamp: <Lun 2014-08-18 21:18 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -17,7 +17,7 @@ namespace :git do
     git_root_dir = FalkorLib::Git.rootdir
 
 	###########  git:init   ###########
-	desc "Initialize Git repository"
+	#desc "Initialize Git repository"
 	task :init => [ 'git:flow:init' ]
 
     #.....................
@@ -76,7 +76,7 @@ end # namespace git
 namespace :version do
 
     ###########   version:info   ###########
-    desc "Get versioning information"
+    #desc "Get versioning information"
     task :info do |t|
         include FalkorLib::Versioning
         version = get_version

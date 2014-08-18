@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-07-12 21:36 svarrette>
+# Time-stamp: <Sam 2014-07-12 21:43 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -210,7 +210,7 @@ module FalkorLib #:nodoc:
         end
 
         ## Display a indexed list to select an i
-        def select_from(list, text = 'Select the index', default_index = 0)
+        def select_from(list, text = 'Select the index', default_idx = 0, raw_list = list)
 	        puts list.to_yaml
 	        answer = ask("=> #{text}", "#{default_idx}")
 	        raise SystemExit.new('exiting selection') if answer == '0'
