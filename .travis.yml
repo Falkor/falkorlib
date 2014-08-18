@@ -1,19 +1,21 @@
 language: ruby
 cache: bundler
 bundler_args: "--without=release doc"
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y git-flow git-core
 rvm:
  - 1.9.2
  - 1.9.3
  - 2.0.0
  - 2.1.1
  - 2.1.2
- - ruby-head
  - rbx-2.2.7
-addons:
-  code_climate:
-    repo_token: 
-      secure: "ZBtaK84ZnjyT4X7mGSYDx31HgD94nZccxAzKA2SBjakW/hfsx9sBGOusxYN7EuC6JydjwLFN3MwLfEGMgjC1zxNwvLO9PGQbh52QawKBue09qouitJbOODwUfQgzNHj/Z0x3dMv3X1Qz31gbfDaC6DJsnTtG2q7R7Kni8hq4/FU="
 notifications:
   hipchat:
     rooms:
       secure: E0V9xQtCyPSB+SZ5n+ztdM5tzJ7d1eR+XR1gIBfAwe0JYnRb735B1v0Z3CVBmosKpv16KEoKUDjum1vHGk8fnOOcxoHx+TtTCF1TVpuBtKzXqG6t4YZAYjkGSIBUM1Zd7kXLlsdmdwRToGmKRqblQHutnm0LkyII/CAwaO+UeY8=
+# addons:
+#   code_climate:
+#     repo_token: 
+#       secure: "ZBtaK84ZnjyT4X7mGSYDx31HgD94nZccxAzKA2SBjakW/hfsx9sBGOusxYN7EuC6JydjwLFN3MwLfEGMgjC1zxNwvLO9PGQbh52QawKBue09qouitJbOODwUfQgzNHj/Z0x3dMv3X1Qz31gbfDaC6DJsnTtG2q7R7Kni8hq4/FU="

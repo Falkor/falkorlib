@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2014-06-19 22:10 svarrette>
+# Time-stamp: <Jeu 2014-07-03 23:58 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -16,7 +16,7 @@ require 'tmpdir'
 describe FalkorLib::GitFlow do
     include FalkorLib::Common
 
-    if command?('git_flow')
+    if command?('git-flow')
 
 
         dir   = Dir.mktmpdir

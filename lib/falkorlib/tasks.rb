@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-06-25 15:38 svarrette>
+# Time-stamp: <Lun 2014-08-18 21:19 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -17,7 +17,7 @@ FalkorLib.config.debug = ARGV.include?('DEBUG')
 #.....................
 namespace :falkorlib do
 	###########  falkorlib:conf   ###########
-	desc "Print the current configuration of FalkorLib"
+	#desc "Print the current configuration of FalkorLib"
 	task :conf do
 		puts FalkorLib.config.to_yaml
 	end 
@@ -28,7 +28,7 @@ end # namespace falkorlib
 namespace :bundle do
 	
 	###########   init   ###########
-	desc "Initialize your Bundler configuration from your Gemfile"
+	#desc "Initialize your Bundler configuration from your Gemfile"
 	task :init do |t|
 		info "#{t.comment}"
 		run %{ bundle }

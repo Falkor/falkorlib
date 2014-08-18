@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-26 23:05 svarrette>
+# Time-stamp: <Sam 2014-07-12 21:43 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -9,24 +9,24 @@ require 'open3'
 
 module FalkorLib #:nodoc:
 
-	# @abstract 
-	# Recipe for all my toolbox and versatile Ruby functions I'm using
-	# everywhere. 
-	# You'll typically want to include the `FalkorLib::Common` module to bring
-	# the corresponding definitions into yoru scope.
+    # @abstract
+    # Recipe for all my toolbox and versatile Ruby functions I'm using
+    # everywhere.
+    # You'll typically want to include the `FalkorLib::Common` module to bring
+    # the corresponding definitions into yoru scope.
     #
-    # @example: 
-	#   require 'falkorlib'
-	#   include FalkorLib::Common
-	#      
-	#   info 'exemple of information text'
-	#   really_continue?
-	#   run %{ echo 'this is an executed command' }
-	#
-	#   Falkor.config.debug = true
-	#   run %{ echo 'this is a simulated command that *will not* be executed' }
-	#   error "that's an error text, let's exit with status code 1"
-	#
+    # @example:
+    #   require 'falkorlib'
+    #   include FalkorLib::Common
+    #
+    #   info 'exemple of information text'
+    #   really_continue?
+    #   run %{ echo 'this is an executed command' }
+    #
+    #   Falkor.config.debug = true
+    #   run %{ echo 'this is a simulated command that *will not* be executed' }
+    #   error "that's an error text, let's exit with status code 1"
+    #
     module Common
         module_function
         ##################################
@@ -108,64 +108,116 @@ module FalkorLib #:nodoc:
 
         ## Execute a given command, return exit code and print nicely stdout and stderr
         def nice_execute(cmd)
-	        puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
-	        stdout, stderr, exit_status = Open3.capture3( cmd )
-	        unless stdout.empty?
-		        stdout.each_line do |line|
-			        print "** [out] #{line}"
-			        $stdout.flush
-		        end
-	        end 
-	        unless stderr.empty?
-		        stderr.each_line do |line|
-			        $stderr.print red("** [err] #{line}")        
-			        $stderr.flush
-		        end		        
-	        end 
-	        exit_status
+            puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
+            stdout, stderr, exit_status = Open3.capture3( cmd )
+            unless stdout.empty?
+                stdout.each_line do |line|
+                    print "** [out] #{line}"
+                    $stdout.flush
+                end
+            end
+            unless stderr.empty?
+                stderr.each_line do |line|
+                    $stderr.print red("** [err] #{line}")
+                    $stderr.flush
+                end
+            end
+            exit_status
         end
 
         # Simpler version that use the system call
         def execute(cmd)
-	        puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
-	        system(cmd)
-	        $?
+            puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
+            system(cmd)
+            $?
         end
-         
+
         ## Execute in a given directory
         def execute_in_dir(path, cmd)
-	        exit_status = 0
-	        Dir.chdir(path) do
-		        exit_status = run %{ #{cmd} }
-	        end 
-	        exit_status
+            exit_status = 0
+            Dir.chdir(path) do
+                exit_status = run %{ #{cmd} }
+            end
+            exit_status
         end # execute_in_dir
-
-
 
         ## Execute a given command - exit if status != 0
         def exec_or_exit(cmd)
-	        status = execute(cmd)
-	        if (status.to_i != 0)
-		        error("The command '#{cmd}' failed with exit status #{status.to_i}")
+            status = execute(cmd)
+            if (status.to_i != 0)
+                error("The command '#{cmd}' failed with exit status #{status.to_i}")
             end
-	        status
+            status
         end
 
         ## "Nice" way to present run commands
         ## Ex: run %{ hostname -f }
         def run(cmds)
-	        exit_status = 0
+            exit_status = 0
             puts bold("[Running]\n#{cmds.gsub(/^\s*/, '   ')}")
-	        $stdout.flush
+            $stdout.flush
             #puts cmds.split(/\n */).inspect
             cmds.split(/\n */).each do |cmd|
                 next if cmd.empty?
                 system("#{cmd}") unless FalkorLib.config.debug
-		        exit_status = $?
+                exit_status = $?
             end
-	        exit_status
+            exit_status
         end
+
+        ## List items from a glob pattern
+        ## list_items
+        def list_items(glob_pattern, options = {})
+            list  = { 0 => 'Exit' }
+            index = 1
+	        raw_list = { }
+
+	        Dir["#{glob_pattern}"].each do |elem|
+		        #puts "=> element '#{elem}' - dir = #{File.directory?(elem)}; file = #{File.file?(elem)}"
+		        next if (! options[:only_files].nil?) && options[:only_files] && File.directory?(elem)
+		        next if (! options[:only_dirs].nil?)  && options[:only_dirs]  && File.file?(elem)
+		        entry = File.basename(elem)
+		        unless options[:pattern_include].nil?
+			        select_entry = false
+			        options[:pattern_include].each do |pattern|
+				        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
+				        select_entry |= entry =~ /#{pattern}/
+			        end
+			        next unless select_entry
+		        end 
+		        unless options[:pattern_exclude].nil?
+			        select_entry = false
+			        options[:pattern_exclude].each do |pattern|
+				        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
+				        select_entry |= entry =~ /#{pattern}/
+			        end
+			        next if select_entry
+		        end 
+		        #puts "selected entry = '#{entry}'"
+		        list[index]     = entry
+		        raw_list[index] = elem
+		        index += 1
+            end
+	        text        = options[:text].nil?    ? "select the index" : options[:text] 
+	        default_idx = options[:default].nil? ? 0 : options[:default]
+	        raise SystemExit.new('Empty list') if index == 1
+	        # puts list.to_yaml
+	        # answer = ask("=> #{text}", "#{default_idx}")
+	        # raise SystemExit.new('exiting selection') if answer == '0'
+	        # raise RangeError.new('Undefined index')   if Integer(answer) >= list.length
+	        # raw_list[Integer(answer)]
+	        select_from(list, text, default_idx, raw_list)
+        end
+
+        ## Display a indexed list to select an i
+        def select_from(list, text = 'Select the index', default_idx = 0, raw_list = list)
+	        puts list.to_yaml
+	        answer = ask("=> #{text}", "#{default_idx}")
+	        raise SystemExit.new('exiting selection') if answer == '0'
+	        raise RangeError.new('Undefined index')   if Integer(answer) >= list.length
+	        raw_list[Integer(answer)] 
+        end # select_from
+
 
         ###############################
         ### YAML File loading/store ###
