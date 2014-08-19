@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Lun 2014-08-18 21:18 svarrette>
+# Time-stamp: <Mar 2014-08-19 10:20 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -81,7 +81,7 @@ namespace :version do
         include FalkorLib::Versioning
         version = get_version
         #major, minor, patch =  bump(version, :major), bumpversion, :minor), bump(version, :patch)
-        info t.comment
+        info "Get versioning information" #  t.comment
         puts "Current version: " + bold(version)
         FalkorLib.config[:versioning][:levels].reverse.each do |level|
             puts "- next #{level} version: " + bump(version, level.to_sym)
