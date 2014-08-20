@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2014-08-20 16:55 svarrette>
+# Time-stamp: <Mer 2014-08-20 17:21 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -44,12 +44,12 @@ namespace :bootstrap do
 		run %{ rvm install `cat .ruby-version` }
 		
 		#rvmenv = %x( rvm env --path -- `cat .ruby-version`@`cat .ruby-gemset`)
-		info "=> Force reloading RVM configuration within $PWD"
-		run %{ 
-           bash -l -c 'rvm use  `cat .ruby-version`' 
-           bash -l -c 'rvm gemset use `cat .ruby-gemset`'
-           bash -l -c 'rvm list && rvm gemset list'
-        }
+		# info "=> Force reloading RVM configuration within $PWD"
+		# run %{ 
+        #    bash -l -c 'rvm use  `cat .ruby-version`' 
+        #    bash -l -c 'rvm gemset use `cat .ruby-gemset`'
+        #    bash -l -c 'rvm list && rvm gemset list'
+        # }
 		
 		info "=> installing the Bundler gem -- see http://bundler.io"
 		run %{ gem install bundler }
