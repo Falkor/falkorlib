@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-18 21:19 svarrette>
+# Time-stamp: <Mer 2014-08-20 16:55 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -25,21 +25,42 @@ end # namespace falkorlib
 
 
 #.....................
-namespace :bundle do
-	
-	###########   init   ###########
-	#desc "Initialize your Bundler configuration from your Gemfile"
-	task :init do |t|
-		info "#{t.comment}"
+namespace :bootstrap do
+	###########   bootstrap:bundler   ###########
+	task :bundler do 
+		info "Bootstrap Bundler -- see http://bundler.io/"
+		error "Unable to find the 'bundle' command" unless command?('bundle')
 		run %{ bundle }
-	end # task init 
+	end 
 
+	###########   rvm   ###########
+	task :rvm do 
+		info "Boostrap RVM for this repository -- see https://rvm.io"
+		error "RVM is not installed -- see https://rvm.io/rvm/install for instructions" unless command?('rvm')
+		['version', 'gemset'].each do |t| 
+			error "unable to find the .ruby-#{t} file" unless File.exists?(".ruby-#{t}")
+		end
+		info "=> initialize RVM -- see http://rvm.io"
+		run %{ rvm install `cat .ruby-version` }
+		
+		#rvmenv = %x( rvm env --path -- `cat .ruby-version`@`cat .ruby-gemset`)
+		info "=> Force reloading RVM configuration within $PWD"
+		run %{ 
+           bash -l -c 'rvm use  `cat .ruby-version`' 
+           bash -l -c 'rvm gemset use `cat .ruby-gemset`'
+           bash -l -c 'rvm list && rvm gemset list'
+        }
+		
+		info "=> installing the Bundler gem -- see http://bundler.io"
+		run %{ gem install bundler }
+	end 
 
-end # namespace bundle
+end # namespace bootstrap
+
 
 ###########   setup   ###########
 desc "Setup the repository"
-task :setup => [ 'bundle:init' ]
+task :setup => ['bootstrap:rvm', 'bootstrap:bundler']
 
 
 # Empty task debug 
