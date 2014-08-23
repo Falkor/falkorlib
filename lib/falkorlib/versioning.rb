@@ -1,11 +1,12 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-07-01 11:13 svarrette>
+# Time-stamp: <Sam 2014-08-23 12:32 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
 # FalkorLib Version management
 #
+require 'json'
 
 module FalkorLib #:nodoc:
 
@@ -28,6 +29,9 @@ module FalkorLib #:nodoc:
                         #:setmethod => 'FalkorLib::Version.set',
                         #:pattern   => '^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)'
                     },
+			        'puppet_module' => {
+				        :filename => 'metadata.json'
+			        },
                     'tag' => {
                         :suffix => 'v'
                     },
@@ -75,6 +79,10 @@ module FalkorLib #:nodoc:
             when 'gem'
                 getmethod = source[:getmethod ]
                 version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
+            when 'puppet_module'
+	            jsonfile = File.join( rootdir, source[:filename] )
+	            metadata = JSON.parse( IO.read( jsonfile ) )
+	            version  = metadata["version"]
             end
             version
         end
@@ -100,6 +108,13 @@ module FalkorLib #:nodoc:
 			                   '\1' + "MAJOR, MINOR, PATCH = #{major}, #{minor}, #{patch}" + '\5')
                     f.rewind
                     f.write(text)
+                end
+            when 'puppet_module'
+	            info "=> writing version changes in #{source[:filename]}"
+	            metadata = JSON.parse( IO.read( versionfile ) )
+	            metadata["version"] = version
+	            File.open(versionfile,"w") do |f|
+			        f.write JSON.pretty_generate( metadata )
                 end
 	            #exit 1
             end
