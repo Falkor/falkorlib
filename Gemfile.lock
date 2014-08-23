@@ -5,6 +5,7 @@ PATH
       awesome_print (~> 1.2)
       configatron (~> 3.2)
       git_remote_branch (~> 0)
+      json (~> 1.8)
       minigit (~> 0)
       rake (~> 10.1, >= 10.1.0)
       term-ansicolor (~> 1.3)
