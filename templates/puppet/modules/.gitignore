@@ -2,3 +2,4 @@
 .vagrant
 /.bundle/*
 .ruby-*
+.falkorlib.yaml

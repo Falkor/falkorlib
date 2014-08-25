@@ -1,12 +1,13 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
 
-     Time-stamp: <Lun 2014-08-25 16:41 svarrette>
+     Time-stamp: <Lun 2014-08-25 23:31 svarrette>
 
 -------------------------------------------
 
 # <%= config[:name].gsub(/^puppet-/,'') %> Puppet Module -- <%= config[:summary] %>
 
 <%= config[:description] %>
+
 
 * Author(s): <%= config[:author] %>
 * Copyright: `Copyright (c) <%= Time.now.year %> <%= config[:author] %>`  
@@ -18,13 +19,13 @@
 
 <%= config[:description] %>
 
+
 The various operations of this repository are piloted from a `Rakefile` which
 assumes that you have [RVM](https://rvm.io/) installed on your system.
 
 ## Puppet Module Layout
 
-    modules/
-      `-- <%= config[:name] %>/       # Main directory for the '<%= config[:name] %>' module
+       <%= config[:name] %>/       # Main directory for the '<%= config[:name] %>' module
            `-- metadata.json     # Module configuration - cf [here](https://docs.puppetlabs.com/puppet/latest/reference/modules_publishing.html#write-a-metadatajson-file)
            `-- README.md         # This file
            `-- files/            # Contains static files, which managed nodes can download
