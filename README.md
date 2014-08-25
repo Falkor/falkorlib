@@ -70,11 +70,14 @@ This library features two aspects
             	c.debug = true
         	end
   	
+    You can also place a special file `.falkorlib.yaml` to customize the
+    FalkorLib settings 
    	 
   * `FalkorLib::Git`: all [git](http://git-scm.com/) operations
   * `FalkorLib::GitFlow`: all [git-flow](http://nvie.com/posts/a-successful-git-branching-model/) operations
   * `FalkorLib::Version`: for the [semantic versioning](http://semver.org/)
     management of your project. 
+  * `FalkorLib::Puppet`: for all [puppet](http://puppetlabs.com) operations
 
 * Some [rake](https://github.com/jimweirich/rake) tasks to facilitate common operations.
   In general you can simply embedded my tasks by adding the following header in your `Rakefile`:
@@ -152,6 +155,9 @@ _Note_: you probably want to
 [take a look at that script content](https://github.com/Falkor/falkorlib/blob/devel/binscripts/bootstrap.sh)
 before running the above command.
 
+Alternatively, assuming you have installed the `falkorlib` gem, you can create a
+minimal `Rakefile` (containing `require 'falkorlib'`) and run `rake bootstrap:rvm`.
+ 
 You can now complete your `Rakefile` depending on the tasks you wish to see. 
 Below is a detailed overview of the implemented rake tasks in `FalkorLib`.
 
@@ -221,10 +227,8 @@ $> rake -T
 rake falkorlib:conf           # Print the current configuration of FalkorLib
 rake git:feature:finish       # Finalize the feature operation
 rake git:feature:start[name]  # Start a new feature operation on the repository using the git-flow framework
-rake git:fetch                # Fetch the latest changes on remotes
 rake git:flow:init            # Initialize your local clone of the repository for the git-flow management
-rake git:push                 # Push your modifications onto the remote branches
-rake git:up                   # Update your local copy of the repository from GIT server
+rake setup                    # Setup the repository
 rake version:bump:major       # Prepare the major release of the repository
 rake version:bump:minor       # Prepare the minor release of the repository
 rake version:bump:patch       # Prepare the patch release of the repository
