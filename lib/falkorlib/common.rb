@@ -1,10 +1,11 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-07-12 21:43 svarrette>
+# Time-stamp: <Lun 2014-08-25 17:20 svarrette>
 ################################################################################
 
 require "falkorlib"
 require 'open3'
+require 'erb'      # required for module generation
 
 
 module FalkorLib #:nodoc:
@@ -170,52 +171,62 @@ module FalkorLib #:nodoc:
         def list_items(glob_pattern, options = {})
             list  = { 0 => 'Exit' }
             index = 1
-	        raw_list = { }
+            raw_list = { }
 
-	        Dir["#{glob_pattern}"].each do |elem|
-		        #puts "=> element '#{elem}' - dir = #{File.directory?(elem)}; file = #{File.file?(elem)}"
-		        next if (! options[:only_files].nil?) && options[:only_files] && File.directory?(elem)
-		        next if (! options[:only_dirs].nil?)  && options[:only_dirs]  && File.file?(elem)
-		        entry = File.basename(elem)
-		        unless options[:pattern_include].nil?
-			        select_entry = false
-			        options[:pattern_include].each do |pattern|
-				        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
-				        select_entry |= entry =~ /#{pattern}/
-			        end
-			        next unless select_entry
-		        end 
-		        unless options[:pattern_exclude].nil?
-			        select_entry = false
-			        options[:pattern_exclude].each do |pattern|
-				        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
-				        select_entry |= entry =~ /#{pattern}/
-			        end
-			        next if select_entry
-		        end 
-		        #puts "selected entry = '#{entry}'"
-		        list[index]     = entry
-		        raw_list[index] = elem
-		        index += 1
+            Dir["#{glob_pattern}"].each do |elem|
+                #puts "=> element '#{elem}' - dir = #{File.directory?(elem)}; file = #{File.file?(elem)}"
+                next if (! options[:only_files].nil?) && options[:only_files] && File.directory?(elem)
+                next if (! options[:only_dirs].nil?)  && options[:only_dirs]  && File.file?(elem)
+                entry = File.basename(elem)
+                unless options[:pattern_include].nil?
+                    select_entry = false
+                    options[:pattern_include].each do |pattern|
+                        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
+                        select_entry |= entry =~ /#{pattern}/
+                    end
+                    next unless select_entry
+                end
+                unless options[:pattern_exclude].nil?
+                    select_entry = false
+                    options[:pattern_exclude].each do |pattern|
+                        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
+                        select_entry |= entry =~ /#{pattern}/
+                    end
+                    next if select_entry
+                end
+                #puts "selected entry = '#{entry}'"
+                list[index]     = entry
+                raw_list[index] = elem
+                index += 1
             end
-	        text        = options[:text].nil?    ? "select the index" : options[:text] 
-	        default_idx = options[:default].nil? ? 0 : options[:default]
-	        raise SystemExit.new('Empty list') if index == 1
-	        # puts list.to_yaml
-	        # answer = ask("=> #{text}", "#{default_idx}")
-	        # raise SystemExit.new('exiting selection') if answer == '0'
-	        # raise RangeError.new('Undefined index')   if Integer(answer) >= list.length
-	        # raw_list[Integer(answer)]
-	        select_from(list, text, default_idx, raw_list)
+            text        = options[:text].nil?    ? "select the index" : options[:text]
+            default_idx = options[:default].nil? ? 0 : options[:default]
+            raise SystemExit.new('Empty list') if index == 1
+            # puts list.to_yaml
+            # answer = ask("=> #{text}", "#{default_idx}")
+            # raise SystemExit.new('exiting selection') if answer == '0'
+            # raise RangeError.new('Undefined index')   if Integer(answer) >= list.length
+            # raw_list[Integer(answer)]
+            select_from(list, text, default_idx, raw_list)
         end
 
         ## Display a indexed list to select an i
         def select_from(list, text = 'Select the index', default_idx = 0, raw_list = list)
-	        puts list.to_yaml
-	        answer = ask("=> #{text}", "#{default_idx}")
-	        raise SystemExit.new('exiting selection') if answer == '0'
-	        raise RangeError.new('Undefined index')   if Integer(answer) >= list.length
-	        raw_list[Integer(answer)] 
+            error "list and raw_list differs in size" if list.size != raw_list.size
+            l     = list
+            raw_l = raw_list
+            if list.kind_of?(Array)
+                l = raw_l = { 0 => 'Exit' }
+                list.each_with_index do |e, idx|
+                    l[idx+1] = e
+                    raw_l[idx+1] = raw_list[idx]
+                end
+            end
+            puts l.to_yaml
+            answer = ask("=> #{text}", "#{default_idx}")
+            raise SystemExit.new('exiting selection') if answer == '0'
+            raise RangeError.new('Undefined index')   if Integer(answer) >= list.length
+            raw_l[Integer(answer)]
         end # select_from
 
 
@@ -237,6 +248,61 @@ module FalkorLib #:nodoc:
             end
         end
 
+        #################################
+        ### [ERB] template generation ###
+        #################################
 
+        # Bootstrap the destination directory `rootdir` using the template
+        # directory `templatedir`. the hash table `config` hosts the elements to
+        # feed ERB files which **should** have the extension .erb.
+        # The initialization is performed as follows:
+        # * a rsync process is initiated to duplicate the directory structure
+        #   and the symlinks
+        # * each erb files (thus with extension .erb) is interpreted, the
+        #   corresponding file is generated without the .erb extension
+        def init_from_template(templatedir, rootdir, config = {}, options = {})
+            error "Unable to find the template directory" unless File.directory?(templatedir)
+            warning "about to initialize/update the directory #{rootdir}"
+            really_continue?
+            run %{ mkdir -p #{rootdir} } unless File.directory?( rootdir )
+            run %{ rsync --exclude '*.erb' -avzu #{templatedir}/ #{rootdir}/ }
+            Dir["#{templatedir}/**/*.erb"].each do |erbfile|
+		        relative_outdir = Pathname.new( File.realpath( File.dirname(erbfile) )).relative_path_from Pathname.new(templatedir)
+		        filename = File.basename(erbfile, '.erb')
+		        outdir   = File.realpath( File.join(rootdir, relative_outdir.to_s) )		        
+		        outfile  = File.join(outdir, filename)
+		        unless options[:erb_exclude].nil?
+			        exclude_entry = false
+			        options[:erb_exclude].each do |pattern|
+				        exclude_entry |= erbfile =~ /#{pattern}/
+			        end
+			        if exclude_entry
+				        info "copying non-interpreted ERB file"
+				        # copy this file since it has been probably excluded from teh rsync process
+				        run %{ cp #{erbfile} #{outdir}/ }
+				        next 
+			        end 
+		        end 
+		        # Let's go
+		        info "updating '#{relative_outdir.to_s}/#{filename}'"
+		        puts "\t* using ERB template '#{erbfile}'"
+		        template = File.read("#{erbfile}")
+                output   = ERB.new(template, nil, '<>')
+		        if File.exists?( outfile )
+			        warn "the file '#{outfile}' already exists and will be overwritten."
+			        error "TODO: watch the diff ;)"
+		        else 
+			        watch =  ask( cyan("  ==> Do you want to see the generated file before commiting the writing (Y|n)"), 'Yes')
+			        puts output.result(binding) if watch =~ /y.*/i
+		        end 
+		        proceed = ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
+		        next if proceed =~ /n.*/i
+		        info("=> writing #{outfile}")
+                File.open("#{outfile}", "w+") do |f|
+			        f.puts output.result(binding)
+                end
+            end
+	        
+        end
     end
 end

@@ -3,25 +3,16 @@
   "version": "<%= config[:version] %>",
   "author":  "<%= config[:author] %>",
   "summary": "<%= config[:summary] %>",
-  "license": "<%= config[:licence] %>",
+  "license": "<%= config[:license] %>",
   "source":  "<%= config[:source] %>",
   "project_page": "<%= config[:project_page] %>",
   "issues_url":   "<%= config[:issues_url] %>",
   "dependencies": [
-    {
-      "name": "puppetlabs-stdlib",
-      "version_range": ">= 1.0.0"
-    }
+    { "name": "puppetlabs-stdlib", "version_range": ">= 1.0.0" }
   ]
-  "operatingsystem_support": [w
-    {
-       "operatingsystem":"Debian",
-       "operatingsystemrelease": [
-          "6",
-          "7"
-        ]
-    }
+  "operatingsystem_support": [
+    {  "operatingsystem":"Debian", "operatingsystemrelease": [ "6", "7" ] }
   ]
-  "tags": []
+  "tags": <%= config[:tags] %>
 }
 

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sam 2014-08-23 15:47 svarrette>
+# Time-stamp: <Lun 2014-08-25 15:58 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -9,27 +9,23 @@
 
 require 'falkorlib'
 require 'falkorlib/tasks'
+require 'falkorlib/puppet/modules'
+
 
 #.....................
-namespace :puppet do
-
+namespace :bootstrap do
 	#.....................
-	namespace :module do
+	namespace :puppet do
 		
-
-		###########  puppet:module:bootstrap   ###########
-		desc "Bootstrap a new module"
-		task :bootstrap do |t|
+		###########  bootstrap:puppet:module   ###########
+		desc "Bootstrap a new Puppet module"
+		task :module do |t|
 			info "#{t.comment}"
-			
-
-			
-		end # task bootstrap 
-
+			dstdir = ask("Destination directory:", File.join(Dir.pwd, 'new'))
+			FalkorLib::Puppet::Modules.init(dstdir)
+		end 
 
 
-
-
-	end # namespace puppet:module
-end # namespace puppet
+	end # namespace bootstrap:puppet
+end # namespace bootstrap
 
