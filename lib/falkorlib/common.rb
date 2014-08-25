@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-25 23:26 svarrette>
+# Time-stamp: <Lun 2014-08-25 23:43 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -326,7 +326,7 @@ module FalkorLib #:nodoc:
 		        end
 	        end 
 	        unless File.exists?( "#{rvm_files[:gemset]}")
-		        g = ask("Enter RVM gemset name for this directory", File.basename(rootdir))
+		        g = gemset.empty? ? ask("Enter RVM gemset name for this directory", File.basename(rootdir)) : gemset
 		        File.open( rvm_files[:gemset], 'w') do |f|
 			        f.puts g
 		        end
