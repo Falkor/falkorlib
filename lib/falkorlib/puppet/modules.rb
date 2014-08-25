@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-25 17:20 svarrette>
+# Time-stamp: <Lun 2014-08-25 23:06 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -54,11 +54,13 @@ module FalkorLib  #:nodoc:
             module_function
 
             ## Initialize a new Puppet Module
-            def init(rootdir = Dir.pwd)
+            def init(rootdir = Dir.pwd, name = '')
                 config = {}
 	            login = `whoami`.chomp
+	            config[:name] = name unless name.empty?
                 FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata].each do |k,v|
                     next if v.kind_of?(Array) or k == :license
+		            next if k == :name and ! name.empty?
                     default_answer = case k
                                      when :project_page
                                          config[:source].nil? ? v : config[:source]
@@ -73,23 +75,28 @@ module FalkorLib  #:nodoc:
                                      else
                                          v
                                      end
-                    config[k.to_sym] = ask("\tModule #{k}", default_answer)
+                    config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
                 end
-                tags = ask("\tKeywords (comma-separated list of tags)")
+                tags = ask("\tKeywords (comma-separated list of tags)", config[:name].gsub(/.*-/, ''))
 	            config[:tags] = tags.split(',')
 	            license = select_from(FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses], 
 	                                  'Select the licence index for the Puppet module:', 
 	                                  1)
 	            puts "\tModule Licence:"
 	            config[:license] = license.downcase unless license.empty?
-	            ap config
+	            #ap config
 	            # Bootstrap the directory
 	            templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
 	            init_from_template(templatedir, rootdir, config, {
 		                               :erb_exclude => [ 'templates\/[^\/]*\.erb$' ]
 	                               })
 	            info "Generating the License file"
-	            run %{ licgen #{config[:license]} #{config[:author]} > #{rootdir}/LICENSE }
+	            Dir.chdir(rootdir) do 
+		            run %{licgen #{config[:license]} #{config[:author]}}
+	            end
+	            info "Initialize RVM"
+	            init_rvm(rootdir)
+
 
             end # init
 
