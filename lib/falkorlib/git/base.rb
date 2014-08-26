@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-26 12:35 svarrette>
+# Time-stamp: <Mar 2014-08-26 11:54 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -100,6 +100,7 @@ module FalkorLib  #:nodoc:
                 end
             end
 	        exit_status = 1
+	        #info "Initialize "
 	        Dir.chdir( path ) do 
 		        execute "git init" unless FalkorLib.config.debug 
 		        exit_status = $?.to_i
@@ -209,8 +210,6 @@ module FalkorLib  #:nodoc:
 	        g.capturing.ls_files.split
         end 
 
-
-
         ## Add a file/whatever to Git and commit it
         def add(path, msg = "")
 	        exit_status = 0
@@ -250,6 +249,11 @@ module FalkorLib  #:nodoc:
             g = MiniGit.new(path)
             g.capturing.remote.split()
         end
+
+        ## remotes?(path = Dir.pw)
+        def remotes?(path = Dir.pwd)
+	        return ! remotes(path).empty?
+        end 
 
         ## Initialize git subtrees from the configuration
         def submodule_init(path = Dir.pwd)

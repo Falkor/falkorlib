@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 17:06 svarrette>
+# Time-stamp: <Sam 2014-08-23 23:18 svarrette>
 ################################################################################
 #                   _____     _ _              _     _ _
 #                   |  ___|_ _| | | _____  _ __| |   (_) |__
@@ -29,11 +29,23 @@ end
 require 'yaml'
 
 # Sebastien Varrette aka Falkor's Common library to share Ruby code
-# and `{rake,cap}` tasks 
+# and `{rake,cap}` tasks
 module FalkorLib
+
+    # Return the root directory of the gem
+	def self.root
+        File.expand_path '../..', __FILE__
+    end
+
+	def self.lib
+		File.join root, 'lib'
+	end
+
+	def self.templates
+		File.join root, 'templates'
+	end
 
 end # module FalkorLib
 
 require "falkorlib/version"
 require "falkorlib/loader"
-
