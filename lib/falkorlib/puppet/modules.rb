@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-25 23:06 svarrette>
+# Time-stamp: <Mar 2014-08-26 12:01 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -77,30 +77,52 @@ module FalkorLib  #:nodoc:
                                      end
                     config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
                 end
-                tags = ask("\tKeywords (comma-separated list of tags)", config[:name].gsub(/.*-/, ''))
+	            name = config[:name].gsub(/.*-/, '')
+                tags = ask("\tKeywords (comma-separated list of tags)", name)
 	            config[:tags] = tags.split(',')
 	            license = select_from(FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses], 
-	                                  'Select the licence index for the Puppet module:', 
+	                                  'Select the license index for the Puppet module:', 
 	                                  1)
-	            puts "\tModule Licence:"
 	            config[:license] = license.downcase unless license.empty?
+	            puts "\t" + sprintf("%-20s", "Module License:") + config[:license]
+	            
 	            #ap config
 	            # Bootstrap the directory
 	            templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
 	            init_from_template(templatedir, rootdir, config, {
 		                               :erb_exclude => [ 'templates\/[^\/]*\.erb$' ]
 	                               })
+	            # Rename the files / element templatename
+	            Dir["#{rootdir}/**/*"].each do |e| 
+		            next unless e =~ /templatename/
+		            info "renaming #{e}"
+		            newname = e.gsub(/templatename/, "#{name}")
+		            run %{ mv #{e} #{newname} }
+	            end
+
 	            info "Generating the License file"
 	            Dir.chdir(rootdir) do 
 		            run %{licgen #{config[:license]} #{config[:author]}}
 	            end
 	            info "Initialize RVM"
 	            init_rvm(rootdir)
+	            unless FalkorLib::GitFlow.init?(rootdir)
+		            warn "Git [Flow] is not initialized in #{rootdir}."
+		            a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
+		            FalkorLib::GitFlow.init(rootdir) unless a =~ /n.*/i
+	            end 
 
-
+	            # Propose to commit the key files
+	            if FalkorLib::Git.init?(rootdir)
+		            if FalkorLib::GitFlow.init?(rootdir)
+			            info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
+			            FalkorLib::GitFlow.start('feature', "init_#{name}", rootdir)
+		            end 
+		            [ 'metadata.json', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f| 
+			            FalkorLib::Git.add(File.join(rootdir, f))
+		            end
+	            end 
             end # init
-
-
 
 
         end # module FalkorLib::Puppet::Modules

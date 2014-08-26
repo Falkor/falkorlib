@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-08-23 15:17 svarrette>
+# Time-stamp: <Mar 2014-08-26 11:54 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -100,6 +100,7 @@ module FalkorLib  #:nodoc:
                 end
             end
 	        exit_status = 1
+	        #info "Initialize "
 	        Dir.chdir( path ) do 
 		        execute "git init" unless FalkorLib.config.debug 
 		        exit_status = $?.to_i

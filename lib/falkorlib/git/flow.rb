@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-06-26 10:45 svarrette>
+# Time-stamp: <Mar 2014-08-26 11:57 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -49,9 +49,11 @@ module FalkorLib
                 unless FalkorLib::Git.has_commits?( git_root_dir)
 	                warn "Not yet any commit detected in this repository."
 	                readme = 'README.md'
-	                answer = ask(cyan("=> Shall one be initiated with a #{readme} file (Y|n)?"), 'Yes')
-	                exit 0 if answer =~ /n.*/i
-	                FileUtils.touch(readme)
+	                unless File.exists?( readme )
+		                answer = ask(cyan("=> initialize a commit with a #{readme} file (Y|n)?"), 'Yes')
+		                exit 0 if answer =~ /n.*/i
+		                FileUtils.touch(readme)
+	                end 
 	                FalkorLib::Git.add(readme, "Initiate the repository with a '#{readme}' file")
                 end
 		        branches     = FalkorLib::Git.list_branch(path)
@@ -103,6 +105,16 @@ module FalkorLib
             end
 	        exit_status
         end
+
+        ## Check if git-flow is initialized
+        def init?(path = Dir.pwd)
+	        res = FalkorLib::Git.init?(path)
+	        Dir.chdir(path) do 
+		        gf_check = `git config --get-regexp 'gitflow*'`
+		        res &= ! gf_check.empty? 
+	        end
+	        res
+        end # init?(path = Dir.pwd)
 
 
         ## generic function to run any of the gitflow commands
