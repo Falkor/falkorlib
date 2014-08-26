@@ -19,7 +19,7 @@ module FalkorLib #:nodoc:
         # MAJOR: Defines the major version
         # MINOR: Defines the minor version
         # PATCH: Defines the patch version
-	    MAJOR, MINOR, PATCH = 0, 2, 15  
+	    MAJOR, MINOR, PATCH = 0, 3, 0  
 	    
 	    module_function
 	    
@@ -71,3 +71,4 @@ module FalkorLib #:nodoc:
     # Shorter version of the Gem's VERSION
     VERSION = Version.to_s
 end
+
