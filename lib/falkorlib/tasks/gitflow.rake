@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Mar 2014-08-19 10:20 svarrette>
+# Time-stamp: <Sam 2014-08-23 15:19 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -16,9 +16,9 @@ namespace :git do
     include FalkorLib::Common
     git_root_dir = FalkorLib::Git.rootdir
 
-	###########  git:init   ###########
-	#desc "Initialize Git repository"
-	task :init => [ 'git:flow:init' ]
+    ###########  git:init   ###########
+    #desc "Initialize Git repository"
+    task :init => [ 'git:flow:init' ]
 
     #.....................
     namespace :flow do
@@ -26,7 +26,7 @@ namespace :git do
         ###########   git:flow:init   ###########
         desc "Initialize your local clone of the repository for the git-flow management"
         task :init do |t|
-			info t.comment
+            info t.comment
             FalkorLib::GitFlow.init(git_root_dir)
         end # task init
 
@@ -45,7 +45,7 @@ namespace :git do
             Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
             info "=> prepare new 'feature' using git flow"
             o = FalkorLib::GitFlow.start('feature', name)
-			error "Git flow feature operation failed" unless o == 0
+            error "Git flow feature operation failed" unless o == 0
             # Now you should be in the new branch
         end
 
@@ -61,7 +61,7 @@ namespace :git do
             info t.comment
             o = FalkorLib::GitFlow.finish('feature', name)
             error "Git flow feature operation failed" unless o == 0
-			unless FalkorLib::Git.remotes.empty?
+            unless FalkorLib::Git.remotes.empty?
                 info "=> about to update remote tracked branches"
                 really_continue?
                 Rake::Task['git:push'].invoke
@@ -103,22 +103,22 @@ namespace :version do
                 Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
                 info "=> prepare release using git flow"
                 o = FalkorLib::GitFlow.start('release', release_version)
-				error "Git flow release process failed" unless o == 0
+                error "Git flow release process failed" unless o == 0
                 # Now you should be in the new branch
                 current_branch = FalkorLib::Git.branch?
                 expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + release_version
                 if (current_branch == expected_branch)
                     FalkorLib::Versioning.set_version(release_version)
-	                if (! FalkorLib.config[:versioning].nil?) && 
-			                FalkorLib.config[:versioning][:type] == 'gem' &&
-			                File.exists?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
-		                info "Updating Gemfile information"
-		                run %{
-                           # Update cache info 
+                    if (! FalkorLib.config[:versioning].nil?) &&
+                            FalkorLib.config[:versioning][:type] == 'gem' &&
+                            File.exists?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
+                        info "Updating Gemfile information"
+                        run %{
+                           # Update cache info
                            bundle list > /dev/null
                            git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
                         }
-	                end 
+                    end
                     warning "The version number has already been bumped"
                     warning "==> run 'rake version:release' to finalize the release and merge the current version of the repository into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch"
                 else
@@ -128,35 +128,37 @@ namespace :version do
         end
     end # namespace version:bump
 
-	###########   release   ###########
-	desc "Finalize the release of a given bumped version"
-	task :release do |t|
-		version = FalkorLib::Versioning.get_version
-		branch  = FalkorLib::Git.branch?
-		expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + version
-		error "You are not in the '#{expected_branch}' branch but in the '#{branch}' one. May be you forgot to run 'rake version:bump:{patch,minor,major}' first" if branch != expected_branch
-		info "=> Finalize the release of the version '#{version}' into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch/environment"
-		o = FalkorLib::GitFlow.finish('release', version, Dir.pwd, '-s')
-		error "Git flow release process failed" unless o == 0
-		info("=> about to update remote tracked branches")
-		really_continue?
-		FalkorLib.config[:gitflow][:branches].each do |type, branch|
-			run %{ 
-               git checkout #{branch} 
-               git push origin
-            }
-		end
-		run %{ git push origin --tags }
-		#info "Update the changelog"
-		if (! FalkorLib.config[:versioning].nil?) && 
-				FalkorLib.config[:versioning][:type] == 'gem'
-			warn "About to push the released new gem (version #{version}) to the gem server (rybygems.org)"
-			really_continue?
-			Rake::Task['gem:release'].invoke
-		end 
+    ###########   release   ###########
+    desc "Finalize the release of a given bumped version"
+    task :release do |t|
+        version = FalkorLib::Versioning.get_version
+        branch  = FalkorLib::Git.branch?
+        expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + version
+        error "You are not in the '#{expected_branch}' branch but in the '#{branch}' one. May be you forgot to run 'rake version:bump:{patch,minor,major}' first" if branch != expected_branch
+        info "=> Finalize the release of the version '#{version}' into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch/environment"
+        o = FalkorLib::GitFlow.finish('release', version, Dir.pwd, '-s')
+        error "Git flow release process failed" unless o == 0
+        if FalkorLib::Git.remotes?
+            info("=> about to update remote tracked branches")
+            really_continue?
+            FalkorLib.config[:gitflow][:branches].each do |type, branch|
+                run %{
+                   git checkout #{branch}
+                   git push origin
+                }
+            end
+            run %{ git push origin --tags }
+        end
+        #info "Update the changelog"
+        if (! FalkorLib.config[:versioning].nil?) &&
+                FalkorLib.config[:versioning][:type] == 'gem'
+            warn "About to push the released new gem (version #{version}) to the gem server (rybygems.org)"
+            really_continue?
+            Rake::Task['gem:release'].invoke
+        end
 
-		#Rake::Task['git:push'].invoke
-	end # task version:release 
+        #Rake::Task['git:push'].invoke
+    end # task version:release
 
 
 

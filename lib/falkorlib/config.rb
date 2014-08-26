@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-20 12:04 svarrette>
+# Time-stamp: <Lun 2014-08-25 22:29 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -40,8 +40,12 @@ module FalkorLib #:nodoc:
     module Config #:nodoc:
         # Defaults global settings
         DEFAULTS = {
-            :debug => false,
-            :root  => Dir.pwd
+            :debug      => false,
+            :root       => Dir.pwd,
+		    :custom_cfg => '.falkorlib.yaml',
+		    :rvm => {
+			    :rubies => [ '1.9.3', '2.0.0', '2.1.0']
+		    }
         }
 
         module_function
@@ -50,11 +54,17 @@ module FalkorLib #:nodoc:
         # The hash is built depending on the loaded files. 
         def default
             res = FalkorLib::Config::DEFAULTS
-            $LOADED_FEATURES.each do |path|
-                res[:git] = FalkorLib::Config::Git::DEFAULTS         if path.include?('lib/falkorlib/git.rb')
-                res[:gitflow] = FalkorLib::Config::GitFlow::DEFAULTS if path.include?('lib/falkorlib/git.rb')
+	        $LOADED_FEATURES.each do |path|
+                res[:git]        = FalkorLib::Config::Git::DEFAULTS        if path.include?('lib/falkorlib/git.rb')
+                res[:gitflow]    = FalkorLib::Config::GitFlow::DEFAULTS    if path.include?('lib/falkorlib/git.rb')
 		        res[:versioning] = FalkorLib::Config::Versioning::DEFAULTS if path.include?('lib/falkorlib/versioning.rb')
+		        res[:puppet]     = FalkorLib::Config::Puppet::DEFAULTS     if path.include?('lib/falkorlib/puppet.rb')
             end
+	        # Check the potential local customizations
+	        custom_cfg = File.join( res[:root], res[:custom_cfg])
+	        if File.exists?( custom_cfg )
+		        res.merge!( load_config( custom_cfg ) )
+	        end 
             res
         end
 

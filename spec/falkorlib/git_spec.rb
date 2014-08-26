@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2014-06-25 14:36 svarrette>
+# Time-stamp: <Sam 2014-08-23 15:26 svarrette>
 #
 # @description Check the Git operations
 #
@@ -43,6 +43,11 @@ describe FalkorLib::Git do
             t = FalkorLib::Git.init?(dir)
             t.should be_true
         end
+
+		it "#remotes? -- should be false" do
+			t = FalkorLib::Git.remotes?(dir)
+			t.should be_false
+		end
 
         it "#rootdir #gitdir - checks git dir and working tree" do
             subdir = File.join(dir, 'some_dir')

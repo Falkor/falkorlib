@@ -130,7 +130,8 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency("term-ansicolor", "~> 1.3")
 	s.add_runtime_dependency("configatron",    "~> 3.2")
 	s.add_runtime_dependency("awesome_print", "~> 1.2")
-
+	s.add_runtime_dependency("json", "~> 1.8")
+	s.add_runtime_dependency("license-generator")
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
