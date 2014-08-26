@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-08-26 12:01 svarrette>
+# Time-stamp: <Mar 2014-08-26 14:17 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -53,12 +53,14 @@ module FalkorLib  #:nodoc:
         module Modules
             module_function
 
-            ## Initialize a new Puppet Module
-            def init(rootdir = Dir.pwd, name = '')
+            ## Initialize a new Puppet Module named `name` in `rootdir`.
+            # Supported options: 
+            # * :no_iteraction [boolean]
+            def init(rootdir = Dir.pwd, name = '', options = {})
                 config = {}
 	            login = `whoami`.chomp
 	            config[:name] = name unless name.empty?
-                FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata].each do |k,v|
+	            FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata].each do |k,v|
                     next if v.kind_of?(Array) or k == :license
 		            next if k == :name and ! name.empty?
                     default_answer = case k
