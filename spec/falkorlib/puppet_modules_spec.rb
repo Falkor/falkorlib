@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mar 2014-08-26 15:04 svarrette>
+# Time-stamp: <Thu 2014-08-28 12:17 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -19,6 +19,11 @@ describe FalkorLib::Puppet::Modules do
 
     dir   = Dir.mktmpdir
     #afile = File.join(dir, 'a_file')
+
+	before :all do
+		ENV['GIT_AUTHOR_NAME']  = 'travis'            if ENV['GIT_AUTHOR_NAME'].empty?
+		ENV['GIT_AUTHOR_EMAIL'] = 'travis@domain.org' if ENV['GIT_AUTHOR_EMAIL'].empty?
+	end
 
     after :all do
         FileUtils.remove_entry_secure dir
