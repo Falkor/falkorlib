@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2014-08-28 15:20 svarrette>
+# Time-stamp: <Thu 2014-08-28 23:02 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -53,6 +53,8 @@ module FalkorLib  #:nodoc:
         # Management of Puppet Modules operations
         module Modules
 
+	        module_function
+	                    
             def _get_classdefs(moduledir = Dir.pwd, type = 'classes')
 	            name     = File.basename( moduledir )
 	            error "The module #{name} does not exist" unless File.directory?( moduledir )
@@ -75,7 +77,7 @@ module FalkorLib  #:nodoc:
                 result
             end
 
-            module_function
+
 
             ####
             # Initialize a new Puppet Module named `name` in `rootdir`.
@@ -86,6 +88,7 @@ module FalkorLib  #:nodoc:
                 config = {}
                 login = `whoami`.chomp
                 config[:name] = name unless name.empty?
+	            moduledir = name.empty? ? rootdir : File.join(rootdir, name)
                 FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata].each do |k,v|
                     next if v.kind_of?(Array) or k == :license
                     next if k == :name and ! name.empty?
@@ -106,7 +109,7 @@ module FalkorLib  #:nodoc:
                     config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
                 end
                 name = config[:name].gsub(/.*-/, '')
-                tags = ask("\tKeywords (comma-separated list of tags)", name)
+	            tags = ask("\tKeywords (comma-separated list of tags)", name)
                 config[:tags] = tags.split(',')
                 license = select_from(FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses],
                                       'Select the license index for the Puppet module:',
@@ -117,11 +120,11 @@ module FalkorLib  #:nodoc:
                 #ap config
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
-                init_from_template(templatedir, rootdir, config, {
+	            init_from_template(templatedir, moduledir, config, {
                                        :erb_exclude => [ 'templates\/[^\/]*\.erb$' ]
                                    })
                 # Rename the files / element templatename
-                Dir["#{rootdir}/**/*"].each do |e|
+                Dir["#{moduledir}/**/*"].each do |e|
                     next unless e =~ /templatename/
                     info "renaming #{e}"
                     newname = e.gsub(/templatename/, "#{name}")
@@ -130,25 +133,25 @@ module FalkorLib  #:nodoc:
 
                 info "Generating the License file"
                 authors = config[:author].empty? ? 'UNKNOWN' : config[:author]
-                Dir.chdir(rootdir) do
+                Dir.chdir(moduledir) do
                     run %{ licgen #{config[:license]} #{authors} }
                 end
                 info "Initialize RVM"
-                init_rvm(rootdir)
-                unless FalkorLib::GitFlow.init?(rootdir)
-                    warn "Git [Flow] is not initialized in #{rootdir}."
+                init_rvm(moduledir)
+                unless FalkorLib::GitFlow.init?(moduledir)
+                    warn "Git [Flow] is not initialized in #{moduledir}."
                     a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
-                    FalkorLib::GitFlow.init(rootdir) unless a =~ /n.*/i
+                    FalkorLib::GitFlow.init(moduledir) unless a =~ /n.*/i
                 end
 
                 # Propose to commit the key files
-                if FalkorLib::Git.init?(rootdir)
-                    if FalkorLib::GitFlow.init?(rootdir)
+                if FalkorLib::Git.init?(moduledir)
+                    if FalkorLib::GitFlow.init?(moduledir)
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
-                        FalkorLib::GitFlow.start('feature', "init_#{name}", rootdir)
+                        FalkorLib::GitFlow.start('feature', "init_#{name}", moduledir)
                     end
                     [ 'metadata.json', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f|
-                        FalkorLib::Git.add(File.join(rootdir, f))
+                        FalkorLib::Git.add(File.join(moduledir, f))
                     end
                 end
             end # init
@@ -158,13 +161,42 @@ module FalkorLib  #:nodoc:
             ##
             def parse(moduledir = Dir.pwd)
                 name     = File.basename( moduledir )
-                jsonfile = File.join( moduledir, 'metadata.json')
                 error "The module #{name} does not exist" unless File.directory?( moduledir )
-                error "Unable to find #{jsonfile}" unless File.exist?( metadata )
-                metadata = JSON.parse( IO.read( jsonfile ) )
-	            
-
-                ap metadata
+	            jsonfile = File.join( moduledir, 'metadata.json')
+	            error "Unable to find #{jsonfile}" unless File.exist?( jsonfile ) 
+	            metadata = JSON.parse( IO.read( jsonfile ) )
+	            metadata["classes"]     = classes(moduledir)
+	            metadata["definitions"] = definitions(moduledir)
+	            deps        = deps(moduledir)
+	            listed_deps = metadata["dependencies"]
+	            missed_deps = []
+	            metadata["dependencies"].each do |dep|
+		            lib = dep["name"].gsub(/^[^\/-]+[\/-]/,'')
+		            if deps.include?( lib )
+			            deps.delete( lib ) 
+		            else 
+			            unless lib =~ /stdlib/
+				            warn "The library '#{dep["name"]}' is not analyzed as part of the #{name} module" 
+				            missed_deps << dep
+			            end 
+		            end 
+	            end
+	            if ! deps.empty?
+		            deps.each do |l| 
+			            warn "The module '#{l}' is missing in the dependencies thus added"
+			            login = ask("[Github] login for the module '#{lib}'")
+			            version = ask("Version requirement (ex: '>=1.0.0 <2.0.0' or '1.2.3' or '1.x')")
+			            metadata["dependencies"] << {
+				            "name"                => "#{login}/#{lib}",
+				            "version_requirement" => "#{version}"
+			            }
+		            end
+		            warn "About to commit these changes in the '#{name}/metadata.json' file"
+		            really_continue?
+		            File.open(jsonfile,"w") do |f|
+			            f.write JSON.pretty_generate( metadata )
+		            end
+	            end
             end # parse
 
 

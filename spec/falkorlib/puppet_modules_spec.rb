@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2014-08-28 12:29 svarrette>
+# Time-stamp: <Thu 2014-08-28 23:21 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -31,10 +31,13 @@ describe FalkorLib::Puppet::Modules do
     #############################################################
     context "Test Puppet Module creation within temporary directory " do
 
+		# Module name
+		name      = 'toto'
+		moduledir = File.join(dir, name) 
+
         it "#init -- create a puppet module" do
-			Array.new(18).each { |e|  STDIN.should_receive(:gets).and_return('') }
-            name = 'toto'
-            FalkorLib::Puppet::Modules.init(dir, name)
+			Array.new(27).each { |e|  STDIN.should_receive(:gets).and_return('') }
+            FalkorLib::Puppet::Modules.init(moduledir)
             templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
             s = true
             Dir["#{templatedir}/**/*"].each  do |e|
@@ -43,12 +46,40 @@ describe FalkorLib::Puppet::Modules do
 				file = e.gsub(/templatename/, "#{name}")
 				filename = File.basename(file)
 				filename = File.basename(file, '.erb') unless file =~ /templates\/toto-variables\.erb/
-				f = File.join(dir, relative_dir, filename)
+				f = File.join(moduledir, relative_dir, filename)
 				#puts "checking #{f} - #{File.exists?( f )}"
                 s &= File.exists?( f )
             end
             s.should be_true
         end
+
+		it "#classes -- list classes" do
+			l = FalkorLib::Puppet::Modules._get_classdefs(moduledir, 'classes')
+			c = FalkorLib::Puppet::Modules.classes(moduledir)
+			c.should == l
+			ref =  [
+			        "toto::params",
+			        "toto",
+			        "toto::common",
+			        "toto::debian",
+			        "toto::redhat"
+			       ]
+			c.size.should == ref.size
+			c.each { |e| ref.should include(e) }
+		end
+		
+		it "#definitions -- list definitions" do
+			d = FalkorLib::Puppet::Modules.definitions(moduledir)
+			d.should == [ "toto::mydef" ]
+		end
+
+		it "#deps -- list dependencies" do
+			d = FalkorLib::Puppet::Modules.deps(moduledir)
+			d.should == []
+		end
+
+
+
 
 
     end

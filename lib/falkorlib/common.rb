@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-25 23:43 svarrette>
+# Time-stamp: <Thu 2014-08-28 23:12 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -171,11 +171,12 @@ module FalkorLib #:nodoc:
         #   :only_files      [boolean]: list only files in the glob
         #   :only_dirs       [boolean]: list only directories in the glob
         #   :pattern_include [array of strings]: pattern(s) to include for listing   
-        #   :pattern_exclude [array of strings]: pattern(s) to exclude for listing   
+        #   :pattern_exclude [array of strings]: pattern(s) to exclude for listing
+        #   :text            [string]: text to put
         def list_items(glob_pattern, options = {})
             list  = { 0 => 'Exit' }
             index = 1
-            raw_list = { }
+            raw_list = { 0 => 'Exit' }
 
             Dir["#{glob_pattern}"].each do |elem|
                 #puts "=> element '#{elem}' - dir = #{File.directory?(elem)}; file = #{File.file?(elem)}"
@@ -206,6 +207,8 @@ module FalkorLib #:nodoc:
             text        = options[:text].nil?    ? "select the index" : options[:text]
             default_idx = options[:default].nil? ? 0 : options[:default]
             raise SystemExit.new('Empty list') if index == 1
+	        #ap list
+	        #ap raw_list
             # puts list.to_yaml
             # answer = ask("=> #{text}", "#{default_idx}")
             # raise SystemExit.new('exiting selection') if answer == '0'

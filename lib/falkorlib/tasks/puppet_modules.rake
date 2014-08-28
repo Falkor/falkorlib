@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Thu 2014-08-28 15:31 svarrette>
+# Time-stamp: <Thu 2014-08-28 23:04 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -26,7 +26,7 @@ namespace :bootstrap do
 			moduledir = File.join( FalkorLib.config[:puppet][:modulesdir], name)
 			dir = ask("Destination directory:", moduledir)
 			error "The module '#{name}' already exists" if File.directory?(dir)
-			FalkorLib::Puppet::Modules.init(dir, name)
+			FalkorLib::Puppet::Modules.init(dir)
 		end 
 
 
