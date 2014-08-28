@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Lun 2014-08-25 22:54 svarrette>
+# Time-stamp: <Thu 2014-08-28 15:31 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -33,3 +33,11 @@ namespace :bootstrap do
 	end # namespace bootstrap:puppet
 end # namespace bootstrap
 
+
+
+#.....................
+namespace :puppet do
+	include FalkorLib::Common
+
+
+end # namespace puppet
