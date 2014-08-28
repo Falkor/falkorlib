@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-08-26 14:17 svarrette>
+# Time-stamp: <Thu 2014-08-28 12:29 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -103,8 +103,9 @@ module FalkorLib  #:nodoc:
 	            end
 
 	            info "Generating the License file"
+	            authors = config[:author].empty? ? 'UNKNOWN' : config[:author]
 	            Dir.chdir(rootdir) do 
-		            run %{licgen #{config[:license]} #{config[:author]}}
+		            run %{ licgen #{config[:license]} #{authors} }
 	            end
 	            info "Initialize RVM"
 	            init_rvm(rootdir)
