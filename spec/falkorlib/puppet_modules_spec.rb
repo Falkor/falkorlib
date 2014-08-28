@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2014-08-28 12:17 svarrette>
+# Time-stamp: <Thu 2014-08-28 12:24 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -21,8 +21,8 @@ describe FalkorLib::Puppet::Modules do
     #afile = File.join(dir, 'a_file')
 
 	before :all do
-		ENV['GIT_AUTHOR_NAME']  = 'travis'            if ENV['GIT_AUTHOR_NAME'].empty?
-		ENV['GIT_AUTHOR_EMAIL'] = 'travis@domain.org' if ENV['GIT_AUTHOR_EMAIL'].empty?
+		ENV['GIT_AUTHOR_NAME']  = 'travis'            if ENV['GIT_AUTHOR_NAME'].nil?
+		ENV['GIT_AUTHOR_EMAIL'] = 'travis@domain.org' if ENV['GIT_AUTHOR_EMAIL'].nil?
 	end
 
     after :all do
