@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2014-08-28 23:21 svarrette>
+# Time-stamp: <Fri 2014-08-29 11:30 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -36,7 +36,9 @@ describe FalkorLib::Puppet::Modules do
 		moduledir = File.join(dir, name) 
 
         it "#init -- create a puppet module" do
-			Array.new(27).each { |e|  STDIN.should_receive(:gets).and_return('') }
+			Array.new(26).each { |e|  STDIN.should_receive(:gets).and_return('') }
+			#STDIN.should_receive(:gets).and_return(3)
+			STDIN.should_receive(:gets).and_return('No')
             FalkorLib::Puppet::Modules.init(moduledir)
             templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
             s = true
