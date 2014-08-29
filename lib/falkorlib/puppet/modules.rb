@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2014-08-28 23:02 svarrette>
+# Time-stamp: <Fri 2014-08-29 15:09 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -25,10 +25,10 @@ module FalkorLib  #:nodoc:
                         :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
                         :summary      => "rtfm",
                         :description  => '',
-                        :license      => 'GPLv3',
+                        :license      => 'Apache-2.0',
                         :source       => '',
                         :project_page => '',
-                        :issue_url    => '',
+                        :issues_url   => '',
                         :dependencies => [],
                         :operatingsystem_support => [],
                         :tags         => []
@@ -97,7 +97,7 @@ module FalkorLib  #:nodoc:
                                          config[:source].nil? ? v : config[:source]
                                      when :name
                                          File.basename(rootdir).gsub(/^puppet-/, '')
-                                     when :issue_url
+                                     when :issues_url
                                          config[:project_page].nil? ? v : "#{config[:project_page]}/issues"
                                      when :description
                                          config[:summary].nil? ? v : "#{config[:summary]}"
@@ -111,9 +111,12 @@ module FalkorLib  #:nodoc:
                 name = config[:name].gsub(/.*-/, '')
 	            tags = ask("\tKeywords (comma-separated list of tags)", name)
                 config[:tags] = tags.split(',')
-                license = select_from(FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses],
+	            list_license    = FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses]
+	            default_license = FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata][:license]
+	            idx = list_license.index(default_license) unless default_license.nil?
+	            license = select_from(list_license,
                                       'Select the license index for the Puppet module:',
-                                      1)
+	                                  idx.nil? ? 1 : idx + 1)
                 config[:license] = license.downcase unless license.empty?
                 puts "\t" + sprintf("%-20s", "Module License:") + config[:license]
 
@@ -148,7 +151,7 @@ module FalkorLib  #:nodoc:
                 if FalkorLib::Git.init?(moduledir)
                     if FalkorLib::GitFlow.init?(moduledir)
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
-                        FalkorLib::GitFlow.start('feature', "init_#{name}", moduledir)
+                        FalkorLib::GitFlow.start('feature', "bootstraping", moduledir)
                     end
                     [ 'metadata.json', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
