@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-25 22:29 svarrette>
+# Time-stamp: <Fri 2014-08-29 14:06 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -45,6 +45,9 @@ module FalkorLib #:nodoc:
 		    :custom_cfg => '.falkorlib.yaml',
 		    :rvm => {
 			    :rubies => [ '1.9.3', '2.0.0', '2.1.0']
+		    },
+		    :templates => {
+			    :puppet => {}
 		    }
         }
 
@@ -58,7 +61,10 @@ module FalkorLib #:nodoc:
                 res[:git]        = FalkorLib::Config::Git::DEFAULTS        if path.include?('lib/falkorlib/git.rb')
                 res[:gitflow]    = FalkorLib::Config::GitFlow::DEFAULTS    if path.include?('lib/falkorlib/git.rb')
 		        res[:versioning] = FalkorLib::Config::Versioning::DEFAULTS if path.include?('lib/falkorlib/versioning.rb')
-		        res[:puppet]     = FalkorLib::Config::Puppet::DEFAULTS     if path.include?('lib/falkorlib/puppet.rb')
+		        if path.include?('lib/falkorlib/puppet.rb')
+			        res[:puppet]     = FalkorLib::Config::Puppet::DEFAULTS     
+			        res[:templates][:puppet][:modules] = FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata]
+		        end 
             end
 	        # Check the potential local customizations
 	        custom_cfg = File.join( res[:root], res[:custom_cfg])
