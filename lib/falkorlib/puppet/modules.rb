@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2014-08-30 20:55 svarrette>
+# Time-stamp: <Sat 2014-08-30 21:23 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -149,8 +149,9 @@ module FalkorLib  #:nodoc:
                 init_rvm(moduledir)
                 unless FalkorLib::GitFlow.init?(moduledir)
                     warn "Git [Flow] is not initialized in #{moduledir}."
-                    a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
-                    FalkorLib::GitFlow.init(moduledir) unless a =~ /n.*/i
+                    a = ask("Proceed to git-flow initialization (y|N)", 'No')
+	                return if a =~ /n.*/i
+                    FalkorLib::GitFlow.init(moduledir) 
                 end
 
                 # Propose to commit the key files

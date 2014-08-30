@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sat 2014-08-30 20:57 svarrette>
+# Time-stamp: <Sat 2014-08-30 21:16 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -56,7 +56,7 @@ namespace :puppet do
             desc "Parse a given module"
             task :parse do |t|
                 info "#{t.comment}"
-                FalkorLib::Puppet::Modules.parse(TOP_SRCDIR)
+                FalkorLib::Puppet::Modules.parse()
             end # task parse
 
 
