@@ -132,7 +132,7 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency("awesome_print", "~> 1.2")
 	s.add_runtime_dependency("json", "~> 1.8")
 	s.add_runtime_dependency("license-generator", '~> 0')
-	s.add_runtime_dependency("diffy", '~> 0')
+	s.add_runtime_dependency("diffy", '>= 3.0')
 
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
