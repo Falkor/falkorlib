@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2014-08-30 21:33 svarrette>
+# Time-stamp: <Sat 2014-08-30 22:00 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -10,6 +10,7 @@ require "falkorlib/common"
 
 require "pathname"
 require 'json'
+require 'diffy'
 
 include FalkorLib::Common
 
@@ -175,7 +176,8 @@ module FalkorLib  #:nodoc:
                 jsonfile = File.join( moduledir, 'metadata.json')
                 error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
                 metadata = JSON.parse( IO.read( jsonfile ) )
-                metadata["classes"]     = classes(moduledir)
+                ref = JSON.pretty_generate( metadata )
+	            metadata["classes"]     = classes(moduledir)
                 metadata["definitions"] = definitions(moduledir)
                 deps        = deps(moduledir)
                 listed_deps = metadata["dependencies"]
@@ -205,8 +207,16 @@ module FalkorLib  #:nodoc:
                         }
                     end
                 end
+	            content = JSON.pretty_generate( metadata ) 
                 info "Metadata configuration for the module '#{name}'"
-                puts JSON.pretty_generate( metadata )
+                puts content
+	            if ref == content
+		            warn "No difference to commit"
+		            return 
+	            end 
+	            info "Differences with the previous file"
+	            Diffy::Diff.default_format = :color
+	            puts Diffy::Diff.new(ref, content, :context => 1)
                 warn "About to commit these changes in the '#{name}/metadata.json' file"
                 really_continue?
                 File.open(jsonfile,"w") do |f|
