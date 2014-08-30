@@ -1,18 +1,13 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
-Time-stamp: <Sat 2014-08-30 17:31 svarrette>
 
-      Copyright (c) <%= Time.now.year %> <%= config[:author] %>
-
--------------------------------------------
-
-# <%= config[:name] %> Developments
+# <%= config[:name].gsub(/.*-/, '').capitalize %> Puppet Module Developments
 
 If you want to contribute to the code, you shall be aware of the way this module
 is organized.   
 
 ### Directory Layout
 
-       <%= config[:name] %>/       # Main directory for the '<%= config[:name] %>' module
+       <%= config[:name] %>/       # Main directory 
            `-- metadata.json     # Module configuration - cf [here](https://docs.puppetlabs.com/puppet/latest/reference/modules_publishing.html#write-a-metadatajson-file)
            `-- README.md         # This file
            `-- files/            # Contains static files, which managed nodes can download
@@ -138,7 +133,7 @@ This project is released under the terms of the [<%= config[:license] %> Licence
 So you are more than welcome to contribute to its development as follows: 
 
 1. Fork it
-2. Create your feature branch (`git:feature:start[<feature_name>]`)
+2. Create your feature branch (`rake git:feature:start[<feature_name>]`)
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git flow feature publish <feature_name>`)
 5. Create new Pull Request

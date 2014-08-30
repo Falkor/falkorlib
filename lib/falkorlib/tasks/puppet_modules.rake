@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sat 2014-08-30 21:16 svarrette>
+# Time-stamp: <Sat 2014-08-30 21:52 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -33,7 +33,7 @@ namespace :bootstrap do
     end # namespace bootstrap:puppet
 end # namespace bootstrap
 
-
+require 'json'
 
 #.....................
 namespace :puppet do
@@ -48,8 +48,14 @@ namespace :puppet do
             task :build do |t|
                 info "#{t.comment}"
                 run %{ puppet module build }
-                warn "you can now upload the generated file on the puppet forge"
-                warn "         https://forge.puppetlabs.com/"
+				if File.exists? ('metadata.json')
+					metadata = JSON.parse( IO.read( 'metadata.json' ) )
+					name    = metadata["name"]
+					version = metadata["version"]
+					url = metadata["forge_url"].nil? ? "https://forge.puppetlabs.com/#{name.gsub(/-/,'/')}" : metadata["forge_url"]
+					warn "you can now upload the generated file 'pkg/#{name}-#{version}.tar.gz' on the puppet forge"
+					warn "         #{url}"
+				end 
             end # task build
 
             ###########   puppet:module:parse   ###########
@@ -76,3 +82,5 @@ namespace :module do
 
 	end # namespace upgrade
 end # namespace module
+
+task 'version:release' => 'puppet:module:build'
