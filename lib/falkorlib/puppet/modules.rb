@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2014-08-30 21:23 svarrette>
+# Time-stamp: <Sat 2014-08-30 21:33 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -234,6 +234,8 @@ module FalkorLib  #:nodoc:
 
                 [ 'README.md', 'doc/contributing.md'].each do |f|
 		            info "Upgrade the content of #{f}"
+		            ans = ask("procceed?", 'Yes')
+		            next unless ans =~ /n*/i 
                     write_from_erb_template(File.join(templatedir, "#{f}.erb"),
                                             File.join(moduledir,  f),
                                             metadata)

@@ -3,10 +3,11 @@
 # <%= config[:name].gsub(/.*-/, '').capitalize %> Puppet Module 
 
 [![Puppet Forge](http://img.shields.io/puppetforge/v/<%= config[:name].gsub(/-/,"/") %>.svg)](<%= config[:forge_url] %>)
-[![License](http://img.shields.io/:license-<%= config[:license].gsub(/-/, '') %>-blue.svg)](LICENCE)
+[![License](http://img.shields.io/:license-<%= config[:license].gsub(/-/, '') %>-blue.svg)](LICENSE)
 ![Supported Platforms](http://img.shields.io/badge/platform-<%= config[:platforms].join('|') %>-lightgrey.svg)
 
 <%= config[:summary] %>
+
 
       Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
       
