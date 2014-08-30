@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2014-08-29 15:09 svarrette>
+# Time-stamp: <Sat 2014-08-30 14:24 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -69,7 +69,7 @@ module FalkorLib  #:nodoc:
 	            error "Undefined type #{type}" if t.empty?	            
                 result = []
                 Dir["#{moduledir}/manifests/**/*.pp"].each do |ppfile|
-		            File.read(ppfile).scan(/^[ \t]*#{t}[\s]+([0-9a-zA-z:]+).*$/).each do |line|
+		            File.read(ppfile).scan(/^[ \t]*#{t}[\s]+([0-9a-zA-z:-]+).*$/).each do |line|
                         result << line[0]
                     end
                 end
@@ -186,20 +186,26 @@ module FalkorLib  #:nodoc:
 	            end
 	            if ! deps.empty?
 		            deps.each do |l| 
+			            shortname = name.gsub(/.*-/, '')
+			            shortmetaname = metadata["name"].gsub(/.*-/, '')
+			            next if [name, metadata["name"], name.gsub(/.*-/, ''), metadata["name"].gsub(/.*-/, '') ].include? ( l )  
 			            warn "The module '#{l}' is missing in the dependencies thus added"
-			            login = ask("[Github] login for the module '#{lib}'")
+			            login = ask("[Github] login for the module '#{l}'")
 			            version = ask("Version requirement (ex: '>=1.0.0 <2.0.0' or '1.2.3' or '1.x')")
 			            metadata["dependencies"] << {
-				            "name"                => "#{login}/#{lib}",
+				            "name"                => "#{login}/#{l}",
 				            "version_requirement" => "#{version}"
 			            }
 		            end
-		            warn "About to commit these changes in the '#{name}/metadata.json' file"
-		            really_continue?
-		            File.open(jsonfile,"w") do |f|
-			            f.write JSON.pretty_generate( metadata )
-		            end
 	            end
+	            info "Metadata configuration for the module '#{name}'"
+	            puts JSON.pretty_generate( metadata )
+	            warn "About to commit these changes in the '#{name}/metadata.json' file"
+	            really_continue?
+	            File.open(jsonfile,"w") do |f|
+		            f.write JSON.pretty_generate( metadata )
+	            end
+
             end # parse
 
 
