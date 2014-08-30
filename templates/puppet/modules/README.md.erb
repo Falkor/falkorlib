@@ -1,20 +1,16 @@
 -*- mode: markdown; mode: auto-fill; fill-column: 80 -*-
-Time-stamp: <Sat 2014-08-30 17:45 svarrette>
 
-      Copyright (c) <%= Time.now.year %> <%= config[:author] %>
+# <%= config[:name].gsub(/.*-/, '').capitalize %> Puppet Module 
 
--------------------------------------------
-
-# <%= config[:name].gsub(/^puppet-/,'') %> Puppet Module 
-
-[![Puppet Forge](http://img.shields.io/puppetforge/v/<%= config[:name].split("-")[0] %>/<%= config[:name] %>.svg)](https://forge.puppetlabs.com/<%= config[:name].split("-")[0] %>/<%= config[:name] %>)
-[![License](http://img.shields.io/:license-<%= config[:license] %>-blue.svg)](LICENCE)
-![Supported Platforms](http://img.shields.io/badge/platform-debian-lightgrey.svg)
+[![Puppet Forge](http://img.shields.io/puppetforge/v/<%= config[:name].gsub(/-/,"/") %>.svg)](<%= config[:forge_url] %>)
+[![License](http://img.shields.io/:license-<%= config[:license].gsub(/-/, '') %>-blue.svg)](LICENCE)
+![Supported Platforms](http://img.shields.io/badge/platform-<%= config[:platforms].join('|') %>-lightgrey.svg)
 
 <%= config[:summary] %>
 
-* Author(s): <%= config[:author] %>
-* [Puppet Forge](https://forge.puppetlabs.com/xx/<%= config[:name] %>)
+      Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
+      
+
 * [Online Project Page](<%= config[:project_page] %>)  -- [Sources](<%= config[:source] %>) -- [Issues](<%= config[:issues_url] %>)
 
 ## Synopsis

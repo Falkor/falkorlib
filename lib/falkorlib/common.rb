@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2014-08-28 23:12 svarrette>
+# Time-stamp: <Sat 2014-08-30 21:05 svarrette>
 ################################################################################
 
 require "falkorlib"
 require 'open3'
 require 'erb'      # required for module generation
-
+require 'diffy'
 
 module FalkorLib #:nodoc:
 
@@ -170,7 +170,7 @@ module FalkorLib #:nodoc:
         # Supported options:
         #   :only_files      [boolean]: list only files in the glob
         #   :only_dirs       [boolean]: list only directories in the glob
-        #   :pattern_include [array of strings]: pattern(s) to include for listing   
+        #   :pattern_include [array of strings]: pattern(s) to include for listing
         #   :pattern_exclude [array of strings]: pattern(s) to exclude for listing
         #   :text            [string]: text to put
         def list_items(glob_pattern, options = {})
@@ -207,8 +207,8 @@ module FalkorLib #:nodoc:
             text        = options[:text].nil?    ? "select the index" : options[:text]
             default_idx = options[:default].nil? ? 0 : options[:default]
             raise SystemExit.new('Empty list') if index == 1
-	        #ap list
-	        #ap raw_list
+            #ap list
+            #ap raw_list
             # puts list.to_yaml
             # answer = ask("=> #{text}", "#{default_idx}")
             # raise SystemExit.new('exiting selection') if answer == '0'
@@ -264,10 +264,10 @@ module FalkorLib #:nodoc:
         # feed ERB files which **should** have the extension .erb.
         # The initialization is performed as follows:
         # * a rsync process is initiated to duplicate the directory structure
-        #   and the symlinks, and exclude .erb files 
+        #   and the symlinks, and exclude .erb files
         # * each erb files (thus with extension .erb) is interpreted, the
         #   corresponding file is generated without the .erb extension
-        # Supported options: 
+        # Supported options:
         #   :erb_exclude [array of strings]: pattern(s) to exclude from erb file
         #                                    interpretation and thus to copy 'as is'
         def init_from_template(templatedir, rootdir, config = {}, options = {})
@@ -277,65 +277,78 @@ module FalkorLib #:nodoc:
             run %{ mkdir -p #{rootdir} } unless File.directory?( rootdir )
             run %{ rsync --exclude '*.erb' -avzu #{templatedir}/ #{rootdir}/ }
             Dir["#{templatedir}/**/*.erb"].each do |erbfile|
-		        relative_outdir = Pathname.new( File.realpath( File.dirname(erbfile) )).relative_path_from Pathname.new(templatedir)
-		        filename = File.basename(erbfile, '.erb')
-		        outdir   = File.realpath( File.join(rootdir, relative_outdir.to_s) )		        
-		        outfile  = File.join(outdir, filename)
-		        unless options[:erb_exclude].nil?
-			        exclude_entry = false
-			        options[:erb_exclude].each do |pattern|
-				        exclude_entry |= erbfile =~ /#{pattern}/
-			        end
-			        if exclude_entry
-				        info "copying non-interpreted ERB file"
-				        # copy this file since it has been probably excluded from teh rsync process
-				        run %{ cp #{erbfile} #{outdir}/ }
-				        next 
-			        end 
-		        end 
-		        # Let's go
-		        info "updating '#{relative_outdir.to_s}/#{filename}'"
-		        puts "  using ERB template '#{erbfile}'"
-		        template = File.read("#{erbfile}")
-                output   = ERB.new(template, nil, '<>')
-		        if File.exists?( outfile )
-			        warn "the file '#{outfile}' already exists and will be overwritten."
-			        error "TODO: watch the diff ;)"
-		        else 
-			        watch =  ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
-			        puts output.result(binding) if watch =~ /y.*/i
-		        end 
-		        proceed = ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
-		        next if proceed =~ /n.*/i
-		        info("=> writing #{outfile}")
-                File.open("#{outfile}", "w+") do |f|
-			        f.puts output.result(binding)
+                relative_outdir = Pathname.new( File.realpath( File.dirname(erbfile) )).relative_path_from Pathname.new(templatedir)
+                filename = File.basename(erbfile, '.erb')
+                outdir   = File.realpath( File.join(rootdir, relative_outdir.to_s) )
+                outfile  = File.join(outdir, filename)
+                unless options[:erb_exclude].nil?
+                    exclude_entry = false
+                    options[:erb_exclude].each do |pattern|
+                        exclude_entry |= erbfile =~ /#{pattern}/
+                    end
+                    if exclude_entry
+                        info "copying non-interpreted ERB file"
+                        # copy this file since it has been probably excluded from teh rsync process
+                        run %{ cp #{erbfile} #{outdir}/ }
+                        next
+                    end
                 end
-            end    
+                # Let's go
+                info "updating '#{relative_outdir.to_s}/#{filename}'"
+                puts "  using ERB template '#{erbfile}'"
+                write_from_erb_template(erbfile, outfile, config)
+            end
         end
+
+        ## ERB generation of the file destfile usung the source template file `erbsrc`
+        def write_from_erb_template(erbfile, outfile, config = {})
+            error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
+            template = File.read("#{erbfile}")
+            output   = ERB.new(template, nil, '<>')
+	        content  = output.result(binding)
+            if File.exists?( outfile )
+                ref = File.read( outfile )
+	            return if ref == content
+	            warn "the file '#{outfile}' already exists and will be overwritten."
+	            warn "Expected difference: \n------"
+	            Diffy::Diff.default_format = :color
+	            puts Diffy::Diff.new(ref, content, :context => 1)
+            else
+	            watch =  ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
+	            puts content if watch =~ /y.*/i
+            end
+	        proceed = ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
+            return if proceed =~ /n.*/i
+            info("=> writing #{outfile}")
+            File.open("#{outfile}", "w+") do |f|
+		        f.puts content
+            end
+        end 
+
+
 
         ### RVM init
         def init_rvm(rootdir = Dir.pwd, gemset = '')
-	        rvm_files = {
-		        :version => File.join(rootdir, '.ruby-version'),
-		        :gemset  => File.join(rootdir, '.ruby-gemset')
-	        }
-	        unless File.exists?( "#{rvm_files[:version]}")
-		        v = select_from(FalkorLib.config[:rvm][:rubies], 
-		                        "Select RVM ruby to configure for this directory", 
-		                        3)
-		        File.open( rvm_files[:version], 'w') do |f|
-			        f.puts v
-		        end
-	        end 
-	        unless File.exists?( "#{rvm_files[:gemset]}")
-		        g = gemset.empty? ? ask("Enter RVM gemset name for this directory", File.basename(rootdir)) : gemset
-		        File.open( rvm_files[:gemset], 'w') do |f|
-			        f.puts g
-		        end
-	        end 
-	        
-        end 
+            rvm_files = {
+                :version => File.join(rootdir, '.ruby-version'),
+                :gemset  => File.join(rootdir, '.ruby-gemset')
+            }
+            unless File.exists?( "#{rvm_files[:version]}")
+                v = select_from(FalkorLib.config[:rvm][:rubies],
+                                "Select RVM ruby to configure for this directory",
+                                3)
+                File.open( rvm_files[:version], 'w') do |f|
+                    f.puts v
+                end
+            end
+            unless File.exists?( "#{rvm_files[:gemset]}")
+                g = gemset.empty? ? ask("Enter RVM gemset name for this directory", File.basename(rootdir)) : gemset
+                File.open( rvm_files[:gemset], 'w') do |f|
+                    f.puts g
+                end
+            end
+
+        end
 
 
     end
