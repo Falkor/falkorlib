@@ -25,18 +25,16 @@ assumes that you have [RVM](https://rvm.io/) installed on your system.
 
 See `metadata.json`.
 
-## <%= config[:name].gsub(/^puppet-/,'') %> class parameters
+## <%= config[:name].gsub(/.*-/, '') %> class parameters
 
 * `$ensure` [Default: 'present']: Ensure <%= config[:name].gsub(/^puppet-/,'')
   %> is present, absent etc. 
 
 ## Usage
 
-### class <%= config[:name].gsub(/^puppet-/,'') %>
+### class <%= config[:name].gsub(/.*-/, '') %>
 
-     class { '<%= config[:name].gsub(/^puppet-/,'') %>': 
-         
-     }
+     include '<%= config[:name].gsub(/.*-/,'') %>'
 
 
 ## Documentation
