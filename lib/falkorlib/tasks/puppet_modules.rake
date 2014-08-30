@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sat 2014-08-30 21:52 svarrette>
+# Time-stamp: <Sat 2014-08-30 22:27 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -83,4 +83,7 @@ namespace :module do
 	end # namespace upgrade
 end # namespace module
 
-task 'version:release' => 'puppet:module:build'
+#task 'version:release' => 'puppet:module:build'
+Rake::Task["version:release"].enhance do
+  Rake::Task["puppet:module:build"].invoke
+end
