@@ -3,3 +3,4 @@
 /.bundle/*
 .ruby-*
 .falkorlib.yaml
+/pkg/*
