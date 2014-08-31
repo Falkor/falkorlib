@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sat 2014-08-30 22:18 svarrette>
+# Time-stamp: <Sun 2014-08-31 17:33 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -19,6 +19,11 @@ describe FalkorLib::Puppet::Modules do
     include FalkorLib::Common
 
     dir   = Dir.mktmpdir
+	# Module name
+	name      = 'toto'
+	moduledir = File.join(dir, name)
+	jsonfile = File.join( moduledir, 'metadata.json') 
+
     #afile = File.join(dir, 'a_file')
     # before :all do
     #   ENV['GIT_AUTHOR_NAME']  = 'travis'            if ENV['GIT_AUTHOR_NAME'].nil?
@@ -32,14 +37,10 @@ describe FalkorLib::Puppet::Modules do
     #############################################################
     context "Test Puppet Module creation within temporary directory " do
 
-        # Module name
-        name      = 'toto'
-        moduledir = File.join(dir, name)
 
         it "#init -- create a puppet module" do
             # Prepare answer to the questions
             Array.new(32).each { |e|  STDIN.should_receive(:gets).and_return('') }
-
             FalkorLib::Puppet::Modules.init(moduledir)
             templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
             s = true
@@ -55,6 +56,11 @@ describe FalkorLib::Puppet::Modules do
             end
             s.should be_true
         end
+
+		it "#_getclassdefs -- should failed on unrecogized type" do
+			expect { FalkorLib::Puppet::Modules._get_classdefs(dir, 'toto') }.to raise_error (SystemExit)
+		end
+
 
         it "#classes -- list classes" do
             l = FalkorLib::Puppet::Modules._get_classdefs(moduledir, 'classes')
@@ -88,7 +94,6 @@ describe FalkorLib::Puppet::Modules do
 
         it "#parse" do
             STDIN.should_receive(:gets).and_return('')
-            jsonfile = File.join( moduledir, 'metadata.json')
             ref = JSON.parse( IO.read( jsonfile ) )
             metadata = FalkorLib::Puppet::Modules.parse(moduledir)
             diff = (metadata.to_a - ref.to_a).flatten
@@ -102,12 +107,34 @@ describe FalkorLib::Puppet::Modules do
                             'definitions',
                             'toto::mydef',
                            ]
-
-
         end
 
+		it "#parse again" do
+			metadata = FalkorLib::Puppet::Modules.parse(moduledir)
+			metadata.should == []
+		end
 
+		it "#deps -- should find a new dependency" do
+			classfile = File.join(moduledir, 'manifests', 'classes', 'toto.pp')
+			newdep = "tata"
+			run %{ echo 'include "#{newdep}"' >> #{classfile} }
+			a = FalkorLib::Puppet::Modules.deps(moduledir)
+			a.should include newdep 
+		end
 
+		it "#parse -- should ask new dependency elements" do
+			ref      = JSON.parse( IO.read( jsonfile ) )
+			STDIN.should_receive(:gets).and_return('svarrette')
+			STDIN.should_receive(:gets).and_return('1.2')
+			STDIN.should_receive(:gets).and_return('Yes')
+			metadata = FalkorLib::Puppet::Modules.parse(moduledir)
+			diff = (metadata.to_a - ref.to_a).flatten
+			diff.should == [
+			                'dependencies',
+			                {"name"=>"puppetlabs-stdlib", "version_range"=>">= 1.0.0"}, 
+			                {"name"=>"svarrette/tata", "version_requirement"=>"1.2"}
+			               ]
+		end
+    end # context
 
-    end
 end

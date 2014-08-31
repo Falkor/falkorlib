@@ -31,8 +31,8 @@ begin
   RSpec::Core::RakeTask.new(:rspec) do |t|
     # Glob pattern to match files.
     #t.pattern = "spec/**/test_*.rb"
-	#t.pattern = "spec/**/*_spec.rb"
-		#t.pattern = "spec/**/puppet*spec.rb"
+	#t.pattern = "spec/**/versioning_*spec.rb"
+		#t.pattern = "spec/**/*puppet*spec.rb"
 
     # Whether or not to fail Rake when an error occurs (typically when
     # examples fail).

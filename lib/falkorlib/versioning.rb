@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-08-23 12:32 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:00 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -72,7 +72,7 @@ module FalkorLib #:nodoc:
             version = FalkorLib.config[:versioning][:default]
             type    = FalkorLib.config[:versioning][:type]
             source  = FalkorLib.config[:versioning][:source][ type ]
-            case type
+	        case type
             when 'file'
                 versionfile = File.join( rootdir, source[:filename] )
                 version = File.read( versionfile ).chomp if File.exist? ( versionfile )
@@ -170,6 +170,14 @@ module FalkorLib #:nodoc:
             end
             version = [major, minor, patch].compact.join('.')
         end
-    end
+
+        # for rspec
+        module Gem
+        end
+        # for rspec
+        module Puppet
+        end
+
+    end # module
 
 end
