@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Dim 2014-08-31 22:04 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:59 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -79,9 +79,10 @@ end
 	Rake::Task["version:bump:#{level}"].enhance do 
 		warn "about to run the rspec tests to ensure the release can be done"
 		really_continue?
-		Rake::Task['rspec']
+		Rake::Task['rspec'].invoke
 	end
 end 
+
 
 
 # Gem::Tasks.new(
