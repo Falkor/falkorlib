@@ -30,7 +30,7 @@ begin
   desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
   RSpec::Core::RakeTask.new(:rspec) do |t|
     # Glob pattern to match files.
-    #t.pattern = "spec/**/test_*.rb"
+		#t.pattern = "spec/**/common_*.rb"
 	#t.pattern = "spec/**/versioning_*spec.rb"
 		#t.pattern = "spec/**/*puppet*spec.rb"
 

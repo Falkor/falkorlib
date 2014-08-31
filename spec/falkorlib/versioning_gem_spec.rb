@@ -2,7 +2,7 @@
 #########################################
 # versioning_gem_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2014-08-31 21:59 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:15 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -69,7 +69,7 @@ describe FalkorLib::Versioning::Gem do
                     t = FalkorLib::Git.init(dir)
                     t.should be_true
                 end
-                #expect { FalkorLib::Versioning.get_version(dir) }.to raise_error (NameError)
+                expect { FalkorLib::Versioning.get_version(dir) }.to raise_error (NameError)
             end
 
             File.open(versionfile_path, 'w') do |f|

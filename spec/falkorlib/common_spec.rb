@@ -5,6 +5,19 @@ describe FalkorLib::Common do
 
     include FalkorLib::Common
 
+	dir   = Dir.mktmpdir
+
+	before :all do
+		FileUtils.touch File.join(dir, 'file1.txt')
+		FileUtils.touch File.join(dir, 'file2.txt')
+		FileUtils.mkdir File.join(dir, 'dir1')
+		FileUtils.mkdir File.join(dir, 'dir2')
+	end 
+
+    after :all do
+        FileUtils.remove_entry_secure dir
+    end
+
 	#############################################
     context "Test (common) printing functions" do
 
@@ -162,8 +175,6 @@ describe FalkorLib::Common do
 	end
 
 
-
-
 	#############################################
     context "Test (common) YAML functions" do
 
@@ -183,5 +194,44 @@ describe FalkorLib::Common do
 		end 
 
 	end 
+
+	############################################
+	context 'Test list selection functions' do
+		
+		it "#list_items - Exit on 0" do
+			STDIN.should_receive(:gets).and_return('0')
+			expect { list_items("#{dir}/*") }.to raise_error (SystemExit)
+		end
+
+		it "#list_items -- select files only" do
+			STDIN.should_receive(:gets).and_return('1')
+			f = list_items("#{dir}/*", { :only_files => true })
+			f.should == "#{dir}/file1.txt"
+		end
+
+		it "#list_items -- select files only with pattern exclude" do
+			STDIN.should_receive(:gets).and_return('1')
+			f = list_items("#{dir}/*", { :only_files => true, :pattern_exclude => [ 'file1' ] })
+			f.should == "#{dir}/file2.txt"
+		end
+
+		it "#list_items -- select dirs only" do
+			STDIN.should_receive(:gets).and_return('1')
+			f = list_items("#{dir}/*", { :only_dirs => true })
+			f.should == "#{dir}/dir1"
+		end
+
+		it "#list_items -- select dirs only with pattern exclude" do
+			STDIN.should_receive(:gets).and_return('1')
+			f = list_items("#{dir}/*", { :only_dirs => true, :pattern_exclude => [ 'dir1' ] })
+			f.should == "#{dir}/dir2"
+		end
+
+		it "#list_items -- exit on empty list" do
+			#STDIN.should_receive(:gets).and_return('1')
+			expect { list_items("#{dir}/*", { :only_files => true, :pattern_exclude => [ '.*\.txt']}) }.to raise_error (SystemExit)
+		end
+	end
+
 
 end
