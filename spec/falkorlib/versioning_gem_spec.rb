@@ -2,7 +2,7 @@
 #########################################
 # versioning_gem_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2014-08-31 22:15 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:34 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -95,52 +95,52 @@ describe FalkorLib::Versioning::Gem do
                 v.should == workingversion[:default]
             end
 
-            # it "#major -- should collect the Gem major version" do
-            #     v = FalkorLib::Versioning.get_version(dir)
-            #     m = FalkorLib::Versioning.major(v)
-            #     m.should == '4'
-            # end
-            # it "#minor -- should collect the Gem minor version" do
-            #     v = FalkorLib::Versioning.get_version(dir)
-            #     m = FalkorLib::Versioning.minor(v)
-            #     m.should == '5'
-            # end
-            # it "#patch -- should collect the Gem patch version" do
-            #     v = FalkorLib::Versioning.get_version(dir)
-            #     m = FalkorLib::Versioning.patch(v)
-            #     m.should == '6'
-            # end
+            it "#major -- should collect the Gem major version" do
+                v = FalkorLib::Versioning.get_version(dir)
+                m = FalkorLib::Versioning.major(v)
+                m.should == '4'
+            end
+            it "#minor -- should collect the Gem minor version" do
+                v = FalkorLib::Versioning.get_version(dir)
+                m = FalkorLib::Versioning.minor(v)
+                m.should == '5'
+            end
+            it "#patch -- should collect the Gem patch version" do
+                v = FalkorLib::Versioning.get_version(dir)
+                m = FalkorLib::Versioning.patch(v)
+                m.should == '6'
+            end
 
-            # it "#set_version -- set Gem version #{default_version} in version file #{versionfile}" do
-            #     STDIN.should_receive(:gets).and_return('Yes')
-            #     v = FalkorLib::Versioning.set_version(default_version, dir)
-            #     v.should == 0
-            #     load "#{versionfile_path}"
-            #     v = FalkorLib::Versioning.get_version(dir)
-            #     v.should == default_version
-            # end
+            it "#set_version -- set Gem version #{default_version} in version file #{versionfile}" do
+                STDIN.should_receive(:gets).and_return('Yes')
+                v = FalkorLib::Versioning.set_version(default_version, dir)
+                v.should == 0
+                load "#{versionfile_path}"
+                v = FalkorLib::Versioning.get_version(dir)
+                v.should == default_version
+            end
 
-            # #FalkorLib.config[:versioning][:levels].reverse.each do |level|
-            # [ :patch, :minor ].each do |level|
-            #     it "#set_version #bump -- #{level} bump Gem version number from #{workingversion[:default]} to #{workingversion[level.to_sym]}" do
-            #         # restore version file
-            #         STDIN.should_receive(:gets).and_return('Yes')
-            #         v = FalkorLib::Versioning.set_version(workingversion[:default], dir)
-            #         v.should == 0
-            #         load "#{versionfile_path}"
-            #         v = FalkorLib::Versioning.get_version(dir)
-            #         v.should == workingversion[:default]
-            #         # Let's bump
-            #         v2 = FalkorLib::Versioning.bump(v, level.to_sym)
-            #         v2.should == workingversion[level.to_sym]
-            #         STDIN.should_receive(:gets).and_return('Yes')
-            #         d = FalkorLib::Versioning.set_version(v2, dir)
-            #         d.should == 0
-            #         load "#{versionfile_path}"
-            #         v3 = FalkorLib::Versioning.get_version(dir)
-            #         v3.should == v2
-            #     end
-            # end
+            #FalkorLib.config[:versioning][:levels].reverse.each do |level|
+            [ :patch, :minor ].each do |level|
+                it "#set_version #bump -- #{level} bump Gem version number from #{workingversion[:default]} to #{workingversion[level.to_sym]}" do
+                    # restore version file
+                    STDIN.should_receive(:gets).and_return('Yes')
+                    v = FalkorLib::Versioning.set_version(workingversion[:default], dir)
+                    v.should == 0
+                    load "#{versionfile_path}"
+                    v = FalkorLib::Versioning.get_version(dir)
+                    v.should == workingversion[:default]
+                    # Let's bump
+                    v2 = FalkorLib::Versioning.bump(v, level.to_sym)
+                    v2.should == workingversion[level.to_sym]
+                    STDIN.should_receive(:gets).and_return('Yes')
+                    d = FalkorLib::Versioning.set_version(v2, dir)
+                    d.should == 0
+                    load "#{versionfile_path}"
+                    v3 = FalkorLib::Versioning.get_version(dir)
+                    v3.should == v2
+                end
+            end
         end
 
     #end #configatron.temp
