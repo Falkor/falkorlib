@@ -8,10 +8,10 @@ describe FalkorLib::Common do
 	dir   = Dir.mktmpdir
 
 	before :all do
-		FileUtils.touch File.join(dir, 'file1.txt')
-		FileUtils.touch File.join(dir, 'file2.txt')
-		FileUtils.mkdir File.join(dir, 'dir1')
-		FileUtils.mkdir File.join(dir, 'dir2')
+		FileUtils.touch File.join(dir, 'fileA.txt')
+		FileUtils.touch File.join(dir, 'fileB.txt')
+		FileUtils.mkdir File.join(dir, 'dirA')
+		FileUtils.mkdir File.join(dir, 'dirB')
 	end 
 
     after :all do
@@ -206,25 +206,25 @@ describe FalkorLib::Common do
 		it "#list_items -- select files only" do
 			STDIN.should_receive(:gets).and_return('1')
 			f = list_items("#{dir}/*", { :only_files => true })
-			f.should == "#{dir}/file1.txt"
+			f.should == "#{dir}/fileA.txt"
 		end
 
 		it "#list_items -- select files only with pattern exclude" do
 			STDIN.should_receive(:gets).and_return('1')
-			f = list_items("#{dir}/*", { :only_files => true, :pattern_exclude => [ 'file1' ] })
-			f.should == "#{dir}/file2.txt"
+			f = list_items("#{dir}/*", { :only_files => true, :pattern_exclude => [ 'fileA' ] })
+			f.should == "#{dir}/fileB.txt"
 		end
 
 		it "#list_items -- select dirs only" do
 			STDIN.should_receive(:gets).and_return('1')
 			f = list_items("#{dir}/*", { :only_dirs => true })
-			f.should == "#{dir}/dir1"
+			f.should == "#{dir}/dirA"
 		end
 
 		it "#list_items -- select dirs only with pattern exclude" do
 			STDIN.should_receive(:gets).and_return('1')
-			f = list_items("#{dir}/*", { :only_dirs => true, :pattern_exclude => [ 'dir1' ] })
-			f.should == "#{dir}/dir2"
+			f = list_items("#{dir}/*", { :only_dirs => true, :pattern_exclude => [ 'dirA' ] })
+			f.should == "#{dir}/dirB"
 		end
 
 		it "#list_items -- exit on empty list" do
