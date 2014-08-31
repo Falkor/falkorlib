@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Ven 2014-06-20 15:00 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:59 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -74,6 +74,16 @@ Gem::Tasks::Sign::PGP.new
 Rake::Task['build'].enhance do
     Rake::Task["sign"].invoke if File.directory?(File.join(ENV['HOME'], '.gnupg') )
 end
+
+[ 'major', 'minor', 'patch' ].each do |level|
+	Rake::Task["version:bump:#{level}"].enhance do 
+		warn "about to run the rspec tests to ensure the release can be done"
+		really_continue?
+		Rake::Task['rspec'].invoke
+	end
+end 
+
+
 
 # Gem::Tasks.new(
 #                :console => false,

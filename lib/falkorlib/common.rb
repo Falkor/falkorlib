@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2014-08-30 21:05 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:32 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -183,14 +183,14 @@ module FalkorLib #:nodoc:
                 next if (! options[:only_files].nil?) && options[:only_files] && File.directory?(elem)
                 next if (! options[:only_dirs].nil?)  && options[:only_dirs]  && File.file?(elem)
                 entry = File.basename(elem)
-                unless options[:pattern_include].nil?
-                    select_entry = false
-                    options[:pattern_include].each do |pattern|
-                        #puts "considering pattern '#{pattern}' on entry '#{entry}'"
-                        select_entry |= entry =~ /#{pattern}/
-                    end
-                    next unless select_entry
-                end
+                # unless options[:pattern_include].nil?
+                #     select_entry = false
+                #     options[:pattern_include].each do |pattern|
+                #         #puts "considering pattern '#{pattern}' on entry '#{entry}'"
+                #         select_entry |= entry =~ /#{pattern}/
+                #     end
+                #     next unless select_entry
+                # end
                 unless options[:pattern_exclude].nil?
                     select_entry = false
                     options[:pattern_exclude].each do |pattern|

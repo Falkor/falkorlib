@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2014-08-30 22:00 svarrette>
+# Time-stamp: <Sun 2014-08-31 16:24 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -148,13 +148,14 @@ module FalkorLib  #:nodoc:
                 end
                 info "Initialize RVM"
                 init_rvm(moduledir)
-                unless FalkorLib::GitFlow.init?(moduledir)
-                    warn "Git [Flow] is not initialized in #{moduledir}."
-                    a = ask("Proceed to git-flow initialization (y|N)", 'No')
-	                return if a =~ /n.*/i
-                    FalkorLib::GitFlow.init(moduledir) 
-                end
-
+	            unless FalkorLib::Git.init?(moduledir)
+		            init_gitflow = command?('git-flow')
+		            warn "Git #{init_gitflow ? '[Flow]' : ''} is not initialized in #{moduledir}."
+		            a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
+		            return if a =~ /n.*/i
+		            init_gitflow ? FalkorLib::GitFlow.init(moduledir) : FalkorLib::Git.init(moduledir)
+	            end 
+               
                 # Propose to commit the key files
                 if FalkorLib::Git.init?(moduledir)
                     if FalkorLib::GitFlow.init?(moduledir)
@@ -212,7 +213,7 @@ module FalkorLib  #:nodoc:
                 puts content
 	            if ref == content
 		            warn "No difference to commit"
-		            return 
+		            return []
 	            end 
 	            info "Differences with the previous file"
 	            Diffy::Diff.default_format = :color
