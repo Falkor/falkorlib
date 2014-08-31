@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2014-08-31 17:33 svarrette>
+# Time-stamp: <Dim 2014-08-31 22:45 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -96,16 +96,16 @@ describe FalkorLib::Puppet::Modules do
             STDIN.should_receive(:gets).and_return('')
             ref = JSON.parse( IO.read( jsonfile ) )
             metadata = FalkorLib::Puppet::Modules.parse(moduledir)
-            diff = (metadata.to_a - ref.to_a).flatten
+            diff = (metadata.to_a - ref.to_a).flatten.sort
             diff.should == [
                             'classes',
-                            'toto::params',
+                            'definitions',
                             'toto',
                             'toto::common',
                             'toto::debian',
-                            'toto::redhat',
-                            'definitions',
                             'toto::mydef',
+                            'toto::params',
+                            'toto::redhat',
                            ]
         end
 
