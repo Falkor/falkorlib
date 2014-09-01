@@ -70,8 +70,9 @@ This library features two aspects
             	c.debug = true
         	end
   	
-    You can also place a special file `.falkorlib.yaml` to customize the
-    FalkorLib settings 
+    __IMPORTANT__: You can also place a special file `.falkorlib.yaml` to customize the
+    FalkorLib settings. Most probably, you shall ignore this file in your
+    `.gitignore` so you can place there your private settings (tokens etc.) 
    	 
   * `FalkorLib::Git`: all [git](http://git-scm.com/) operations
   * `FalkorLib::GitFlow`: all [git-flow](http://nvie.com/posts/a-successful-git-branching-model/) operations
@@ -374,11 +375,22 @@ rake version:bump:patch       # Prepare the patch release of the repository
 rake version:info             # Get versioning information
 rake version:release          # Finalize the release of a given bumped version
 ```
+If your gem is coupled with [Code Climate](https://codeclimate.com/), you might
+wish to set the code climate token to report the test coverage for you gem (see
+[these instructions](http://docs.codeclimate.com/article/104-how-do-i-set-up-test-coverage-for-one-of-my-repos)). 
+To avoid exposing this token in your (potentially public) repository, simply
+set that token in `.falkorlib.yaml` (ignored you shall ignore in your
+`.gitignore`) as follows: 
 
+```
+:tokens:
+  :code_climate: 'ACDDD1111222223333....'
+```
 
-## Implementation details
+## FalkorLib Developments / Implementation details
 
-If you want to contribute to the code, you shall be aware of the way I organize this gem and implementation details.   
+If you want to contribute to the code, you shall be aware of the way I organized
+this gem and its implementation details.    
 
 ### [RVM](https://rvm.io/) setup
 
@@ -429,7 +441,7 @@ Also, to facilitate the tracking of remote branches, you probably wants to insta
 
 Then, to make your local copy of the repository ready to use my git-flow workflow, you have to run the following commands once you cloned it for the first time:
 
-      $> rake setup # Not yet implemented!
+      $> rake setup 
 
 ### Working in a separate project
 
@@ -446,7 +458,7 @@ To illustrate the usage of the library as a regular user would do, you are advis
 
 	$> cat cat Gemfile 
 	source "https://rubygems.org"
-	gem 'falkorlib', :path => '~/git/github.com/Falkor/falkorlib'   # or whichever path that works for you
+	gem 'falkorlib'  #, :path => '~/git/github.com/Falkor/falkorlib'   # or whichever path that works for you
 
 Adapt the `Rakefile` and `tester.rb` file to reflect your tests.
 
