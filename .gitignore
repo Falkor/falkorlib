@@ -9,3 +9,4 @@ doc/api
 *~
 tmp/
 *.noespec
+/.falkorlib.yaml

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2014-08-29 14:06 svarrette>
+# Time-stamp: <Lun 2014-09-01 09:37 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -48,6 +48,9 @@ module FalkorLib #:nodoc:
 		    },
 		    :templates => {
 			    :puppet => {}
+		    },
+		    :tokens => {
+			    :code_climate => ''
 		    }
         }
 
