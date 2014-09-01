@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Lun 2014-09-01 12:19 svarrette>
+# Time-stamp: <Lun 2014-09-01 16:38 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -78,6 +78,32 @@ namespace :puppet do
 					sh "erb -P -x -T '-' #{template} | ruby -c"
 				end
 			end
+			
+			###########   puppet:module:classes   ###########
+			desc "Parse the module for classes definitions"
+			task :classes do |t|
+				c = FalkorLib::Puppet::Modules.classes()
+				info "Implemented classes:"
+				puts c.empty? ? red('NONE') : c.to_yaml				
+			end # task classes 
+
+			###########   puppet:module:definitions   ###########
+			desc "Parse the module for definitions"
+			task :definitions do |t|
+				d = FalkorLib::Puppet::Modules.definitions()
+				info "Implemented definitions:"
+				puts d.empty? ? red('NONE') : d.to_yaml				
+			end # task definitions
+
+			###########   puppet:module:deps   ###########
+			desc "Parse the module for its exact dependencies"
+			task :deps do |t|
+				d = FalkorLib::Puppet::Modules.deps()
+				info "Module dependencies:"
+				puts d.empty? ? red('NONE') : d.to_yaml				
+			end # task deps
+
+
         end
     end # namespace module
 end # namespace puppet
