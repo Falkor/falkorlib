@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2014-08-31 16:24 svarrette>
+# Time-stamp: <Lun 2014-09-01 21:46 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -131,7 +131,7 @@ module FalkorLib  #:nodoc:
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 init_from_template(templatedir, moduledir, config, {
-                                       :erb_exclude => [ 'templates\/[^\/]*\.erb$' ]
+                                       :erb_exclude => [ 'templates\/[^\/]*variables\.erb$' ]
                                    })
                 # Rename the files / element templatename
                 Dir["#{moduledir}/**/*"].each do |e|
@@ -162,7 +162,7 @@ module FalkorLib  #:nodoc:
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
                         FalkorLib::GitFlow.start('feature', "bootstraping", moduledir)
                     end
-                    [ 'metadata.json', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f|
+                    [ 'metadata.json', 'doc/', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
                 end
@@ -287,12 +287,12 @@ module FalkorLib  #:nodoc:
                     resulttmp = result.dup
                     (result - result2).each do |x|
                         Dir["#{moduledir}/**/*.pp"].each do |ppfile|
-                            File.read(ppfile).scan(/^[ \t]*include.*$|^[ \t]*require.*$/).each do |line|
-                                if line.scan(">").length == 0
-                                    result << line.gsub(/^[ \t]*(include|require) ([\"']|)([0-9a-zA-Z:{$}\-]*)([\"']|)/, '\3').split("::").first
-                                end
-                            end
-                        end
+				            File.read(ppfile).scan(/^\s*(include|require|class\s*{)\s*["']?(::)?([0-9a-zA-Z:{$}\-]*)["']?/) do |m|
+					            next if $3.nil?
+					            entry = $3.split('::').first 
+					            result << entry unless entry.nil? or entry.empty?
+				            end 
+			            end 
                     end
                     result.uniq!
                     result2 = resulttmp.dup

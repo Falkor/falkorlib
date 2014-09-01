@@ -26,49 +26,66 @@
 # http://relishapp.com/rspec
 #
 begin
-  require "rspec/core/rake_task"
-  desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
-  RSpec::Core::RakeTask.new(:rspec) do |t|
-    # Glob pattern to match files.
-		#t.pattern = "spec/**/common_*.rb"
-	#t.pattern = "spec/**/versioning_*spec.rb"
-		#t.pattern = "spec/**/*puppet*spec.rb"
+    require "rspec/core/rake_task"
+    desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
+    RSpec::Core::RakeTask.new(:rspec) do |t|
+        # Glob pattern to match files.
+        #t.pattern = "spec/**/common_*.rb"
+        #t.pattern = "spec/**/versioning_*spec.rb"
+        #t.pattern = "spec/**/*puppet*spec.rb"
 
-    # Whether or not to fail Rake when an error occurs (typically when
-    # examples fail).
-    t.fail_on_error = true
+        # Whether or not to fail Rake when an error occurs (typically when
+        # examples fail).
+        t.fail_on_error = true
 
-    # A message to print to stderr when there are failures.
-    t.failure_message = nil
+        # A message to print to stderr when there are failures.
+        t.failure_message = nil
 
-    # Use verbose output. If this is set to true, the task will print the
-    # executed spec command to stdout.
-    t.verbose = true
+        # Use verbose output. If this is set to true, the task will print the
+        # executed spec command to stdout.
+        t.verbose = true
 
-    # Use rcov for code coverage?
-    t.rcov = false
+        # Use rcov for code coverage?
+        t.rcov = false
 
-    # Path to rcov.
-    t.rcov_path = "rcov"
+        # Path to rcov.
+        t.rcov_path = "rcov"
 
-    # Command line options to pass to rcov. See 'rcov --help' about this
-    t.rcov_opts = []
+        # Command line options to pass to rcov. See 'rcov --help' about this
+        t.rcov_opts = []
 
-    # Command line options to pass to ruby. See 'ruby --help' about this
-    t.ruby_opts = []
+        # Command line options to pass to ruby. See 'ruby --help' about this
+        t.ruby_opts = []
 
-    # Path to rspec
-    t.rspec_path = "rspec"
+        # Path to rspec
+        t.rspec_path = "rspec"
 
-    # Command line options to pass to rspec. See 'rspec --help' about this
-    #t.rspec_opts = ["--color", "--backtrace"] 
-    t.rspec_opts = ["--color", "--format d", "--backtrace"] # "--format d", 
-  end
+        # Command line options to pass to rspec. See 'rspec --help' about this
+        #t.rspec_opts = ["--color", "--backtrace"]
+        t.rspec_opts = ["--color", "--format d", "--backtrace"] # "--format d",
+    end
 rescue LoadError => ex
-  task :spec_test do
-    abort 'rspec is not available. In order to run spec, you must: gem install rspec'
-  end
+    task :spec_test do
+        abort 'rspec is not available. In order to run spec, you must: gem install rspec'
+    end
 ensure
-  task :spec => [:spec_test]
-  task :test => [:spec_test]
+    task :spec => [:spec_test]
+    task :test => [:spec_test]
 end
+
+#.....................
+namespace :setenv do
+    ###########   code_climate   ###########
+    #desc "Set Code Climate token to report rspec results"
+    task :code_climate do |t|
+        unless FalkorLib.config[:tokens].nil? or
+                FalkorLib.config[:tokens][:code_climate].nil? or
+                FalkorLib.config[:tokens][:code_climate].empty?
+            ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No')
+            ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
+        end
+    end # task code_climate
+
+end # namespace set
+
+task :rspec => 'setenv:code_climate'
