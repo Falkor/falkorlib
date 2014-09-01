@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2014-08-31 22:45 svarrette>
+# Time-stamp: <Lun 2014-09-01 21:51 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -40,18 +40,19 @@ describe FalkorLib::Puppet::Modules do
 
         it "#init -- create a puppet module" do
             # Prepare answer to the questions
-            Array.new(32).each { |e|  STDIN.should_receive(:gets).and_return('') }
+            Array.new(36).each { |e|  STDIN.should_receive(:gets).and_return('') }
             FalkorLib::Puppet::Modules.init(moduledir)
             templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
             s = true
+			puts "templatedir = #{templatedir}"
             Dir["#{templatedir}/**/*"].each  do |e|
                 next if File.directory?(e)
                 relative_dir = Pathname.new( File.realpath( File.dirname(e) )).relative_path_from Pathname.new(templatedir)
                 file = e.gsub(/templatename/, "#{name}")
                 filename = File.basename(file)
-                filename = File.basename(file, '.erb') unless file =~ /templates\/toto-variables\.erb/
+                filename = File.basename(file, '.erb') unless file =~ /templates\/toto-variables\.erb/ 
                 f = File.join(moduledir, relative_dir, filename)
-                #puts "checking #{f} - #{File.exists?( f )}"
+                puts "checking #{f} - #{File.exists?( f )}"
                 s &= File.exists?( f )
             end
             s.should be_true

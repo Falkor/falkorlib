@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-01 17:04 svarrette>
+# Time-stamp: <Lun 2014-09-01 21:46 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -131,7 +131,7 @@ module FalkorLib  #:nodoc:
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 init_from_template(templatedir, moduledir, config, {
-                                       :erb_exclude => [ 'templates\/[^\/]*\.erb$' ]
+                                       :erb_exclude => [ 'templates\/[^\/]*variables\.erb$' ]
                                    })
                 # Rename the files / element templatename
                 Dir["#{moduledir}/**/*"].each do |e|
@@ -289,7 +289,8 @@ module FalkorLib  #:nodoc:
                         Dir["#{moduledir}/**/*.pp"].each do |ppfile|
 				            File.read(ppfile).scan(/^\s*(include|require|class\s*{)\s*["']?(::)?([0-9a-zA-Z:{$}\-]*)["']?/) do |m|
 					            next if $3.nil?
-					            result << $3.split('::').first 
+					            entry = $3.split('::').first 
+					            result << entry unless entry.nil? or entry.empty?
 				            end 
 			            end 
                     end

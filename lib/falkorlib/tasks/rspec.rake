@@ -29,12 +29,6 @@ begin
     require "rspec/core/rake_task"
     desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
     RSpec::Core::RakeTask.new(:rspec) do |t|
-		unless FalkorLib.config[:tokens].nil? or 
-				FalkorLib.config[:tokens][:code_climate].nil? or 
-				FalkorLib.config[:tokens][:code_climate].empty?
-			ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No') 
-			ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
-		end 
         # Glob pattern to match files.
         #t.pattern = "spec/**/common_*.rb"
         #t.pattern = "spec/**/versioning_*spec.rb"
@@ -78,3 +72,20 @@ ensure
     task :spec => [:spec_test]
     task :test => [:spec_test]
 end
+
+#.....................
+namespace :setenv do
+    ###########   code_climate   ###########
+    #desc "Set Code Climate token to report rspec results"
+    task :code_climate do |t|
+        unless FalkorLib.config[:tokens].nil? or
+                FalkorLib.config[:tokens][:code_climate].nil? or
+                FalkorLib.config[:tokens][:code_climate].empty?
+            ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No')
+            ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
+        end
+    end # task code_climate
+
+end # namespace set
+
+task :rspec => 'setenv:code_climate'
