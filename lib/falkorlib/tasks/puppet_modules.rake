@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sat 2014-08-30 22:27 svarrette>
+# Time-stamp: <Lun 2014-09-01 12:19 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -65,23 +65,37 @@ namespace :puppet do
                 FalkorLib::Puppet::Modules.parse()
             end # task parse
 
-
+			###########   puppet:module:validate   ###########
+			desc "Validate manifests, templates, and ruby files"
+			task :validate do
+				Dir['manifests/**/*.pp'].each do |manifest|
+					sh "puppet parser validate --noop #{manifest}"
+				end
+				Dir['spec/**/*.rb','lib/**/*.rb'].each do |ruby_file|
+					sh "ruby -c #{ruby_file}" unless ruby_file =~ /spec\/fixtures/
+				end
+				Dir['templates/**/*.erb'].each do |template|
+					sh "erb -P -x -T '-' #{template} | ruby -c"
+				end
+			end
         end
     end # namespace module
 end # namespace puppet
 
 #.....................
-namespace :module do
+namespace :templates do
 	namespace :upgrade do
 		###########   module:upgrade:readme   ###########
 		task :readme do |t|
 			#info "#{t.comment}"
 			FalkorLib::Puppet::Modules.upgrade()
 		end 
-
-
 	end # namespace upgrade
 end # namespace module
+
+[ 'major', 'minor', 'patch' ].each do |level|
+	task "version:bump:#{level}" => 'puppet:module:validate'
+end 
 
 #task 'version:release' => 'puppet:module:build'
 Rake::Task["version:release"].enhance do
