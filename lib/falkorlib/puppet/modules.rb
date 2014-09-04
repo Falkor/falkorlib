@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-09-04 20:58 svarrette>
+# Time-stamp: <Jeu 2014-09-04 22:19 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -223,6 +223,7 @@ module FalkorLib  #:nodoc:
                 File.open(jsonfile,"w") do |f|
                     f.write JSON.pretty_generate( metadata )
                 end
+	            run %{ git commit -s -m "Update metadata.json" #{jsonfile} }
                 metadata
             end # parse
 
