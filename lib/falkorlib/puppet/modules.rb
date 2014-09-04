@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-01 21:46 svarrette>
+# Time-stamp: <Jeu 2014-09-04 20:58 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -30,7 +30,7 @@ module FalkorLib  #:nodoc:
                         :source       => '',
                         :project_page => '',
                         :issues_url   => '',
-			            :forge_url    => 'https://forge.puppetlabs.com/',       
+			            :forge_url    => 'https://forge.puppetlabs.com',       
                         :dependencies => [],
                         :operatingsystem_support => [],
                         :tags         => []
