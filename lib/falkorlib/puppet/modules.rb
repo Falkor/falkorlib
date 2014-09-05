@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-01 21:46 svarrette>
+# Time-stamp: <Ven 2014-09-05 10:50 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -30,7 +30,7 @@ module FalkorLib  #:nodoc:
                         :source       => '',
                         :project_page => '',
                         :issues_url   => '',
-			            :forge_url    => 'https://forge.puppetlabs.com/',       
+			            :forge_url    => 'https://forge.puppetlabs.com',       
                         :dependencies => [],
                         :operatingsystem_support => [],
                         :tags         => []
@@ -131,7 +131,8 @@ module FalkorLib  #:nodoc:
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 init_from_template(templatedir, moduledir, config, {
-                                       :erb_exclude => [ 'templates\/[^\/]*variables\.erb$' ]
+                                       :erb_exclude    => [ 'templates\/[^\/]*variables\.erb$' ],
+	                                   :no_interaction => true
                                    })
                 # Rename the files / element templatename
                 Dir["#{moduledir}/**/*"].each do |e|
@@ -223,11 +224,15 @@ module FalkorLib  #:nodoc:
                 File.open(jsonfile,"w") do |f|
                     f.write JSON.pretty_generate( metadata )
                 end
+	            run %{ git commit -s -m "Update metadata.json" #{jsonfile} }
                 metadata
             end # parse
 
             ##Upgrade the repository README etc. with the
-            def upgrade(moduledir = Dir.pwd)
+            def upgrade(moduledir = Dir.pwd, 
+                        options = {
+	                        :no_interaction => false
+                        })
                 name     = File.basename( moduledir )
                 error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
@@ -245,11 +250,12 @@ module FalkorLib  #:nodoc:
 
                 [ 'README.md', 'doc/contributing.md'].each do |f|
 		            info "Upgrade the content of #{f}"
-		            ans = ask("procceed?", 'Yes')
+		            ans = options[:no_interaction] ? 'Yes' : ask("procceed?", 'Yes')
 		            next unless ans =~ /n*/i 
                     write_from_erb_template(File.join(templatedir, "#{f}.erb"),
                                             File.join(moduledir,  f),
-                                            metadata)
+                                            metadata,
+                                            options)
                 end
             end
 
