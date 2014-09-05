@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2014-09-04 22:19 svarrette>
+# Time-stamp: <Ven 2014-09-05 10:50 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -131,7 +131,8 @@ module FalkorLib  #:nodoc:
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 init_from_template(templatedir, moduledir, config, {
-                                       :erb_exclude => [ 'templates\/[^\/]*variables\.erb$' ]
+                                       :erb_exclude    => [ 'templates\/[^\/]*variables\.erb$' ],
+	                                   :no_interaction => true
                                    })
                 # Rename the files / element templatename
                 Dir["#{moduledir}/**/*"].each do |e|
@@ -228,7 +229,10 @@ module FalkorLib  #:nodoc:
             end # parse
 
             ##Upgrade the repository README etc. with the
-            def upgrade(moduledir = Dir.pwd)
+            def upgrade(moduledir = Dir.pwd, 
+                        options = {
+	                        :no_interaction => false
+                        })
                 name     = File.basename( moduledir )
                 error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
@@ -246,11 +250,12 @@ module FalkorLib  #:nodoc:
 
                 [ 'README.md', 'doc/contributing.md'].each do |f|
 		            info "Upgrade the content of #{f}"
-		            ans = ask("procceed?", 'Yes')
+		            ans = options[:no_interaction] ? 'Yes' : ask("procceed?", 'Yes')
 		            next unless ans =~ /n*/i 
                     write_from_erb_template(File.join(templatedir, "#{f}.erb"),
                                             File.join(moduledir,  f),
-                                            metadata)
+                                            metadata,
+                                            options)
                 end
             end
 

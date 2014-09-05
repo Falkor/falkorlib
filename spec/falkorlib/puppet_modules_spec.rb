@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Lun 2014-09-01 21:57 svarrette>
+# Time-stamp: <Ven 2014-09-05 10:52 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -40,7 +40,7 @@ describe FalkorLib::Puppet::Modules do
 
         it "#init -- create a puppet module" do
             # Prepare answer to the questions
-            Array.new(36).each { |e|  STDIN.should_receive(:gets).and_return('') }
+            Array.new(16).each { |e|  STDIN.should_receive(:gets).and_return('') }
             FalkorLib::Puppet::Modules.init(moduledir)
             templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
             s = true
@@ -89,8 +89,9 @@ describe FalkorLib::Puppet::Modules do
         end
 
         it "#upgrade" do
-            Array.new(3).each { |e| STDIN.should_receive(:gets).and_return('') }
-            d = FalkorLib::Puppet::Modules.upgrade(moduledir)
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true
+			                                       })
         end
 
         it "#parse" do

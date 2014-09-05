@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2014-08-31 22:32 svarrette>
+# Time-stamp: <Ven 2014-09-05 10:44 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -270,7 +270,12 @@ module FalkorLib #:nodoc:
         # Supported options:
         #   :erb_exclude [array of strings]: pattern(s) to exclude from erb file
         #                                    interpretation and thus to copy 'as is'
-        def init_from_template(templatedir, rootdir, config = {}, options = {})
+        #   :no_interaction [boolean]: do not interact
+        def init_from_template(templatedir, rootdir, config = {}, 
+                               options = {
+	                               :erb_exclude    => [],
+	                               :no_interaction => false
+                               })
             error "Unable to find the template directory" unless File.directory?(templatedir)
             warning "about to initialize/update the directory #{rootdir}"
             really_continue?
@@ -296,34 +301,41 @@ module FalkorLib #:nodoc:
                 # Let's go
                 info "updating '#{relative_outdir.to_s}/#{filename}'"
                 puts "  using ERB template '#{erbfile}'"
-                write_from_erb_template(erbfile, outfile, config)
+                write_from_erb_template(erbfile, outfile, config, options)
             end
         end
 
-        ## ERB generation of the file destfile usung the source template file `erbsrc`
-        def write_from_erb_template(erbfile, outfile, config = {})
+        ## ERB generation of the file `outfile` using the source template file `erbfile`
+        # Supported options:
+        #   :no_interaction [boolean]: do not interact
+        def write_from_erb_template(erbfile, outfile, config = {}, 
+                                    options = {
+                                        :no_interaction => false
+                                    })
             error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
             template = File.read("#{erbfile}")
             output   = ERB.new(template, nil, '<>')
-	        content  = output.result(binding)
+            content  = output.result(binding)
             if File.exists?( outfile )
                 ref = File.read( outfile )
-	            return if ref == content
-	            warn "the file '#{outfile}' already exists and will be overwritten."
-	            warn "Expected difference: \n------"
-	            Diffy::Diff.default_format = :color
-	            puts Diffy::Diff.new(ref, content, :context => 1)
+                return if ref == content
+                warn "the file '#{outfile}' already exists and will be overwritten."
+                warn "Expected difference: \n------"
+                Diffy::Diff.default_format = :color
+                puts Diffy::Diff.new(ref, content, :context => 1)
             else
-	            watch =  ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
-	            puts content if watch =~ /y.*/i
+
+                watch =  options[:no_interaction] ? 'no' : ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
+                puts content if watch =~ /y.*/i
+
             end
-	        proceed = ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
+            proceed = options[:no_interaction] ? 'yes' : ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
             return if proceed =~ /n.*/i
             info("=> writing #{outfile}")
             File.open("#{outfile}", "w+") do |f|
-		        f.puts content
+                f.puts content
             end
-        end 
+        end
 
 
 

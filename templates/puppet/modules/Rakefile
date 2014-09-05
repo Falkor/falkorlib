@@ -26,3 +26,6 @@ require 'falkorlib/tasks/puppet'
 ##############################################################################
 #TOP_SRCDIR = File.expand_path(File.join(File.dirname(__FILE__), "."))
 
+require 'rake/clean'
+
+CLEAN.add   'pkg'
