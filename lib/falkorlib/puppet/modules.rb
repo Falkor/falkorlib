@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-09-05 10:50 svarrette>
+# Time-stamp: <Ven 2014-09-05 22:35 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -112,7 +112,7 @@ module FalkorLib  #:nodoc:
                                      end
                     config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
                 end
-                name = config[:name].gsub(/.*-/, '')
+                config[:shortname] = name = config[:name].gsub(/.*-/, '')
                 tags = ask("\tKeywords (comma-separated list of tags)", name)
                 config[:tags] = tags.split(',')
                 list_license    = FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses]

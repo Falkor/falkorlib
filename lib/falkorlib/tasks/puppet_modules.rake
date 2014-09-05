@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Lun 2014-09-01 16:38 svarrette>
+# Time-stamp: <Ven 2014-09-05 22:27 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -65,19 +65,28 @@ namespace :puppet do
                 FalkorLib::Puppet::Modules.parse()
             end # task parse
 
-			###########   puppet:module:validate   ###########
-			desc "Validate manifests, templates, and ruby files"
-			task :validate do
-				Dir['manifests/**/*.pp'].each do |manifest|
-					sh "puppet parser validate --noop #{manifest}"
-				end
-				Dir['spec/**/*.rb','lib/**/*.rb'].each do |ruby_file|
-					sh "ruby -c #{ruby_file}" unless ruby_file =~ /spec\/fixtures/
-				end
-				Dir['templates/**/*.erb'].each do |template|
-					sh "erb -P -x -T '-' #{template} | ruby -c"
-				end
-			end
+			###########   puppet:module:check   ###########
+			desc "Check the syntax and programming style of the module"
+			task :check => [
+			                :syntax,
+			                :lint
+			               ]
+#			do
+# 				info "validate parsing"
+# 				Dir['manifests/**/*.pp'].each do |manifest|
+# 					sh "puppet parser validate --noop #{manifest}"
+# 				end
+# 				Dir['spec/**/*.rb','lib/**/*.rb'].each do |ruby_file|
+# 					sh "ruby -c #{ruby_file}" unless ruby_file =~ /spec\/fixtures/
+# 				end
+# 				Dir['templates/**/*.erb'].each do |template|
+# 					sh "erb -P -x -T '-' #{template} | ruby -c"
+# 				end
+# 				info "checking  style guidelines with puppet-lint"
+# 				Rake::Task[:lint].invoke
+# 				info "checking syntax"
+# 				Rake::Task[:syntax].invoke
+# 			end
 			
 			###########   puppet:module:classes   ###########
 			desc "Parse the module for classes definitions"
@@ -118,6 +127,43 @@ namespace :templates do
 		end 
 	end # namespace upgrade
 end # namespace module
+
+
+#.....................
+require 'rake/clean'
+CLEAN.add   'pkg'
+
+exclude_tests_paths = ['pkg/**/*','spec/**/*']
+
+#.........................................................................
+# puppet-lint tasks -- see http://puppet-lint.com/checks/
+#
+require 'puppet-lint/tasks/puppet-lint'
+
+PuppetLint.configuration.send('disable_autoloader_layout')
+PuppetLint.configuration.send('disable_class_inherits_from_params_class')
+PuppetLint.configuration.send('disable_80chars')
+PuppetLint.configuration.ignore_paths = exclude_tests_paths
+
+task :lint_info do 
+	info "checking  style guidelines with puppet-lint"
+end 
+task :lint => :lint_info
+
+#.........................................................................
+# Puppet-syntax - see https://github.com/gds-operations/puppet-syntax
+#
+require 'puppet-syntax/tasks/puppet-syntax'
+PuppetSyntax.future_parser = true
+PuppetSyntax.exclude_paths = exclude_tests_paths  
+
+task :syntax_info do 
+	info "checking syntax for Puppet manifests, templates, and Hiera YAML"
+end 
+task :syntax => :syntax_info
+
+
+################################################
 
 [ 'major', 'minor', 'patch' ].each do |level|
 	task "version:bump:#{level}" => 'puppet:module:validate'

@@ -1,0 +1,41 @@
+# File::      <tt>params.pp</tt>
+# Author::    <%= config[:author] %> (<%= config[:mail] %>)
+# Copyright:: Copyright (c) <%= Time.now.year %> <%= config[:author] %>
+# License::   <%= config[:license].capitilize %>
+#
+# ------------------------------------------------------------------------------
+# You need the 'future' parser to be able to execute this manifest (that's
+# required for the each loop below).
+#
+# Thus execute this manifest in your vagrant box as follows:
+#
+#      sudo puppet apply -t --parser future /vagrant/tests/params.pp
+#
+#
+
+include '<%= config[:shortname] %>::params'
+
+$names = [
+          "ensure",
+          "protocol",
+          "port"
+          "packagename"
+          "logdir",
+          "logdir_mode",
+          "logdir_owner",
+          "logdir_group",
+          "servicename",
+          "processname",
+          "hasstatus",
+          "hasrestart",
+          "configfile",
+          "configfile_init",
+          "configfile_mode",
+          "configfile_owner",
+          "configfile_group",
+          ]
+
+each($names) |$v| {
+    $var = "<%= config[:shortname] %>::params::${v}"
+    notice("${var} = ", inline_template('< %= scope.lookupvar(@var) %>'))
+}
