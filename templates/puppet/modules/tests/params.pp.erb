@@ -37,5 +37,5 @@ $names = [
 
 each($names) |$v| {
     $var = "<%= config[:shortname] %>::params::${v}"
-    notice("${var} = ", inline_template('< %= scope.lookupvar(@var) %>'))
+    notice("${var} = ", inline_template('<%%= scope.lookupvar(@var) %>'))
 }

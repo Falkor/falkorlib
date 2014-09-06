@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-09-05 22:35 svarrette>
+# Time-stamp: <Sam 2014-09-06 16:13 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -126,7 +126,10 @@ module FalkorLib  #:nodoc:
 	            
 	            # Supported platforms
 	            config[:platforms] = [ 'debian' ]
-
+	            config[:dependencies] = [{
+		                                     "name"          => "puppetlabs-stdlib",
+		                                     "version_range" => ">= 1.0.0"
+	                                     }]
                 #ap config
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
@@ -163,7 +166,9 @@ module FalkorLib  #:nodoc:
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
                         FalkorLib::GitFlow.start('feature', "bootstraping", moduledir)
                     end
-                    [ 'metadata.json', 'doc/', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f|
+                    [ 'metadata.json', 
+                      'doc/', 'LICENSE', '.gitignore', 
+                      'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
                 end
