@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sam 2014-09-06 16:29 svarrette>
+# Time-stamp: <Sam 2014-09-06 16:32 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -65,9 +65,9 @@ namespace :puppet do
                 FalkorLib::Puppet::Modules.parse()
             end # task parse
 
-			###########   puppet:module:check   ###########
-			desc "Check the syntax and programming style of the module"
-			task :check => [
+			###########   puppet:module:validate   ###########
+			desc "Validate the module by checking the syntax and programming style of the module"
+			task :validate => [
 			                :syntax,
 			                :lint
 			               ]
