@@ -1,13 +1,13 @@
-# File::      <tt><%= config[:name] %>-params.pp</tt>
+# File::      <tt>params.pp</tt>
 # Author::    <%= config[:author] %> (<%= config[:mail] %>)
 # Copyright:: Copyright (c) <%= Time.now.year %> <%= config[:author] %>
-# License::   <%= config[:license] %>
+# License::   <%= config[:license].capitalize %>
 #
 # ------------------------------------------------------------------------------
-# = Class: <%= config[:name] %>::params
+# = Class: <%= config[:shortname] %>::params
 #
 # In this class are defined as variables values that are used in other
-# <%= config[:name] %> classes.
+# <%= config[:shortname] %> classes.
 # This class should be included, where necessary, and eventually be enhanced
 # with support for more OS
 #
@@ -22,42 +22,42 @@
 #
 # [Remember: No empty lines between comments and class definition]
 #
-class <%= config[:name] %>::params {
+class <%= config[:shortname] %>::params {
 
     ######## DEFAULTS FOR VARIABLES USERS CAN SET ##########################
     # (Here are set the defaults, provide your custom variables externally)
     # (The default used is in the line with '')
     ###########################################
 
-    # ensure the presence (or absence) of <%= config[:name] %>
-    $ensure = $<%= config[:name] %>_ensure ? {
+    # ensure the presence (or absence) of <%= config[:shortname] %>
+    $ensure = $<%= config[:shortname] %>_ensure ? {
         ''      => 'present',
-        default => "${<%= config[:name] %>_ensure}"
+        default => "${<%= config[:shortname] %>_ensure}"
     }
 
     # The Protocol used. Used by monitor and firewall class. Default is 'tcp'
-    $protocol = $<%= config[:name] %>_protocol ? {
+    $protocol = $<%= config[:shortname] %>_protocol ? {
         ''      => 'tcp',
-        default => "${<%= config[:name] %>_protocol}",
+        default => "${<%= config[:shortname] %>_protocol}",
     }
     # The port number. Used by monitor and firewall class. The default is 22.
-    $port = $<%= config[:name] %>_port ? {
+    $port = $<%= config[:shortname] %>_port ? {
         ''      => 22,
-        default => "${<%= config[:name] %>_port}",
+        default => "${<%= config[:shortname] %>_port}",
     }
     # example of an array variable
-    $array_variable = $<%= config[:name] %>_array_variable ? {
+    $array_variable = $<%= config[:shortname] %>_array_variable ? {
         ''      => [],
-        default => $<%= config[:name] %>_array_variable,
+        default => $<%= config[:shortname] %>_array_variable,
     }
 
 
     #### MODULE INTERNAL VARIABLES  #########
     # (Modify to adapt to unsupported OSes)
     #######################################
-    # <%= config[:name] %> packages
+    # <%= config[:shortname] %> packages
     $packagename = $::operatingsystem ? {
-        default => '<%= config[:name] %>',
+        default => '<%= config[:shortname] %>',
     }
     # $extra_packages = $::operatingsystem ? {
     #     /(?i-mx:ubuntu|debian)/        => [],
@@ -67,7 +67,7 @@ class <%= config[:name] %>::params {
 
     # Log directory
     $logdir = $::operatingsystem ? {
-        default => '/var/log/<%= config[:name] %>'
+        default => '/var/log/<%= config[:shortname] %>'
     }
     $logdir_mode = $::operatingsystem ? {
         default => '750',
@@ -81,30 +81,30 @@ class <%= config[:name] %>::params {
 
     # PID for daemons
     # $piddir = $::operatingsystem ? {
-    #     default => "/var/run/<%= config[:name] %>",
+    #     default => "/var/run/<%= config[:shortname] %>",
     # }
     # $piddir_mode = $::operatingsystem ? {
     #     default => '750',
     # }
     # $piddir_owner = $::operatingsystem ? {
-    #     default => '<%= config[:name] %>',
+    #     default => '<%= config[:shortname] %>',
     # }
     # $piddir_group = $::operatingsystem ? {
     #     default => 'adm',
     # }
     # $pidfile = $::operatingsystem ? {
-    #     default => '/var/run/<%= config[:name] %>/<%= config[:name] %>.pid'
+    #     default => '/var/run/<%= config[:shortname] %>/<%= config[:shortname] %>.pid'
     # }
 
-    # <%= config[:name] %> associated services
+    # <%= config[:shortname] %> associated services
     $servicename = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/ => '<%= config[:name] %>',
-        default                 => '<%= config[:name] %>'
+        /(?i-mx:ubuntu|debian)/ => '<%= config[:shortname] %>',
+        default                 => '<%= config[:shortname] %>'
     }
     # used for pattern in a service ressource
     $processname = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/ => '<%= config[:name] %>',
-        default                 => '<%= config[:name] %>'
+        /(?i-mx:ubuntu|debian)/ => '<%= config[:shortname] %>',
+        default                 => '<%= config[:shortname] %>'
     }
     $hasstatus = $::operatingsystem ? {
         /(?i-mx:ubuntu|debian)/        => false,
@@ -117,7 +117,7 @@ class <%= config[:name] %>::params {
 
     # Configuration directory & file
     # $configdir = $::operatingsystem ? {
-    #     default => "/etc/<%= config[:name] %>",
+    #     default => "/etc/<%= config[:shortname] %>",
     # }
     # $configdir_mode = $::operatingsystem ? {
     #     default => '0755',
@@ -130,11 +130,11 @@ class <%= config[:name] %>::params {
     # }
 
     $configfile = $::operatingsystem ? {
-        default => '/etc/<%= config[:name] %>.conf',
+        default => '/etc/<%= config[:shortname] %>.conf',
     }
     $configfile_init = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/ => '/etc/default/<%= config[:name] %>',
-        default                 => '/etc/sysconfig/<%= config[:name] %>'
+        /(?i-mx:ubuntu|debian)/ => '/etc/default/<%= config[:shortname] %>',
+        default                 => '/etc/sysconfig/<%= config[:shortname] %>'
     }
     $configfile_mode = $::operatingsystem ? {
         default => '0600',

@@ -1,16 +1,16 @@
-# File::      <tt><%= config[:name] %>-mydef.pp</tt>
+# File::      <tt>mydef.pp</tt>
 # Author::    <%= config[:author] %> (<%= config[:mail] %>)
 # Copyright:: Copyright (c) <%= Time.now.year %> <%= config[:author] %>
-# License::   <%= config[:license] %>
+# License::   <%= config[:license].capitalize %>
 #
 # ------------------------------------------------------------------------------
-# = Defines: <%= config[:name] %>::mydef
+# = Defines: <%= config[:shortname] %>::mydef
 #
 # <%= config[:summary] %>
 #
 # == Pre-requisites
 #
-# * The class '<%= config[:name] %>' should have been instanciated
+# * The class '<%= config[:shortname] %>' should have been instanciated
 #
 # == Parameters:
 #
@@ -32,11 +32,11 @@
 #
 # == Sample usage:
 #
-#     include "<%= config[:name] %>"
+#     include "<%= config[:shortname] %>"
 #
 # You can then add a mydef specification as follows:
 #
-#      <%= config[:name] %>::mydef {
+#      <%= config[:shortname] %>::mydef {
 #
 #      }
 #
@@ -47,31 +47,31 @@
 #
 # [Remember: No empty lines between comments and class definition]
 #
-define <%= config[:name] %>::mydef(
+define <%= config[:shortname] %>::mydef(
     $ensure         = 'present',
     $content        = '',
     $source         = ''
 )
 {
-    include <%= config[:name] %>::params
+    include <%= config[:shortname] %>::params
 
     # $name is provided at define invocation
     $basename = $name
 
     if ! ($ensure in [ 'present', 'absent' ]) {
-        fail("<%= config[:name] %>::mydef 'ensure' parameter must be set to either 'absent' or 'present'")
+        fail("<%= config[:shortname] %>::mydef 'ensure' parameter must be set to either 'absent' or 'present'")
     }
 
-    if ($<%= config[:name] %>::ensure != $ensure) {
-        if ($<%= config[:name] %>::ensure != 'present') {
-            fail("Cannot configure a <%= config[:name] %> '${basename}' as <%= config[:name] %>::ensure is NOT set to present (but ${<%= config[:name] %>::ensure})")
+    if ($<%= config[:shortname] %>::ensure != $ensure) {
+        if ($<%= config[:shortname] %>::ensure != 'present') {
+            fail("Cannot configure a <%= config[:shortname] %> '${basename}' as <%= config[:shortname] %>::ensure is NOT set to present (but ${<%= config[:shortname] %>::ensure})")
         }
     }
 
     # if content is passed, use that, else if source is passed use that
     $real_content = $content ? {
         '' => $source ? {
-            ''      => template('<%= config[:name] %>/<%= config[:name] %>_entry.erb'),
+            ''      => template('<%= config[:shortname] %>/<%= config[:shortname] %>_entry.erb'),
             default => ''
         },
         default => $content
@@ -84,9 +84,9 @@ define <%= config[:name] %>::mydef(
         }
     }
 
-    # concat::fragment { "${<%= config[:name] %>::params::configfile}_${basename}":
-    #     target  => "${<%= config[:name] %>::params::configfile}",
+    # concat::fragment { "${<%= config[:shortname] %>::params::configfile}_${basename}":
     #     ensure  => "${ensure}",
+    #     target  => "${<%= config[:shortname] %>::params::configfile}",
     #     content => $real_content,
     #     source  => $real_source,
     #     order   => '50',

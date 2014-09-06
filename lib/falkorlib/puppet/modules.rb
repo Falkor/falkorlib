@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-09-05 10:50 svarrette>
+# Time-stamp: <Sam 2014-09-06 16:21 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -112,7 +112,7 @@ module FalkorLib  #:nodoc:
                                      end
                     config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
                 end
-                name = config[:name].gsub(/.*-/, '')
+                config[:shortname] = name = config[:name].gsub(/.*-/, '')
                 tags = ask("\tKeywords (comma-separated list of tags)", name)
                 config[:tags] = tags.split(',')
                 list_license    = FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses]
@@ -126,7 +126,10 @@ module FalkorLib  #:nodoc:
 	            
 	            # Supported platforms
 	            config[:platforms] = [ 'debian' ]
-
+	            config[:dependencies] = [{
+		                                     "name"          => "puppetlabs-stdlib",
+		                                     "version_range" => ">= 1.0.0"
+	                                     }]
                 #ap config
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
@@ -163,7 +166,9 @@ module FalkorLib  #:nodoc:
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
                         FalkorLib::GitFlow.start('feature', "bootstraping", moduledir)
                     end
-                    [ 'metadata.json', 'doc/', 'LICENSE', '.gitignore', 'Gemfile', 'Rakefile'].each do |f|
+                    [ 'metadata.json', 
+                      'doc/', 'LICENSE', '.gitignore', 
+                      'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
                 end
@@ -247,7 +252,7 @@ module FalkorLib  #:nodoc:
 	            metadata[:operatingsystem_support].each do |e| 
 		            metadata[:platforms] << e["operatingsystem"].downcase
 	            end
-
+	            metadata[:shortname] = name.gsub(/.*-/, '')
                 [ 'README.md', 'doc/contributing.md'].each do |f|
 		            info "Upgrade the content of #{f}"
 		            ans = options[:no_interaction] ? 'Yes' : ask("procceed?", 'Yes')
