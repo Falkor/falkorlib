@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-09-06 16:13 svarrette>
+# Time-stamp: <Sam 2014-09-06 16:21 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -252,7 +252,7 @@ module FalkorLib  #:nodoc:
 	            metadata[:operatingsystem_support].each do |e| 
 		            metadata[:platforms] << e["operatingsystem"].downcase
 	            end
-
+	            metadata[:shortname] = name.gsub(/.*-/, '')
                 [ 'README.md', 'doc/contributing.md'].each do |f|
 		            info "Upgrade the content of #{f}"
 		            ans = options[:no_interaction] ? 'Yes' : ask("procceed?", 'Yes')

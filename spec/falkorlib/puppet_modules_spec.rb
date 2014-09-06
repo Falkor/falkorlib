@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Ven 2014-09-05 10:52 svarrette>
+# Time-stamp: <Sam 2014-09-06 16:25 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -117,7 +117,7 @@ describe FalkorLib::Puppet::Modules do
 		end
 
 		it "#deps -- should find a new dependency" do
-			classfile = File.join(moduledir, 'manifests', 'classes', 'toto.pp')
+			classfile = File.join(moduledir, 'manifests', 'init.pp')
 			newdep = "tata"
 			run %{ echo 'include "#{newdep}"' >> #{classfile} }
 			a = FalkorLib::Puppet::Modules.deps(moduledir)
