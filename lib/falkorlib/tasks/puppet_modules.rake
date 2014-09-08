@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Lun 2014-09-08 08:53 svarrette>
+# Time-stamp: <Lun 2014-09-08 10:15 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -128,6 +128,7 @@ namespace :templates do
 		end 
 
 		[ 'readme', 'rake', 'vagrant' ].each do |t|
+			###########   templates:upgrade:{readme,rake,vagrant}   ###########
 			task t.to_sym do
 				list = case t
 				       when 'readme'
@@ -143,8 +144,14 @@ namespace :templates do
 					                                   :only => list
 				                                   })
 			end
-			
 		end
+
+		###########   templates:upgrade:tests   ###########
+		task :tests do 
+			info "Upgrade the basic tests manifests in tests/"
+			FalkorLib::Puppet::Modules.tests()
+		end 
+
 
 	end # namespace upgrade
 end # namespace module

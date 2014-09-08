@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-08 08:52 svarrette>
+# Time-stamp: <Lun 2014-09-08 11:44 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -176,13 +176,23 @@ module FalkorLib  #:nodoc:
 
             ####
             # Parse a given modules to collect information
-            ##
-            def parse(moduledir = Dir.pwd)
-                name     = File.basename( moduledir )
-                error "The module #{name} does not exist" unless File.directory?( moduledir )
+            # Supported options:
+            #   :no_interaction [boolean]: do not interact
+            #
+            def parse(moduledir = Dir.pwd, options = {
+                          :no_interaction => false
+                      })
+                name = File.basename(moduledir)
+	            metadata = metadata(moduledir, {
+                                        :use_symbols => false,
+	                                    :extras      => false
+                                    })
+	            puts "**********************"
+	            puts metadata.to_yaml
+	            # error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
-                error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
-                metadata = JSON.parse( IO.read( jsonfile ) )
+                # error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
+                # metadata = JSON.parse( IO.read( jsonfile ) )
                 ref = JSON.pretty_generate( metadata )
                 metadata["classes"]     = classes(moduledir)
                 metadata["definitions"] = definitions(moduledir)
@@ -195,18 +205,16 @@ module FalkorLib  #:nodoc:
                         deps.delete( lib )
                     else
                         unless lib =~ /stdlib/
-                            warn "The library '#{dep["name"]}' is not analyzed as part of the #{name} module"
+                            warn "The library '#{dep["name"]}' is not analyzed as part of the #{metadata['shortname']} module"
                             missed_deps << dep
                         end
                     end
                 end
                 if ! deps.empty?
                     deps.each do |l|
-                        shortname = name.gsub(/.*-/, '')
-                        shortmetaname = metadata["name"].gsub(/.*-/, '')
                         next if [name, metadata["name"], name.gsub(/.*-/, ''), metadata["name"].gsub(/.*-/, '') ].include? ( l )
                         warn "The module '#{l}' is missing in the dependencies thus added"
-                        login = ask("[Github] login for the module '#{l}'")
+                        login   = ask("[Github] login for the module '#{l}'")
                         version = ask("Version requirement (ex: '>=1.0.0 <2.0.0' or '1.2.3' or '1.x')")
                         metadata["dependencies"] << {
                             "name"                => "#{login}/#{l}",
@@ -217,55 +225,69 @@ module FalkorLib  #:nodoc:
                 content = JSON.pretty_generate( metadata )
                 info "Metadata configuration for the module '#{name}'"
                 puts content
-                if ref == content
-                    warn "No difference to commit"
-                    return []
-                end
-                info "Differences with the previous file"
-                Diffy::Diff.default_format = :color
-                puts Diffy::Diff.new(ref, content, :context => 1)
-                warn "About to commit these changes in the '#{name}/metadata.json' file"
-                really_continue?
-                File.open(jsonfile,"w") do |f|
-                    f.write JSON.pretty_generate( metadata )
-                end
-                run %{ git commit -s -m "Update metadata.json" #{jsonfile} }
+                show_diff_and_write(content, jsonfile, {
+                                        :no_interaction     => options[:no_interaction],
+                                        :json_pretty_format => true
+                                    })
                 metadata
             end # parse
 
-            ## Upgrade the key files (README etc.) of the puppet module hosted
+            ###
+            # Retrieves the metadata from the metadata.json file in `moduledir`.
+            # Supported options:
+            #   :use_symbols [boolean]: convert all keys to symbols
+            #   :extras  [boolean]: add extra keys
+            #
+            def metadata(moduledir = Dir.pwd, options = {
+                             :use_symbols => true,
+                             :extras      => true
+                         })
+	            add_extras = options[:extras].nil? ? true : options[:extras]
+	            name     = File.basename( moduledir )
+                error "The module #{name} does not exist" unless File.directory?( moduledir )
+                jsonfile = File.join( moduledir, 'metadata.json')
+                error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
+                metadata = JSON.parse( IO.read( jsonfile ) )
+                if add_extras
+                    metadata[:shortname] = name.gsub(/.*-/, '')
+                    metadata[:platforms] = []
+                    metadata["operatingsystem_support"].each do |e|
+                        metadata[:platforms] << e["operatingsystem"].downcase unless e["operatingsystem"].nil?
+                    end
+                end
+                if options[:use_symbols]
+                    # convert string keys to symbols
+                    metadata.keys.each do |k|
+                        metadata[(k.to_sym rescue k) || k] = metadata.delete(k)
+                    end
+                end
+                metadata
+            end # metadata
+
+
+
+            ##
+            # Upgrade the key files (README etc.) of the puppet module hosted
             # in `moduledir` with the latest version of the FalkorLib template
             # Supported options:
             #   :no_interaction [boolean]: do not interact
             #   :only [Array of string]: update only the listed files
             #   :exclude [Array of string]: exclude from the upgrade the listed
             #                               files
-            #
+            # return the number of considered files
             def upgrade(moduledir = Dir.pwd,
                         options = {
                             :no_interaction => false,
                             :only    => nil,
                             :exclude => []
                         })
-                name     = File.basename( moduledir )
-                error "The module #{name} does not exist" unless File.directory?( moduledir )
-                jsonfile = File.join( moduledir, 'metadata.json')
-                error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
-                metadata = JSON.parse( IO.read( jsonfile ) )
-                templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
-                # convert string keys to symbols
-                metadata.keys.each do |k|
-                    metadata[(k.to_sym rescue k) || k] = metadata.delete(k)
-                end
-                metadata[:platforms] = []
-                metadata[:operatingsystem_support].each do |e|
-                    metadata[:platforms] << e["operatingsystem"].downcase
-                end
-                metadata[:shortname] = name.gsub(/.*-/, '')
+                metadata = metadata(moduledir)
+	            templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
+                i = 0
 	            update_from_erb = [ 'README.md', 'doc/contributing.md']
                 (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
-		            next unless options[:exclude].nil? or ! options[:exclude].include?( f )
-		            next unless options[:only].nil?    or options[:only].include?(f) 
+                    next unless options[:exclude].nil? or ! options[:exclude].include?( f )
+                    next unless options[:only].nil?    or options[:only].include?(f)
                     info "Upgrade the content of #{f}"
                     ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
                     next if ans =~ /n.*/i
@@ -280,11 +302,17 @@ module FalkorLib  #:nodoc:
                                                 :srcdir => templatedir
                                             })
                     end
+		            i += 1
                 end
-
+	            i
             end
 
+            ## initializes or update the tests directory
+            def tests(moduledir = Dir.pwd)
 
+
+
+            end # tests
 
 
             #######

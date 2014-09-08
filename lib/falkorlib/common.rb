@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-08 08:34 svarrette>
+# Time-stamp: <Lun 2014-09-08 10:56 svarrette>
 ################################################################################
 
 require "falkorlib"
 require 'open3'
 require 'erb'      # required for module generation
 require 'diffy'
+require 'json'
 
 module FalkorLib #:nodoc:
 
@@ -321,12 +322,18 @@ module FalkorLib #:nodoc:
 
         ## Show the difference between a `content` string and an destination file (using Diff algorithm).
         # Obviosuly, if the outfile does not exists, no difference is proposed. 
-        # The file is proposed for writing
+        # Supported options:
+        #   :no_interaction [boolean]: do not interact
+        #   :json_pretty_format [boolean]: write a json content, in pretty format
         def show_diff_and_write(content, outfile, options = {
-	                                :no_interaction => false
+	                                :no_interaction     => false,
+	                                :json_pretty_format => false,
                                 })
 	        if File.exists?( outfile )
 		        ref = File.read( outfile )
+		        if options[:json_pretty_format]
+			        ref = JSON.pretty_generate (JSON.parse( IO.read( outfile ) ))
+		        end 
 		        if ref == content
 			        warn "Nothing to update"
 			        return
@@ -343,7 +350,7 @@ module FalkorLib #:nodoc:
             return if proceed =~ /n.*/i
             info("=> writing #{outfile}")
             File.open("#{outfile}", "w+") do |f|
-                f.puts content
+		        f.write content
             end
 	        if FalkorLib::Git.init?(File.dirname(outfile))
 		        do_commit = options[:no_interaction] ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
