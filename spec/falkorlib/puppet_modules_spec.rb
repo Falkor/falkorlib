@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sam 2014-09-06 16:25 svarrette>
+# Time-stamp: <Lun 2014-09-08 08:55 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -93,6 +93,32 @@ describe FalkorLib::Puppet::Modules do
 				                                       :no_interaction => true
 			                                       })
         end
+
+        it "#upgrade -- with only a subset of files" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true,
+				                                       :only => [ 'README.md', 'Gemfile']
+			                                       })
+        end
+
+        it "#upgrade -- exclude some files" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true, 
+				                                       :exclude => [ 'README.md']
+			                                       })
+        end
+
+        it "#upgrade -- both include and exclude files" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true, 
+				                                       :only    => [ 'README.md'],
+				                                       :exclude => [ 'README.md']
+			                                       })
+        end
+
+		
+
+		
 
         it "#parse" do
             STDIN.should_receive(:gets).and_return('')
