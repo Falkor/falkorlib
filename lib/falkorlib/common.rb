@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-08 10:56 svarrette>
+# Time-stamp: <Lun 2014-09-08 14:18 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -306,7 +306,8 @@ module FalkorLib #:nodoc:
             end
         end
 
-        ## ERB generation of the file `outfile` using the source template file `erbfile`
+        ### 
+        # ERB generation of the file `outfile` using the source template file `erbfile`
         # Supported options:
         #   :no_interaction [boolean]: do not interact
         def write_from_erb_template(erbfile, outfile, config = {}, 
@@ -325,6 +326,8 @@ module FalkorLib #:nodoc:
         # Supported options:
         #   :no_interaction [boolean]: do not interact
         #   :json_pretty_format [boolean]: write a json content, in pretty format
+        #
+        # return 0 if nothing happened, 1 if a write has been done
         def show_diff_and_write(content, outfile, options = {
 	                                :no_interaction     => false,
 	                                :json_pretty_format => false,
@@ -336,7 +339,7 @@ module FalkorLib #:nodoc:
 		        end 
 		        if ref == content
 			        warn "Nothing to update"
-			        return
+			        return 0
 		        end 
 		        warn "the file '#{outfile}' already exists and will be overwritten."
 		        warn "Expected difference: \n------"
@@ -347,7 +350,7 @@ module FalkorLib #:nodoc:
 		        puts content if watch =~ /y.*/i
 	        end
 	        proceed = options[:no_interaction] ? 'yes' : ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
-            return if proceed =~ /n.*/i
+            return 0 if proceed =~ /n.*/i
             info("=> writing #{outfile}")
             File.open("#{outfile}", "w+") do |f|
 		        f.write content
@@ -355,7 +358,8 @@ module FalkorLib #:nodoc:
 	        if FalkorLib::Git.init?(File.dirname(outfile))
 		        do_commit = options[:no_interaction] ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
 		        FalkorLib::Git.add(outfile, "update content of '#{File.basename(outfile)}'") if do_commit =~ /y.*/i
-	        end 
+	        end
+	        return 1
         end 
 
 

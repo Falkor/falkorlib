@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-08 11:44 svarrette>
+# Time-stamp: <Lun 2014-09-08 14:03 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -130,6 +130,7 @@ module FalkorLib  #:nodoc:
                                              "name"          => "puppetlabs-stdlib",
                                              "version_range" => ">= 1.0.0"
                                          }]
+                config[:params] = ["ensure", "protocol", "port", "packagename" ]
                 #ap config
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
@@ -183,13 +184,13 @@ module FalkorLib  #:nodoc:
                           :no_interaction => false
                       })
                 name = File.basename(moduledir)
-	            metadata = metadata(moduledir, {
+                metadata = metadata(moduledir, {
                                         :use_symbols => false,
-	                                    :extras      => false
+                                        :extras      => false
                                     })
-	            puts "**********************"
-	            puts metadata.to_yaml
-	            # error "The module #{name} does not exist" unless File.directory?( moduledir )
+                puts "**********************"
+                puts metadata.to_yaml
+                # error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
                 # error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
                 # metadata = JSON.parse( IO.read( jsonfile ) )
@@ -242,8 +243,8 @@ module FalkorLib  #:nodoc:
                              :use_symbols => true,
                              :extras      => true
                          })
-	            add_extras = options[:extras].nil? ? true : options[:extras]
-	            name     = File.basename( moduledir )
+                add_extras = options[:extras].nil? ? true : options[:extras]
+                name     = File.basename( moduledir )
                 error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
                 error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
@@ -253,6 +254,15 @@ module FalkorLib  #:nodoc:
                     metadata[:platforms] = []
                     metadata["operatingsystem_support"].each do |e|
                         metadata[:platforms] << e["operatingsystem"].downcase unless e["operatingsystem"].nil?
+                    end
+                    # Analyse params
+                    params_manifest = File.join(moduledir, 'manifests', 'params.pp')
+                    if File.exist?(params_manifest)
+                        params = []
+                        File.read(params_manifest).scan(/^\s*\$(.*)\s*=/) do |m|
+                            params << $1 unless $1.nil?
+                        end
+                        metadata[:params] = params.uniq
                     end
                 end
                 if options[:use_symbols]
@@ -282,9 +292,9 @@ module FalkorLib  #:nodoc:
                             :exclude => []
                         })
                 metadata = metadata(moduledir)
-	            templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
+                templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 i = 0
-	            update_from_erb = [ 'README.md', 'doc/contributing.md']
+                update_from_erb = [ 'README.md', 'doc/contributing.md']
                 (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
                     next unless options[:exclude].nil? or ! options[:exclude].include?( f )
                     next unless options[:only].nil?    or options[:only].include?(f)
@@ -292,27 +302,46 @@ module FalkorLib  #:nodoc:
                     ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
                     next if ans =~ /n.*/i
                     if update_from_erb.include?(f)
-                        write_from_erb_template(File.join(templatedir, "#{f}.erb"),
-                                                File.join(moduledir,  f),
-                                                metadata,
-                                                options)
+                        i += write_from_erb_template(File.join(templatedir, "#{f}.erb"),
+                                                     File.join(moduledir,  f),
+                                                     metadata,
+                                                     options)
                     else
-                        write_from_template(f, moduledir, {
-                                                :no_interaction => options[:no_interaction],
-                                                :srcdir => templatedir
-                                            })
+                        i+= write_from_template(f, moduledir, {
+                                                    :no_interaction => options[:no_interaction],
+                                                    :srcdir => templatedir
+                                                })
                     end
-		            i += 1
                 end
-	            i
+                i
             end
 
-            ## initializes or update the tests directory
-            def tests(moduledir = Dir.pwd)
-
-
-
-            end # tests
+            ##
+            # initializes or update the (tests/specs/etc.) sub-directory of the
+            # `moduledir` using the correcponding ERB files.
+            # Supported options:
+            #   :no_interaction [boolean]: do not interact
+            #
+            # returns the number of considered files
+            def upgrade_from_template(moduledir = Dir.pwd,
+                                      subdir = 'tests',
+                                      options = {
+                                          :no_interaction => false
+                                      })
+                metadata = metadata(moduledir)
+                #ap metadata
+                i = 0
+                templatedir = File.join( FalkorLib.templates, 'puppet', 'modules', subdir)
+                error "Unable to find the template directory '#{templatedir}" unless File.directory?( templatedir )
+                Dir["#{templatedir}/**/*.erb"].each do |erbfile|
+                    f = File.join(subdir, File.basename(erbfile, '.erb'))
+                    info "Upgrade the content of #{f}"
+                    ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
+                    next if ans =~ /n.*/i
+                    i+= write_from_erb_template(erbfile, File.join(moduledir, f), metadata, options)
+                end
+                i
+            end
 
 
             #######
