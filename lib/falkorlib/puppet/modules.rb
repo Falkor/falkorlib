@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-09-06 16:21 svarrette>
+# Time-stamp: <Lun 2014-09-08 16:41 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -30,7 +30,7 @@ module FalkorLib  #:nodoc:
                         :source       => '',
                         :project_page => '',
                         :issues_url   => '',
-			            :forge_url    => 'https://forge.puppetlabs.com',       
+                        :forge_url    => 'https://forge.puppetlabs.com',
                         :dependencies => [],
                         :operatingsystem_support => [],
                         :tags         => []
@@ -76,7 +76,7 @@ module FalkorLib  #:nodoc:
                     end
                 end
                 result.uniq!
-                result
+                result.sort
             end
 
 
@@ -102,7 +102,7 @@ module FalkorLib  #:nodoc:
                                      when :issues_url
                                          config[:project_page].nil? ? v : "#{config[:project_page]}/issues"
                                      when :forge_url
-	                                     v + '/' + config[:name].gsub(/-/,'/')
+                                         v + '/' + config[:name].gsub(/-/,'/')
                                      when :description
                                          config[:summary].nil? ? v : "#{config[:summary]}"
                                      when :source
@@ -123,19 +123,20 @@ module FalkorLib  #:nodoc:
                                       idx.nil? ? 1 : idx + 1)
                 config[:license] = license.downcase unless license.empty?
                 puts "\t" + sprintf("%-20s", "Module License:") + config[:license]
-	            
-	            # Supported platforms
-	            config[:platforms] = [ 'debian' ]
-	            config[:dependencies] = [{
-		                                     "name"          => "puppetlabs-stdlib",
-		                                     "version_range" => ">= 1.0.0"
-	                                     }]
+
+                # Supported platforms
+                config[:platforms] = [ 'debian' ]
+                config[:dependencies] = [{
+                                             "name"          => "puppetlabs-stdlib",
+                                             "version_range" => ">= 1.0.0"
+                                         }]
+                config[:params] = ["ensure", "protocol", "port", "packagename" ]
                 #ap config
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 init_from_template(templatedir, moduledir, config, {
                                        :erb_exclude    => [ 'templates\/[^\/]*variables\.erb$' ],
-	                                   :no_interaction => true
+                                       :no_interaction => true
                                    })
                 # Rename the files / element templatename
                 Dir["#{moduledir}/**/*"].each do |e|
@@ -152,22 +153,22 @@ module FalkorLib  #:nodoc:
                 end
                 info "Initialize RVM"
                 init_rvm(moduledir)
-	            unless FalkorLib::Git.init?(moduledir)
-		            init_gitflow = command?('git-flow')
-		            warn "Git #{init_gitflow ? '[Flow]' : ''} is not initialized in #{moduledir}."
-		            a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
-		            return if a =~ /n.*/i
-		            init_gitflow ? FalkorLib::GitFlow.init(moduledir) : FalkorLib::Git.init(moduledir)
-	            end 
-               
+                unless FalkorLib::Git.init?(moduledir)
+                    init_gitflow = command?('git-flow')
+                    warn "Git #{init_gitflow ? '[Flow]' : ''} is not initialized in #{moduledir}."
+                    a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
+                    return if a =~ /n.*/i
+                    init_gitflow ? FalkorLib::GitFlow.init(moduledir) : FalkorLib::Git.init(moduledir)
+                end
+
                 # Propose to commit the key files
                 if FalkorLib::Git.init?(moduledir)
                     if FalkorLib::GitFlow.init?(moduledir)
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
                         FalkorLib::GitFlow.start('feature', "bootstraping", moduledir)
                     end
-                    [ 'metadata.json', 
-                      'doc/', 'LICENSE', '.gitignore', 
+                    [ 'metadata.json',
+                      'doc/', 'LICENSE', '.gitignore',
                       'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
@@ -176,15 +177,25 @@ module FalkorLib  #:nodoc:
 
             ####
             # Parse a given modules to collect information
-            ##
-            def parse(moduledir = Dir.pwd)
-                name     = File.basename( moduledir )
-                error "The module #{name} does not exist" unless File.directory?( moduledir )
+            # Supported options:
+            #   :no_interaction [boolean]: do not interact
+            #
+            def parse(moduledir = Dir.pwd, options = {
+                          :no_interaction => false
+                      })
+                name = File.basename(moduledir)
+                metadata = metadata(moduledir, {
+                                        :use_symbols => false,
+                                        :extras      => false
+                                    })
+                puts "**********************"
+                puts metadata.to_yaml
+                # error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
-                error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
-                metadata = JSON.parse( IO.read( jsonfile ) )
+                # error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
+                # metadata = JSON.parse( IO.read( jsonfile ) )
                 ref = JSON.pretty_generate( metadata )
-	            metadata["classes"]     = classes(moduledir)
+                metadata["classes"]     = classes(moduledir)
                 metadata["definitions"] = definitions(moduledir)
                 deps        = deps(moduledir)
                 listed_deps = metadata["dependencies"]
@@ -195,18 +206,16 @@ module FalkorLib  #:nodoc:
                         deps.delete( lib )
                     else
                         unless lib =~ /stdlib/
-                            warn "The library '#{dep["name"]}' is not analyzed as part of the #{name} module"
+                            warn "The library '#{dep["name"]}' is not analyzed as part of the #{metadata['shortname']} module"
                             missed_deps << dep
                         end
                     end
                 end
                 if ! deps.empty?
                     deps.each do |l|
-                        shortname = name.gsub(/.*-/, '')
-                        shortmetaname = metadata["name"].gsub(/.*-/, '')
                         next if [name, metadata["name"], name.gsub(/.*-/, ''), metadata["name"].gsub(/.*-/, '') ].include? ( l )
                         warn "The module '#{l}' is missing in the dependencies thus added"
-                        login = ask("[Github] login for the module '#{l}'")
+                        login   = ask("[Github] login for the module '#{l}'")
                         version = ask("Version requirement (ex: '>=1.0.0 <2.0.0' or '1.2.3' or '1.x')")
                         metadata["dependencies"] << {
                             "name"                => "#{login}/#{l}",
@@ -214,57 +223,125 @@ module FalkorLib  #:nodoc:
                         }
                     end
                 end
-	            content = JSON.pretty_generate( metadata ) 
+                content = JSON.pretty_generate( metadata )
                 info "Metadata configuration for the module '#{name}'"
                 puts content
-	            if ref == content
-		            warn "No difference to commit"
-		            return []
-	            end 
-	            info "Differences with the previous file"
-	            Diffy::Diff.default_format = :color
-	            puts Diffy::Diff.new(ref, content, :context => 1)
-                warn "About to commit these changes in the '#{name}/metadata.json' file"
-                really_continue?
-                File.open(jsonfile,"w") do |f|
-                    f.write JSON.pretty_generate( metadata )
-                end
-	            run %{ git commit -s -m "Update metadata.json" #{jsonfile} }
+                show_diff_and_write(content, jsonfile, {
+                                        :no_interaction     => options[:no_interaction],
+                                        :json_pretty_format => true
+                                    })
                 metadata
             end # parse
 
-            ##Upgrade the repository README etc. with the
-            def upgrade(moduledir = Dir.pwd, 
-                        options = {
-	                        :no_interaction => false
-                        })
+            ###
+            # Retrieves the metadata from the metadata.json file in `moduledir`.
+            # Supported options:
+            #   :use_symbols [boolean]: convert all keys to symbols
+            #   :extras  [boolean]: add extra keys
+            #
+            def metadata(moduledir = Dir.pwd, options = {
+                             :use_symbols => true,
+                             :extras      => true
+                         })
+                add_extras = options[:extras].nil? ? true : options[:extras]
                 name     = File.basename( moduledir )
                 error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
                 error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
                 metadata = JSON.parse( IO.read( jsonfile ) )
+                if add_extras
+                    metadata[:shortname] = name.gsub(/.*-/, '')
+                    metadata[:platforms] = []
+                    metadata["operatingsystem_support"].each do |e|
+                        metadata[:platforms] << e["operatingsystem"].downcase unless e["operatingsystem"].nil?
+                    end
+                    # Analyse params
+                    params_manifest = File.join(moduledir, 'manifests', 'params.pp')
+                    if File.exist?(params_manifest)
+                        params = []
+                        File.read(params_manifest).scan(/^\s*\$(.*)\s*=/) do |m|
+                            params << $1 unless $1.nil?
+                        end
+                        metadata[:params] = params.uniq
+                    end
+                end
+                if options[:use_symbols]
+                    # convert string keys to symbols
+                    metadata.keys.each do |k|
+                        metadata[(k.to_sym rescue k) || k] = metadata.delete(k)
+                    end
+                end
+                metadata
+            end # metadata
+
+
+
+            ##
+            # Upgrade the key files (README etc.) of the puppet module hosted
+            # in `moduledir` with the latest version of the FalkorLib template
+            # Supported options:
+            #   :no_interaction [boolean]: do not interact
+            #   :only [Array of string]: update only the listed files
+            #   :exclude [Array of string]: exclude from the upgrade the listed
+            #                               files
+            # return the number of considered files
+            def upgrade(moduledir = Dir.pwd,
+                        options = {
+                            :no_interaction => false,
+                            :only    => nil,
+                            :exclude => []
+                        })
+                metadata = metadata(moduledir)
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
-                # convert string keys to symbols
-                metadata.keys.each do |k|
-                    metadata[(k.to_sym rescue k) || k] = metadata.delete(k)
+                i = 0
+                update_from_erb = [ 'README.md', 'doc/contributing.md']
+                (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
+                    next unless options[:exclude].nil? or ! options[:exclude].include?( f )
+                    next unless options[:only].nil?    or options[:only].include?(f)
+                    info "Upgrade the content of #{f}"
+                    ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
+                    next if ans =~ /n.*/i
+                    if update_from_erb.include?(f)
+                        i += write_from_erb_template(File.join(templatedir, "#{f}.erb"),
+                                                     File.join(moduledir,  f),
+                                                     metadata,
+                                                     options)
+                    else
+                        i+= write_from_template(f, moduledir, {
+                                                    :no_interaction => options[:no_interaction],
+                                                    :srcdir => templatedir
+                                                })
+                    end
                 end
-	            metadata[:platforms] = []
-	            metadata[:operatingsystem_support].each do |e| 
-		            metadata[:platforms] << e["operatingsystem"].downcase
-	            end
-	            metadata[:shortname] = name.gsub(/.*-/, '')
-                [ 'README.md', 'doc/contributing.md'].each do |f|
-		            info "Upgrade the content of #{f}"
-		            ans = options[:no_interaction] ? 'Yes' : ask("procceed?", 'Yes')
-		            next unless ans =~ /n*/i 
-                    write_from_erb_template(File.join(templatedir, "#{f}.erb"),
-                                            File.join(moduledir,  f),
-                                            metadata,
-                                            options)
-                end
+                i
             end
 
-
+            ##
+            # initializes or update the (tests/specs/etc.) sub-directory of the
+            # `moduledir` using the correcponding ERB files.
+            # Supported options:
+            #   :no_interaction [boolean]: do not interactww
+            #
+            # returns the number of considered files
+            def upgrade_from_template(moduledir = Dir.pwd,
+                                      subdir = 'tests',
+                                      options = {
+                                          :no_interaction => false
+                                      })
+                metadata = metadata(moduledir)
+                #ap metadata
+                i = 0
+                templatedir = File.join( FalkorLib.templates, 'puppet', 'modules', subdir)
+                error "Unable to find the template directory '#{templatedir}" unless File.directory?( templatedir )
+                Dir["#{templatedir}/**/*.erb"].each do |erbfile|
+                    f = File.join(subdir, File.basename(erbfile, '.erb'))
+                    info "Upgrade the content of #{f}"
+                    ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
+                    next if ans =~ /n.*/i
+                    i+= write_from_erb_template(erbfile, File.join(moduledir, f), metadata, options)
+                end
+                i
+            end
 
 
             #######
@@ -298,12 +375,12 @@ module FalkorLib  #:nodoc:
                     resulttmp = result.dup
                     (result - result2).each do |x|
                         Dir["#{moduledir}/**/*.pp"].each do |ppfile|
-				            File.read(ppfile).scan(/^\s*(include|require|class\s*{)\s*["']?(::)?([0-9a-zA-Z:{$}\-]*)["']?/) do |m|
-					            next if $3.nil?
-					            entry = $3.split('::').first 
-					            result << entry unless entry.nil? or entry.empty?
-				            end 
-			            end 
+                            File.read(ppfile).scan(/^\s*(include|require|class\s*{)\s*["']?(::)?([0-9a-zA-Z:{$}\-]*)["']?/) do |m|
+                                next if $3.nil?
+                                entry = $3.split('::').first
+                                result << entry unless entry.nil? or entry.empty?
+                            end
+                        end
                     end
                     result.uniq!
                     result2 = resulttmp.dup

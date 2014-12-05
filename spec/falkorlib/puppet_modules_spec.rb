@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sam 2014-09-06 16:25 svarrette>
+# Time-stamp: <Ven 2014-12-05 22:56 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -88,17 +88,23 @@ describe FalkorLib::Puppet::Modules do
             d.should == []
         end
 
-        it "#upgrade" do
-			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
-				                                       :no_interaction => true
-			                                       })
-        end
+		it "#metadata" do
+			ref = JSON.parse( IO.read( jsonfile ) )
+			metadata = FalkorLib::Puppet::Modules.metadata(moduledir, { 
+				                                               :use_symbols => false,
+				                                               :extras      => false
+			                                               })
+			ref.keys.each do |k|
+				metadata[k].should == ref[k] 
+			end
+		end
+
 
         it "#parse" do
-            STDIN.should_receive(:gets).and_return('')
+            #STDIN.should_receive(:gets).and_return('')
             ref = JSON.parse( IO.read( jsonfile ) )
-            metadata = FalkorLib::Puppet::Modules.parse(moduledir)
-            diff = (metadata.to_a - ref.to_a).flatten.sort
+			metadata = FalkorLib::Puppet::Modules.parse(moduledir, { :no_interaction => true })
+			diff = (metadata.to_a - ref.to_a).flatten.sort
             diff.should == [
                             'classes',
                             'definitions',
@@ -111,9 +117,11 @@ describe FalkorLib::Puppet::Modules do
                            ]
         end
 
-		it "#parse again" do
-			metadata = FalkorLib::Puppet::Modules.parse(moduledir)
-			metadata.should == []
+		it "#parse again -- should not exhibit any difference" do
+			ref = JSON.parse( IO.read( jsonfile ) )
+			metadata = FalkorLib::Puppet::Modules.parse(moduledir, { :no_interaction => true })
+			diff = (metadata.to_a - ref.to_a).flatten.sort
+			diff.should == []
 		end
 
 		it "#deps -- should find a new dependency" do
@@ -124,11 +132,12 @@ describe FalkorLib::Puppet::Modules do
 			a.should include newdep 
 		end
 
-		it "#parse -- should ask new dependency elements" do
+		it "#parse again -- should ask new dependency elements" do
 			ref      = JSON.parse( IO.read( jsonfile ) )
 			STDIN.should_receive(:gets).and_return('svarrette')
 			STDIN.should_receive(:gets).and_return('1.2')
 			STDIN.should_receive(:gets).and_return('Yes')
+			STDIN.should_receive(:gets).and_return('')
 			metadata = FalkorLib::Puppet::Modules.parse(moduledir)
 			diff = (metadata.to_a - ref.to_a).flatten
 			diff.should == [
@@ -137,6 +146,41 @@ describe FalkorLib::Puppet::Modules do
 			                {"name"=>"svarrette/tata", "version_requirement"=>"1.2"}
 			               ]
 		end
+
+		upgraded_files_default = 1
+		it "#upgrade" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true
+			                                       })
+			d.should == upgraded_files_default
+		end
+
+		it "#upgrade -- with only a subset of files" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true,
+				                                       :only => [ 'README.md', 'Gemfile']
+			                                       })
+			d.should == 0
+		end
+
+		it "#upgrade -- exclude some files" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true, 
+				                                       :exclude => [ 'README.md']
+			                                       })
+			d.should == (upgraded_files_default - 1)
+		end
+
+		it "#upgrade -- both include and exclude files" do
+			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
+				                                       :no_interaction => true, 
+				                                       :only    => [ 'README.md'],
+				                                       :exclude => [ 'README.md']
+			                                       })
+			d.should == 0
+		end
+
+
     end # context
 
 end

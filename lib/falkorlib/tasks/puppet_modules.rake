@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Sam 2014-09-06 16:32 svarrette>
+# Time-stamp: <Lun 2014-09-08 17:19 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
 ################################################################################
 
+require 'rake'
 require 'falkorlib'
 require 'falkorlib/tasks'
 require 'falkorlib/puppet'
@@ -119,12 +120,40 @@ end # namespace puppet
 
 #.....................
 namespace :templates do
+
 	namespace :upgrade do
-		###########   module:upgrade:readme   ###########
-		task :readme do |t|
-			#info "#{t.comment}"
+		###########   templates:upgrade:all   ###########
+		task :all do 
+			info "Upgrade all key module files from FalkorLib templates"
 			FalkorLib::Puppet::Modules.upgrade()
 		end 
+
+		[ 'readme', 'rake', 'vagrant' ].each do |t|
+			###########   templates:upgrade:{readme,rake,vagrant}   ###########
+			task t.to_sym do
+				list = case t
+				       when 'readme'
+					       [ 'README.md', 'doc/contributing.md' ]
+				       when 'rake' 
+					       [ 'Gemfile', 'Rakefile' ]
+				       when 'vagrant'
+					       [ 'Vagrantfile', '.vagrant_init.rb']
+				       else []
+				       end
+				#info "Upgrade the module files '#{list.join(',')}' from FalkorLib templates"
+				FalkorLib::Puppet::Modules.upgrade(Dir.pwd,{
+					                                   :only => list
+				                                   })
+			end
+		end
+
+		###########   templates:upgrade:tests   ###########
+		task :tests do 
+			info "Upgrade the basic tests manifests in tests/"
+			FalkorLib::Puppet::Modules.upgrade_from_template(Dir.pwd, 'tests')
+		end 
+
+
 	end # namespace upgrade
 end # namespace module
 
@@ -161,6 +190,32 @@ PuppetSyntax.exclude_paths = exclude_tests_paths
 # 	info "checking syntax for Puppet manifests, templates, and Hiera YAML"
 # end 
 # task :syntax => :syntax_info
+
+#.........................................................................
+# rspec-puppet tasks -- see http://rspec-puppet.com/tutorial/
+#
+require 'rspec/core/rake_task'
+
+########## rspec #################
+desc "Run all RSpec code examples"
+RSpec::Core::RakeTask.new(:rspec) do |t|
+	t.rspec_opts = File.read("spec/spec.opts").chomp || ""
+end
+
+SPEC_SUITES = (Dir.entries('spec') - ['.', '..','fixtures']).select {|e| File.directory? "spec/#{e}" }
+namespace :rspec do
+	SPEC_SUITES.each do |suite|
+		############ rspec:{classes,defines...} ##########
+		desc "Run #{suite} RSpec code examples"
+		RSpec::Core::RakeTask.new(suite) do |t|
+			t.pattern = "spec/#{suite}/**/*_spec.rb"
+			t.rspec_opts = File.read("spec/spec.opts").chomp || ""
+		end
+	end
+end
+task :default => :rspec
+
+
 
 
 ################################################
