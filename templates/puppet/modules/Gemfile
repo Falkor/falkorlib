@@ -10,3 +10,4 @@ gem "puppet", puppetversion
 gem 'puppet-lint',            '>= 0.3.2'
 gem 'puppet-syntax'
 gem 'facter',                 '>= 1.7.0'
+gem 'rspec-puppet'

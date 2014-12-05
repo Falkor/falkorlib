@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Lun 2014-09-08 12:21 svarrette>
+# Time-stamp: <Lun 2014-09-08 17:19 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
 ################################################################################
 
+require 'rake'
 require 'falkorlib'
 require 'falkorlib/tasks'
 require 'falkorlib/puppet'
@@ -189,6 +190,32 @@ PuppetSyntax.exclude_paths = exclude_tests_paths
 # 	info "checking syntax for Puppet manifests, templates, and Hiera YAML"
 # end 
 # task :syntax => :syntax_info
+
+#.........................................................................
+# rspec-puppet tasks -- see http://rspec-puppet.com/tutorial/
+#
+require 'rspec/core/rake_task'
+
+########## rspec #################
+desc "Run all RSpec code examples"
+RSpec::Core::RakeTask.new(:rspec) do |t|
+	t.rspec_opts = File.read("spec/spec.opts").chomp || ""
+end
+
+SPEC_SUITES = (Dir.entries('spec') - ['.', '..','fixtures']).select {|e| File.directory? "spec/#{e}" }
+namespace :rspec do
+	SPEC_SUITES.each do |suite|
+		############ rspec:{classes,defines...} ##########
+		desc "Run #{suite} RSpec code examples"
+		RSpec::Core::RakeTask.new(suite) do |t|
+			t.pattern = "spec/#{suite}/**/*_spec.rb"
+			t.rspec_opts = File.read("spec/spec.opts").chomp || ""
+		end
+	end
+end
+task :default => :rspec
+
+
 
 
 ################################################

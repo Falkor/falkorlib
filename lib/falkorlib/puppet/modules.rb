@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-08 14:03 svarrette>
+# Time-stamp: <Lun 2014-09-08 16:41 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -76,7 +76,7 @@ module FalkorLib  #:nodoc:
                     end
                 end
                 result.uniq!
-                result
+                result.sort
             end
 
 
@@ -320,7 +320,7 @@ module FalkorLib  #:nodoc:
             # initializes or update the (tests/specs/etc.) sub-directory of the
             # `moduledir` using the correcponding ERB files.
             # Supported options:
-            #   :no_interaction [boolean]: do not interact
+            #   :no_interaction [boolean]: do not interactww
             #
             # returns the number of considered files
             def upgrade_from_template(moduledir = Dir.pwd,
