@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-08-26 11:54 svarrette>
+# Time-stamp: <Ven 2014-12-05 22:43 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -315,12 +315,12 @@ module FalkorLib  #:nodoc:
                 FalkorLib.config.git[:subtrees].each do |dir,conf|
                     next if conf[:url].nil?
                     url    = conf[:url]
-                    remote = dir
+                    remote = dir.gsub(/\//, '-')
                     branch = conf[:branch].nil? ? 'master' : conf[:branch]
                     remotes = FalkorLib::Git.remotes
                     unless remotes.include?( remote )
                         info "Initialize Git remote '#{remote}' from URL '#{url}'"
-                        exit_status = execute "git remote add -f #{dir} #{url}"
+                        exit_status = execute "git remote add -f #{remote} #{url}"
                     end
                     unless File.directory?( File.join(git_root_dir, dir) )
                         info "initialize Git subtree '#{dir}'"
@@ -356,7 +356,7 @@ module FalkorLib  #:nodoc:
                 FalkorLib.config.git[:subtrees].each do |dir,conf|
                     next if conf[:url].nil?
                     url    = conf[:url]
-                    remote = dir
+                    remote = dir.gsub(/\//, '-')
                     branch = conf[:branch].nil? ? 'master' : conf[:branch]
                     remotes = FalkorLib::Git.remotes
                     raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
@@ -377,7 +377,7 @@ module FalkorLib  #:nodoc:
                 FalkorLib.config.git[:subtrees].each do |dir,conf|
                     next if conf[:url].nil?
                     url    = conf[:url]
-                    remote = dir
+                    remote = dir.gsub(/\//, '-')
                     branch = conf[:branch].nil? ? 'master' : conf[:branch]
                     remotes = FalkorLib::Git.remotes
                     info "Pulling changes into subtree '#{dir}' using remote '#{remote}/#{branch}'"
@@ -387,6 +387,7 @@ module FalkorLib  #:nodoc:
                     raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory? ( File.join(git_root_dir, dir) )
                     info "\t\\__ pulling changes"
                     exit_status = execute "git subtree pull --prefix #{dir} --squash #{remote} #{branch}"
+                    #exit_status = puts "git subtree pull --prefix #{dir} --squash #{remote} #{branch}"
                 end
             end
             exit_status
