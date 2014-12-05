@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Lun 2014-09-08 11:44 svarrette>
+# Time-stamp: <Ven 2014-12-05 22:56 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -147,7 +147,7 @@ describe FalkorLib::Puppet::Modules do
 			               ]
 		end
 
-		upgraded_files_default = 6
+		upgraded_files_default = 1
 		it "#upgrade" do
 			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
 				                                       :no_interaction => true
@@ -160,7 +160,7 @@ describe FalkorLib::Puppet::Modules do
 				                                       :no_interaction => true,
 				                                       :only => [ 'README.md', 'Gemfile']
 			                                       })
-			d.should == 2
+			d.should == 0
 		end
 
 		it "#upgrade -- exclude some files" do
