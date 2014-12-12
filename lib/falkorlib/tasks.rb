@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2014-08-26 23:46 svarrette>
+# Time-stamp: <Ven 2014-12-12 19:01 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -46,7 +46,7 @@ namespace :bootstrap do
 		rvm_current = `rvm current`.chomp
 		rvm_version = `cat .ruby-version`.chomp
 		rvm_gemset  = `cat .ruby-gemset`.chomp
-		if rvm_current.empty? or rvm_current !~ /#{rvm_version}@#{rvm_gemset}/
+        if rvm_current.empty? or rvm_current !~ /#{rvm_version}[^@]*@#{rvm_gemset}/
 			warn "You need to manually force the reloading of the RVM configuration."
 			warn "To do that, simply run \n\t\tcd .. && cd -"
 			error "manual RVM reloading required"
