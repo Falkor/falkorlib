@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Dim 2014-08-31 22:59 svarrette>
+# Time-stamp: <Lun 2015-01-12 21:14 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -54,12 +54,7 @@ namespace :gem do
 - Description: #{spec.description}
 eos
         end
-
-
-
     end # task info
-
-
 
 end # namespace gem
 
@@ -72,7 +67,9 @@ Gem::Tasks::Sign::PGP.new
 
 # Enhance the build to sign the built gem
 Rake::Task['build'].enhance do
+  unless ENV['GIT_AUTHOR_NAME'].nil?
     Rake::Task["sign"].invoke if File.directory?(File.join(ENV['HOME'], '.gnupg') )
+  end
 end
 
 [ 'major', 'minor', 'patch' ].each do |level|
