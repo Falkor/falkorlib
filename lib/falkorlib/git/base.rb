@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-12-05 22:43 svarrette>
+# Time-stamp: <Sam 2015-01-17 21:47 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -255,7 +255,7 @@ module FalkorLib  #:nodoc:
 	        return ! remotes(path).empty?
         end 
 
-        ## Initialize git subtrees from the configuration
+        ## Initialize git submodule from the configuration
         def submodule_init(path = Dir.pwd)
             exit_status  = 1
             git_root_dir = rootdir(path)

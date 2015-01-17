@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -U
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-16 15:26 svarrette>
+# Time-stamp: <Sam 2015-01-17 18:28 svarrette>
 #
 # Copyright (c) 2015 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -12,7 +12,15 @@
 # * http://chrisparai.so/creating-a-thor-gem/
 # * http://willschenk.com/making-a-command-line-utility-with-gems-and-thor/
 
+
+require "thor/error"
+require "thor/actions"
 require 'falkorlib/cli'
 
-FalkorLib::CLI::App.start(ARGV, :debug => true)
+begin
+  FalkorLib::CLI::App.start(ARGV, :debug => true)
+rescue Thor::InvocationError => e
+  error e.message.gsub(/^ERROR:/, '')
+end
+
 
