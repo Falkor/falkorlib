@@ -1,23 +1,61 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-16 11:45 svarrette>
+# Time-stamp: <Sam 2015-01-17 12:55 svarrette>
 ################################################################################
 # Interface for the CLI
 #
 
-#require "thor"
-#require 'thor/group'
+require 'thor'
+require 'thor/actions'
+require "falkorlib"
 
-#require "thor/runner"
+require "falkorlib/cli/init"
 
-require 'falkorlib/cli/runner'
+
 
 module FalkorLib
 
   # Falkor CLI Application, based on [Thor](http://whatisthor.com)
   module CLI
 
+    # Main Application 
+    class App < ::Thor
+      package_name "Falkor[Lib]"
+      map "-V" => "version"
+
+      namespace :falkor
+
+      include Thor::Actions
+      include FalkorLib::Common
+
+      #default_command :info
+
+      class_option :verbose, :aliases => "-v",
+        :type => :boolean, :desc => "Enable verbose output mode"
+
+      map %w[--version -V] => :version
+      desc "--version, -V", "Print the version number"
+      def version
+        say "Falkor[Lib] version " + FalkorLib::VERSION, :yellow # + "on ruby " + `ruby --version`
+      end
+
+      # map %w[--help -h] => :help
+
+
+      ###### info ######
+      # desc "info", "Print various configuration information"
+      # def info
+      #   ap options
+      # end # info
+
+      ###### init ######
+      desc "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
+      subcommand "init", FalkorLib::CLI::Init
+
+    end # class App
+
   end # module CLI
+
 end
 
 

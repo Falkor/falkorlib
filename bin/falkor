@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -U
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-16 11:43 svarrette>
+# Time-stamp: <Ven 2015-01-16 15:26 svarrette>
 #
 # Copyright (c) 2015 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -14,5 +14,5 @@
 
 require 'falkorlib/cli'
 
-FalkorLib::CLI::Runner.start  #(ARGV)
+FalkorLib::CLI::App.start(ARGV, :debug => true)
 

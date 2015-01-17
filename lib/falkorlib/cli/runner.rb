@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-16 11:48 svarrette>
+# Time-stamp: <Ven 2015-01-16 14:20 svarrette>
 ################################################################################
 
 require 'thor'
@@ -30,9 +30,11 @@ module FalkorLib
         puts options.to_yaml
       end # info
 
-      ####### init ########
-      desc "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
-      subcommand "init", FalkorLib::CLI::Init
+      
+      
+      # ####### init ########
+      # desc "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
+      # subcommand "init", FalkorLib::CLI::Init
       #register FalkorLib::CLI::Init, 'init', 'init <TYPE>', "Initialize the directory PATH with FalkorLib's template(s)"
 
       
