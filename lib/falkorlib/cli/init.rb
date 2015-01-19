@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-17 21:50 svarrette>
+# Time-stamp: <Lun 2015-01-19 16:05 svarrette>
 ################################################################################
 
 require 'thor'
@@ -11,17 +11,6 @@ module FalkorLib
   module CLI
 
     class Init < ::Thor
-
-      # attr_reader :options
-
-      # def initialize(options)
-      #   @options = options
-      # end
-
-      # ###### run ######
-      # def run
-
-      # end # run
 
       ###### latex ######
       desc "latex [options]", "Bootstrap a LaTeX project"
@@ -39,35 +28,53 @@ Initiate a Git repository according to my classical layout.
 By default, NAME is '.' meaning that the repository will be initialized in the current directory.
 \x5Otherwise, the NAME subdirectory will be created and bootstraped accordingly.
       REPO_LONG_DESC
+      method_option :dry_run, :aliases => '-n', :type => :boolean
       method_option :use_make, :aliases => ['-m', '--make'],
         :type => :boolean, :default => true, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :use_rake, :aliases => ['-r', '--rake'],
         :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
       method_option :git_flow,
         :type => :boolean, :default => true, :desc => 'Initiate with git-flow'
+      method_option :branch_prod, :default => 'production', :desc => "Branch name for production releases"
+      method_option :branch_master, :default => 'devel',    :desc => "Branch name for development commits"
       #___________________
       def repo(name = '.')
-        repo_path = (name == '.') ? Dir.pwd : File.join(Dir.pwd,  name)
+        _newrepo(name, options)
+
+      end # repo
+
+
+      private
+      ###### _newrepo(name, options) ######
+      def _newrepo(name, options)
+
+        repo_path = Dir.pwd
+        if name == '.'
+          repo_path = Dir.pwd
+        elsif
+          repo_path = (name =~ /^\//) ? name : File.join(Dir.pwd,  name)
+        end
         FalkorLib::Common.error "Already initialized repository" if FalkorLib::Git.init?(repo_path)
-        FalkorLib::GitFlow::Init(repo_path)
+
+        FalkorLib::GitFlow.init(repo_path) unless options[:dry_run]
         # Now prepare the template
+        FalkorLib.config.git[:submodules]['gitstats'] =   { :url => 'https://github.com/hoxu/gitstats.git' }
         if options[:use_make]
-          
+          FalkorLib.config.git[:submodules]['Makefile'] = { :url => 'https://github.com/Falkor/Makefiles.git' }
         end
         if options[:use_rake]
           FalkorLib.config.gitflow do |c|
             c[:branches] = {
-                            :master  => 'production',
-                            :develop => 'devel'
+                            :master  => options[:branch_prod],
+                            :develop => options[:branch_master]
                            }
           end
         end
-
-      end
-    end
-
+        ap FalkorLib.config
+      end # _newrepo(name, options)
 
 
-  end # class Init
-end # module CLI
-end
+
+    end # class Init
+  end # module CLI
+end # module FalkorLib

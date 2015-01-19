@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -U
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-17 18:28 svarrette>
+# Time-stamp: <Lun 2015-01-19 14:48 svarrette>
 #
 # Copyright (c) 2015 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -12,10 +12,13 @@
 # * http://chrisparai.so/creating-a-thor-gem/
 # * http://willschenk.com/making-a-command-line-utility-with-gems-and-thor/
 
+# Exit cleanly from an early interrupt
+Signal.trap("INT") { exit 1 }
+
+
 
 require "thor/error"
-require "thor/actions"
-require 'falkorlib/cli'
+require 'falkorlib'
 
 begin
   FalkorLib::CLI::App.start(ARGV, :debug => true)

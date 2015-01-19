@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-17 12:55 svarrette>
+# Time-stamp: <Lun 2015-01-19 16:20 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -18,7 +18,7 @@ module FalkorLib
   # Falkor CLI Application, based on [Thor](http://whatisthor.com)
   module CLI
 
-    # Main Application 
+    # Main Application
     class App < ::Thor
       package_name "Falkor[Lib]"
       map "-V" => "version"
@@ -28,12 +28,29 @@ module FalkorLib
       include Thor::Actions
       include FalkorLib::Common
 
-      #default_command :info
+      #register CLI::Init, 'init', "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
 
+      #default_command :info
       class_option :verbose, :aliases => "-v",
         :type => :boolean, :desc => "Enable verbose output mode"
+      class_option :debug, :aliases => "-d",
+        :type => :boolean, :default => FalkorLib.config[:debug], :desc => "Enable debug output mode"
+      class_option :dry_run, :aliases => '-n', :type => :boolean
+
+      ###### commands ######
+      desc "commands", "Lists all available commands", :hide => true
+      def commands
+        puts App.all_commands.keys - ["commands", "completions"]
+      end
+
+      ###### config ######
+      desc "config", "Print the current configuration of FalkorLib", :hide => true
+      def config
+        puts FalkorLib.config.to_yaml
+      end # config
 
       map %w[--version -V] => :version
+      ###### version ######
       desc "--version, -V", "Print the version number"
       def version
         say "Falkor[Lib] version " + FalkorLib::VERSION, :yellow # + "on ruby " + `ruby --version`
@@ -51,6 +68,7 @@ module FalkorLib
       ###### init ######
       desc "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
       subcommand "init", FalkorLib::CLI::Init
+
 
     end # class App
 
