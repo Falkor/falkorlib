@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-08-25 21:34 svarrette>
+# Time-stamp: <Lun 2015-01-19 17:56 svarrette>
 ################################################################################
 # Interface for the main Puppet operations
 #
@@ -17,9 +17,9 @@ module FalkorLib  #:nodoc:
 		    # Puppet defaults for FalkorLib
 		    DEFAULTS = {
 			    :modulesdir => File.join(Dir.pwd, 'modules')
-		    } 
-	    end 
-    end 
+		    }
+	    end
+    end
 
     module Puppet  #:nodoc
 	    
@@ -27,4 +27,4 @@ module FalkorLib  #:nodoc:
 
 
 
-end 
+end

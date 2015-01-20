@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-01-19 16:05 svarrette>
+# Time-stamp: <Lun 2015-01-19 17:50 svarrette>
 ################################################################################
 
 require 'thor'
@@ -10,13 +10,17 @@ require 'falkorlib'
 module FalkorLib
   module CLI
 
+    # Thor class for all bootstrapping / initialization 
     class Init < ::Thor
+      
 
-      ###### latex ######
-      desc "latex [options]", "Bootstrap a LaTeX project"
-      def latex
-        ap desc
-      end # Bootstrap a LaTeX project
+
+      
+      # ###### latex ######
+      # desc "latex [options]", "Bootstrap a LaTeX project"
+      # def latex
+      #   ap desc
+      # end # Bootstrap a LaTeX project
 
       ###### repo ######
       desc "repo NAME [options]", "Bootstrap a Git Repository"
@@ -28,7 +32,8 @@ Initiate a Git repository according to my classical layout.
 By default, NAME is '.' meaning that the repository will be initialized in the current directory.
 \x5Otherwise, the NAME subdirectory will be created and bootstraped accordingly.
       REPO_LONG_DESC
-      method_option :dry_run, :aliases => '-n', :type => :boolean
+
+
       method_option :use_make, :aliases => ['-m', '--make'],
         :type => :boolean, :default => true, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :use_rake, :aliases => ['-r', '--rake'],

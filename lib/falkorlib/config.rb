@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-01 09:37 svarrette>
+# Time-stamp: <Mar 2015-01-20 10:14 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -47,7 +47,8 @@ module FalkorLib #:nodoc:
 			    :rubies => [ '1.9.3', '2.0.0', '2.1.0']
 		    },
 		    :templates => {
-			    :puppet => {}
+                     :trashdir => '.Trash',
+                     :puppet   => {}
 		    },
 		    :tokens => {
 			    :code_climate => ''

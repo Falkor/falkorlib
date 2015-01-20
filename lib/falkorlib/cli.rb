@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-01-19 16:20 svarrette>
+# Time-stamp: <Mar 2015-01-20 23:15 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -28,9 +28,8 @@ module FalkorLib
       include Thor::Actions
       include FalkorLib::Common
 
-      #register CLI::Init, 'init', "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
-
       #default_command :info
+
       class_option :verbose, :aliases => "-v",
         :type => :boolean, :desc => "Enable verbose output mode"
       class_option :debug, :aliases => "-d",
@@ -46,8 +45,20 @@ module FalkorLib
       ###### config ######
       desc "config", "Print the current configuration of FalkorLib", :hide => true
       def config
+        info "Thor options:"
+        puts options.to_yaml
+        info "FalkorLib internal configuration:"
         puts FalkorLib.config.to_yaml
       end # config
+
+
+      # map %w[--help -h] => :help
+
+      ###### init ######
+      desc "new TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
+      subcommand "new", FalkorLib::CLI::Init
+
+
 
       map %w[--version -V] => :version
       ###### version ######
@@ -56,22 +67,10 @@ module FalkorLib
         say "Falkor[Lib] version " + FalkorLib::VERSION, :yellow # + "on ruby " + `ruby --version`
       end
 
-      # map %w[--help -h] => :help
 
-
-      ###### info ######
-      # desc "info", "Print various configuration information"
-      # def info
-      #   ap options
-      # end # info
-
-      ###### init ######
-      desc "init TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
-      subcommand "init", FalkorLib::CLI::Init
 
 
     end # class App
-
   end # module CLI
 
 end
