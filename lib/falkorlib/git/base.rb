@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-17 22:43 svarrette>
+# Time-stamp: <Mar 2015-01-20 23:46 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -212,15 +212,18 @@ module FalkorLib  #:nodoc:
         end 
 
         ## Add a file/whatever to Git and commit it
-        def add(path, msg = "")
+        # Supported options:
+        # * :force [boolean]: force the add
+        def add(path, msg = "", options = {})
 	        exit_status = 0
             dir  = File.realpath File.dirname(path)
             root = rootdir(path)
             relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
             real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
+            opts = '-f' if options[:force]
             Dir.chdir( dir ) do
 		        exit_status = run %{
-                  git add #{path}
+                  git add #{opts} #{path}
                   git commit -s -m "#{real_msg}" #{path}
                 }
             end

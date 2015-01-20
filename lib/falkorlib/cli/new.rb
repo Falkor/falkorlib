@@ -1,26 +1,18 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-01-19 17:50 svarrette>
+# Time-stamp: <Mar 2015-01-20 23:24 svarrette>
 ################################################################################
 
 require 'thor'
 require 'falkorlib'
 #require 'falkorlib/cli/init/repo'
+require "falkorlib/bootstrap"
 
 module FalkorLib
   module CLI
 
-    # Thor class for all bootstrapping / initialization 
-    class Init < ::Thor
-      
-
-
-      
-      # ###### latex ######
-      # desc "latex [options]", "Bootstrap a LaTeX project"
-      # def latex
-      #   ap desc
-      # end # Bootstrap a LaTeX project
+    # Thor class for all bootstrapping / initialization
+    class New < ::Thor
 
       ###### repo ######
       desc "repo NAME [options]", "Bootstrap a Git Repository"
@@ -49,6 +41,13 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       end # repo
 
 
+      ###### trash ######
+      desc "trash PATH", "Add a Trash directory"
+      def trash(path = Dir.pwd)
+        FalkorLib::Bootstrap.trash(path)
+      end # trash
+
+      
       private
       ###### _newrepo(name, options) ######
       def _newrepo(name, options)

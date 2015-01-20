@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-01-20 23:15 svarrette>
+# Time-stamp: <Mar 2015-01-20 23:25 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -9,7 +9,7 @@ require 'thor'
 require 'thor/actions'
 require "falkorlib"
 
-require "falkorlib/cli/init"
+require "falkorlib/cli/new"
 
 
 
@@ -56,7 +56,7 @@ module FalkorLib
 
       ###### init ######
       desc "new TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
-      subcommand "new", FalkorLib::CLI::Init
+      subcommand "new", FalkorLib::CLI::New
 
 
 
