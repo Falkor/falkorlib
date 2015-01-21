@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-01-20 23:24 svarrette>
+# Time-stamp: <Mer 2015-01-21 21:51 svarrette>
 ################################################################################
 
 require 'thor'
@@ -24,8 +24,7 @@ Initiate a Git repository according to my classical layout.
 By default, NAME is '.' meaning that the repository will be initialized in the current directory.
 \x5Otherwise, the NAME subdirectory will be created and bootstraped accordingly.
       REPO_LONG_DESC
-
-
+      #......................................................
       method_option :use_make, :aliases => ['-m', '--make'],
         :type => :boolean, :default => true, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :use_rake, :aliases => ['-r', '--rake'],
@@ -47,6 +46,29 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
         FalkorLib::Bootstrap.trash(path)
       end # trash
 
+      ###### rvm ######
+      method_option :force, :aliases => '-f',
+        :type => :boolean, :desc => 'Force overwritting the RVM config'
+      method_option :ruby, :banner => 'VERSION',
+        :desc => 'Ruby version to configure / install for RVM'
+      method_option :versionfile, :banner => 'FILE',
+        :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
+      method_option :gemset, :desc => 'RVM gemset to configure for this directory'
+      method_option :gemsetfile, :banner => 'FILE',
+        :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
+      #..........................................
+      desc "rvm PATH [options]", "Initialize RVM"
+      long_desc <<-RVM_LONG_DESC
+Initialize Ruby Version Manager (RVM) for the current directory (or at the root directory of the Git repository).
+It consists of two files:
+\x5 * `.ruby-version`: Project file hosting a single line for the ruby version
+\x5 * `.ruby-gemset`:  Gemset file hosting a single line for the gemset to use for this project
+
+These files will be committed in Git to ensure a consistent environment for the project.
+      RVM_LONG_DESC
+      def rvm(path = Dir.pwd)
+        FalkorLib::Bootstrap.rvm(path, options)
+      end # rvm
       
       private
       ###### _newrepo(name, options) ######
