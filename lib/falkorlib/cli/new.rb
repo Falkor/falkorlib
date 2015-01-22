@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2015-01-22 21:35 svarrette>
+# Time-stamp: <Ven 2015-01-23 00:00 svarrette>
 ################################################################################
 
 require 'thor'
@@ -46,21 +46,12 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
 
       ###### trash ######
       desc "trash PATH", "Add a Trash directory"
+      #________________________
       def trash(path = Dir.pwd)
         FalkorLib::Bootstrap.trash(path)
       end # trash
 
       ###### rvm ######
-      method_option :force, :aliases => '-f',
-        :type => :boolean, :desc => 'Force overwritting the RVM config'
-      method_option :ruby, :banner => 'VERSION',
-        :desc => 'Ruby version to configure / install for RVM'
-      method_option :versionfile, :banner => 'FILE',
-        :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
-      method_option :gemset, :desc => 'RVM gemset to configure for this directory'
-      method_option :gemsetfile, :banner => 'FILE',
-        :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
-      #..........................................
       desc "rvm PATH [options]", "Initialize RVM"
       long_desc <<-RVM_LONG_DESC
 Initialize Ruby Version Manager (RVM) for the current directory (or at the root directory of the Git repository).
@@ -70,9 +61,33 @@ It consists of two files:
 
 These files will be committed in Git to ensure a consistent environment for the project.
       RVM_LONG_DESC
+      method_option :force, :aliases => '-f',
+        :type => :boolean, :desc => 'Force overwritting the RVM config'
+      method_option :ruby, :banner => 'VERSION',
+        :desc => 'Ruby version to configure / install for RVM'
+      method_option :versionfile, :banner => 'FILE',
+        :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
+      method_option :gemset, :desc => 'RVM gemset to configure for this directory'
+      method_option :gemsetfile, :banner => 'FILE',
+        :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
+      #____________________
       def rvm(path = '.')
         FalkorLib::Bootstrap.rvm(path, options)
       end # rvm
+
+      ###### versionfile ######
+      desc "versionfile PATH [options]", "initiate a VERSION file"
+      method_option :file, :aliases => '-f',
+        :desc => "Set the VERSION filename"
+      method_option :tag,  :aliases => '-t',
+        :desc => "Git tag to use"
+      method_option :version,  :aliases => '-v',
+        :desc => "Set the version to initialize in the version file"
+      #_______________
+      def versionfile(path = '.')
+          FalkorLib::Bootstrap.versionfile(path, options)
+      end # versionfile
+
       
     end # class Init
   end # module CLI
