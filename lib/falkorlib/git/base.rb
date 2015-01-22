@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 23:09 svarrette>
+# Time-stamp: <Jeu 2015-01-22 14:38 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -83,7 +83,7 @@ module FalkorLib  #:nodoc:
         end
 
         ## Initialize a git repository
-        def init(path = Dir.pwd, options)
+        def init(path = Dir.pwd, options = {})
             # FIXME for travis test: ensure the global git configurations
             # 'user.email' and 'user.name' are set
             [ 'user.name', 'user.email' ].each do |userconf|
@@ -101,8 +101,7 @@ module FalkorLib  #:nodoc:
             end
 	        exit_status = 1
             Dir.mkdir( path ) unless Dir.exist?( path )
-	        #info "Initialize "
-	        Dir.chdir( path ) do 
+	        Dir.chdir( path ) do
 		        execute "git init" unless FalkorLib.config.debug
 		        exit_status = $?.to_i
 	        end
@@ -140,6 +139,25 @@ module FalkorLib  #:nodoc:
 	        g.branch (opts[:force] ? :D : :d) => "#{branch}"
         end
 
+        ###### config ######
+        # Retrieve the Git configuration
+        # Supported options:
+        #  * :list [boolean]  list all configutations
+        ##
+        def config(key, dir = Dir.pwd, options = {})
+          info "Retrieve the Git configuration"
+          res = nil
+          if options[:list] or key == '*'
+            cg  = MiniGit::Capturing.new(dir)
+            res = (cg.config :list => true).split("\n")
+          else
+            g = MiniGit.new(dir)
+            res = g[key]
+          end
+          res
+        end # 
+
+        
         ## Fetch the latest changes
         def fetch(path = Dir.pwd)
             Dir.chdir( path ) do
@@ -205,7 +223,7 @@ module FalkorLib  #:nodoc:
             exit_status
         end
 
-        ## List the files currently version
+        ## List the files currently under version
         def list_files(path = Dir.pwd)
 	        g = MiniGit.new(path)
 	        g.capturing.ls_files.split
@@ -259,19 +277,21 @@ module FalkorLib  #:nodoc:
 	        return ! remotes(path).empty?
         end 
 
-        ## Initialize git submodule from the configuration
-        def submodule_init(path = Dir.pwd)
+        ###
+        # Initialize git submodule from the configuration
+        ##
+        def submodule_init(path = Dir.pwd, submodules = FalkorLib.config.git[:submodules], options = {})
             exit_status  = 1
             git_root_dir = rootdir(path)
             if File.exists?("#{git_root_dir}/.gitmodules")
-                unless FalkorLib.config.git[:submodules].empty?
+                unless submodules.empty?
                     # TODO: Check if it contains all submodules of the configuration
                 end
             end
             #ap FalkorLib.config.git
             Dir.chdir(git_root_dir) do
                 exit_status = FalkorLib::Git.submodule_update( git_root_dir )
-                FalkorLib.config.git[:submodules].each do |subdir,conf|
+                submodules.each do |subdir,conf|
                     next if conf[:url].nil?
                     url = conf[:url]
                     dir = "#{FalkorLib.config.git[:submodulesdir]}/#{subdir}"

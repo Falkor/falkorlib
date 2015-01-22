@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sam 2014-08-23 15:26 svarrette>
+# Time-stamp: <Jeu 2015-01-22 14:37 svarrette>
 #
 # @description Check the Git operations
 #
@@ -129,6 +129,25 @@ describe FalkorLib::Git do
             c.should be_true
         end
 
+        it "#config -- check existing key" do
+            c = FalkorLib::Git.config('user.name', dir)
+            c.should_not be_empty
+            t = c.is_a? String
+            t.should be_true
+        end
+
+        it "#config -- check non-existing key" do
+            c = FalkorLib::Git.config('user.nam', dir)
+            c.should be_nil
+        end
+
+        it "#config -- check all keys" do
+            c = FalkorLib::Git.config('*', dir)
+            c.should_not be_empty
+            t = c.is_a? Array
+            t.should be_true
+        end
+
         # ---------- Submodules ---------------
         it "#submodules_init" do
             FalkorLib.config.git do |c|
@@ -192,7 +211,7 @@ describe FalkorLib::Git do
             end
         end
 
-
+        
 
 
         # shall be the last check
