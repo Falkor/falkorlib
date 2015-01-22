@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2015-01-22 15:11 svarrette>
+# Time-stamp: <Jeu 2015-01-22 15:14 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -141,6 +141,7 @@ module FalkorLib  #:nodoc:
 
         ###### config ######
         # Retrieve the Git configuration
+        # You can propose a pattern as key
         # Supported options:
         #  * :list [boolean]  list all configutations
         ##
