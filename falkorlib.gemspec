@@ -101,7 +101,7 @@ Gem::Specification.new do |s|
 
     # Executables included in the gem.
     #
-    #s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
+    s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
 
     ################################################################### REQUIREMENTS & INSTALL
     # Remember the gem version requirements operators and schemes:
@@ -133,7 +133,11 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency("json", "~> 1.8")
 	s.add_runtime_dependency("license-generator", '~> 0')
 	s.add_runtime_dependency("diffy", '>= 3.0')
+	s.add_runtime_dependency("logger", '>= 1.2.8')
+    s.add_runtime_dependency("thor",      '>= 0.19')
+    #s.add_runtime_dependency("mercenary", '>= 0.3.5')
 
+    #
     #
     # One call to add_dependency('gem_name', 'gem version requirement') for each
     # runtime dependency. These gems will be installed with your gem.

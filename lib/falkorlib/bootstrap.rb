@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-01-19 17:57 svarrette>
+# Time-stamp: <Mer 2015-01-21 22:35 svarrette>
 ################################################################################
-# Management of [Puppet](http://puppetlabs.com/) operations
+# Management of Bootstrapping operations
 
 require "falkorlib"
 
@@ -10,6 +10,6 @@ module FalkorLib #:nodoc:
 
 end # module FalkorLib
 
-require "falkorlib/puppet/base"
-require "falkorlib/puppet/modules"
+require "falkorlib/bootstrap/base"
+#require "falkorlib/bootstrap/repo"
  

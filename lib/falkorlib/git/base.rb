@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-12-05 22:43 svarrette>
+# Time-stamp: <Jeu 2015-01-22 17:57 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -82,8 +82,10 @@ module FalkorLib  #:nodoc:
             subl.any? { |i| l[i].split.include?(cmd) }
         end
 
-        ## Initialize a git repository
-        def init(path = Dir.pwd)
+        ###
+        # Initialize a git repository
+        ## 
+        def init(path = Dir.pwd, options = {})
             # FIXME for travis test: ensure the global git configurations
             # 'user.email' and 'user.name' are set
             [ 'user.name', 'user.email' ].each do |userconf|
@@ -100,9 +102,9 @@ module FalkorLib  #:nodoc:
                 end
             end
 	        exit_status = 1
-	        #info "Initialize "
-	        Dir.chdir( path ) do 
-		        execute "git init" unless FalkorLib.config.debug 
+            Dir.mkdir( path ) unless Dir.exist?( path )
+	        Dir.chdir( path ) do
+		        execute "git init" unless FalkorLib.config.debug
 		        exit_status = $?.to_i
 	        end
             # #puts "#init #{path}"
@@ -139,6 +141,30 @@ module FalkorLib  #:nodoc:
 	        g.branch (opts[:force] ? :D : :d) => "#{branch}"
         end
 
+        ###### config ######
+        # Retrieve the Git configuration
+        # You can propose a pattern as key
+        # Supported options:
+        #  * :list [boolean] list all configutations
+        #  * :hash [boolean] return a Hash
+        ##
+        def config(key, dir = Dir.pwd, options = {})
+          #info "Retrieve the Git configuration"
+          res = nil
+          if (options[:list] or (key.is_a? Regexp) or (key =~ /\*/))
+            cg  = MiniGit::Capturing.new(dir)
+            res = (cg.config :list => true).split("\n")
+            res.select! { |e| e.match(key) } unless key =='*'
+            res = res.map { |e| e.split('=') }.to_h if options[:hash]
+          else
+            g = MiniGit.new(dir)
+            res = g[key]
+          end
+          #ap res
+          res
+        end
+
+        
         ## Fetch the latest changes
         def fetch(path = Dir.pwd)
             Dir.chdir( path ) do
@@ -204,22 +230,25 @@ module FalkorLib  #:nodoc:
             exit_status
         end
 
-        ## List the files currently version
+        ## List the files currently under version
         def list_files(path = Dir.pwd)
 	        g = MiniGit.new(path)
 	        g.capturing.ls_files.split
         end 
 
         ## Add a file/whatever to Git and commit it
-        def add(path, msg = "")
+        # Supported options:
+        # * :force [boolean]: force the add
+        def add(path, msg = "", options = {})
 	        exit_status = 0
             dir  = File.realpath File.dirname(path)
             root = rootdir(path)
             relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
             real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
+            opts = '-f' if options[:force]
             Dir.chdir( dir ) do
 		        exit_status = run %{
-                  git add #{path}
+                  git add #{opts} #{path}
                   git commit -s -m "#{real_msg}" #{path}
                 }
             end
@@ -241,7 +270,7 @@ module FalkorLib  #:nodoc:
 	        g = MiniGit.new(path)
 	        # git rev-list --tags --max-count=1)
             a = g.capturing.rev_list :tags => true, :max_count => 1
-	        a	        
+	        a
         end # last_tag_commit
 
         ## List of Git remotes
@@ -255,25 +284,29 @@ module FalkorLib  #:nodoc:
 	        return ! remotes(path).empty?
         end 
 
-        ## Initialize git subtrees from the configuration
-        def submodule_init(path = Dir.pwd)
+        ###
+        # Initialize git submodule from the configuration
+        ##
+        def submodule_init(path = Dir.pwd, submodules = FalkorLib.config.git[:submodules], options = {})
             exit_status  = 1
             git_root_dir = rootdir(path)
             if File.exists?("#{git_root_dir}/.gitmodules")
-                unless FalkorLib.config.git[:submodules].empty?
+                unless submodules.empty?
                     # TODO: Check if it contains all submodules of the configuration
                 end
             end
             #ap FalkorLib.config.git
             Dir.chdir(git_root_dir) do
                 exit_status = FalkorLib::Git.submodule_update( git_root_dir )
-                FalkorLib.config.git[:submodules].each do |subdir,conf|
+                submodules.each do |subdir,conf|
                     next if conf[:url].nil?
                     url = conf[:url]
                     dir = "#{FalkorLib.config.git[:submodulesdir]}/#{subdir}"
                     branch = conf[:branch].nil? ? 'master' : conf[:branch]
-                    unless File.directory?( dir )
-                        info "Adding Git submodule '#{dir}' from '#{url}'"
+                    if File.directory?( dir )
+                      puts "  ... the git submodule '#{subdir}' is already setup."
+                    else
+                      info "adding Git submodule '#{dir}' from '#{url}'"
                         exit_status = run %{
                            git submodule add -b #{branch} #{url} #{dir}
                            git commit -s -m "Add Git submodule '#{dir}' from '#{url}'" .gitmodules #{dir}
@@ -289,6 +322,7 @@ module FalkorLib  #:nodoc:
 	        execute_in_dir(rootdir(path), 
 	                       %{
                    git submodule init
+                   git submodule foreach git fetch
                    git submodule update
             })
         end

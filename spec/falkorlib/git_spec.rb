@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sam 2014-08-23 15:26 svarrette>
+# Time-stamp: <Jeu 2015-01-22 15:38 svarrette>
 #
 # @description Check the Git operations
 #
@@ -39,15 +39,15 @@ describe FalkorLib::Git do
 
         it "#init - initialize a git repository" do
             c = FalkorLib::Git.init(dir)
-			c.should == 0
+            c.should == 0
             t = FalkorLib::Git.init?(dir)
             t.should be_true
         end
 
-		it "#remotes? -- should be false" do
-			t = FalkorLib::Git.remotes?(dir)
-			t.should be_false
-		end
+        it "#remotes? -- should be false" do
+            t = FalkorLib::Git.remotes?(dir)
+            t.should be_false
+        end
 
         it "#rootdir #gitdir - checks git dir and working tree" do
             subdir = File.join(dir, 'some_dir')
@@ -60,37 +60,37 @@ describe FalkorLib::Git do
             end
         end
 
-		it "#has_commits? - not yet any commits" do
-			b = FalkorLib::Git.has_commits?( dir )
-			b.should be_false
-		end
+        it "#has_commits? - not yet any commits" do
+            b = FalkorLib::Git.has_commits?( dir )
+            b.should be_false
+        end
 
         it "#branch? - check non-existing branch" do
             br = FalkorLib::Git.branch?( dir )
             br.should be_nil
         end
 
-		it "#list_files -- should not list any files" do
-			l = FalkorLib::Git.list_files( dir )
-			l.should be_empty
-		end
+        it "#list_files -- should not list any files" do
+            l = FalkorLib::Git.list_files( dir )
+            l.should be_empty
+        end
 
         it "#add - makes a first commit" do
             FileUtils.touch( afile )
             t = FalkorLib::Git.add(afile)
-			t.should == 0
+            t.should == 0
         end
 
-		it "#list_files -- should list a single files" do
-			l = FalkorLib::Git.list_files( dir )
-			l.should include 'a_file'
-		end
+        it "#list_files -- should list a single files" do
+            l = FalkorLib::Git.list_files( dir )
+            l.should include 'a_file'
+        end
 
 
-		it "#has_commits? - no some commits have been done" do
-			b = FalkorLib::Git.has_commits?( dir )
-			b.should be_true
-		end
+        it "#has_commits? - no some commits have been done" do
+            b = FalkorLib::Git.has_commits?( dir )
+            b.should be_true
+        end
 
 
         it "#branch? - check existing branch" do
@@ -113,7 +113,7 @@ describe FalkorLib::Git do
 
         default_branches.each do |br|
             it "#delete_branch #list_branch - deletes branch #{br}" do
-				FalkorLib::Git.delete_branch( br, dir) #, :force => true )
+                FalkorLib::Git.delete_branch( br, dir) #, :force => true )
                 l = FalkorLib::Git.list_branch( dir )
                 l.should_not include "#{br}"
             end
@@ -128,6 +128,50 @@ describe FalkorLib::Git do
             c = FalkorLib::Git.command?('init')
             c.should be_true
         end
+
+        it "#config -- check existing key" do
+            c = FalkorLib::Git.config('user.name', dir)
+            c.should_not be_empty
+            t = c.is_a? String
+            t.should be_true
+        end
+
+        it "#config -- check non-existing key" do
+            c = FalkorLib::Git.config('user.nam', dir)
+            c.should be_nil
+        end
+
+        it "#config -- check all keys" do
+            c = FalkorLib::Git.config('*', dir)
+            c.should_not be_empty
+            t = c.is_a? Array
+            t.should be_true
+        end
+
+        it "#config -- check pattern" do
+            c = FalkorLib::Git.config('user*', dir)
+            c.should_not be_empty
+            t = c.is_a? Array
+            t.should be_true
+            c.length.should == 2
+        end
+
+        it "#config -- check pattern 2" do
+            c = FalkorLib::Git.config(/.*name=/, dir)
+            c.should_not be_empty
+            t = c.is_a? Array
+            t.should be_true
+            c.length.should == 1
+        end
+
+        it "#config -- return hash" do
+            c = FalkorLib::Git.config('user*', dir, :hash => true)
+            c.should_not be_empty
+            t = c.is_a? Hash
+            t.should be_true
+            c.keys.length.should == 2
+        end
+
 
         # ---------- Submodules ---------------
         it "#submodules_init" do
@@ -153,32 +197,32 @@ describe FalkorLib::Git do
             b.should == 0
         end
 
-		# ---------- Subtrees ---------------
+        # ---------- Subtrees ---------------
         if FalkorLib::Git.command? 'subtree'
-	        FalkorLib.config.git do |c|
-				c[:subtrees] = {
-					'falkor/lib' => {
-						:url    => 'https://github.com/Falkor/falkorlib.git',
-						:branch => 'devel'
-					},
-				}
-			end
+            FalkorLib.config.git do |c|
+                c[:subtrees] = {
+                    'falkor/lib' => {
+                        :url    => 'https://github.com/Falkor/falkorlib.git',
+                        :branch => 'devel'
+                    },
+                }
+            end
 
-	        it "#subtree_init? -- should check that the subtree(s) have not been initialized" do
-				b = FalkorLib::Git.subtree_init?( dir )
+            it "#subtree_init? -- should check that the subtree(s) have not been initialized" do
+                b = FalkorLib::Git.subtree_init?( dir )
                 b.should be_false
-			end
+            end
 
             it "#subtree_init - initialize some Git Subtrees" do
-                
+
                 b = FalkorLib::Git.subtree_init( dir )
                 b.should == 0
             end
 
-	        it "#subtree_init? -- should check that the subtree(s) have been initialized" do
-				b = FalkorLib::Git.subtree_init?( dir )
-				b.should be_true
-			end
+            it "#subtree_init? -- should check that the subtree(s) have been initialized" do
+                b = FalkorLib::Git.subtree_init?( dir )
+                b.should be_true
+            end
 
             it "#subtree_up" do
                 b = FalkorLib::Git.subtree_up( dir )
@@ -197,7 +241,7 @@ describe FalkorLib::Git do
 
         # shall be the last check
         it "#dirty? - check dirty git directory" do
-          execute "echo 'toto' > #{afile}"
+            execute "echo 'toto' > #{afile}"
             b = FalkorLib::Git.dirty?( dir )
             b.should be_true
         end
