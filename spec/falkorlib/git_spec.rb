@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2015-01-22 14:37 svarrette>
+# Time-stamp: <Jeu 2015-01-22 15:13 svarrette>
 #
 # @description Check the Git operations
 #
@@ -146,6 +146,14 @@ describe FalkorLib::Git do
             c.should_not be_empty
             t = c.is_a? Array
             t.should be_true
+        end
+
+        it "#config -- check pattern" do
+            c = FalkorLib::Git.config('user*', dir)
+            c.should_not be_empty
+            t = c.is_a? Array
+            t.should be_true
+            c.length.should == 2
         end
 
         # ---------- Submodules ---------------

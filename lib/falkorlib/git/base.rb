@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2015-01-22 14:38 svarrette>
+# Time-stamp: <Jeu 2015-01-22 15:11 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -147,13 +147,15 @@ module FalkorLib  #:nodoc:
         def config(key, dir = Dir.pwd, options = {})
           info "Retrieve the Git configuration"
           res = nil
-          if options[:list] or key == '*'
+          if (options[:list] or (key.is_a? Regexp) or (key =~ /\*/))
             cg  = MiniGit::Capturing.new(dir)
             res = (cg.config :list => true).split("\n")
+            res.select! { |e| e.match(key) } unless key =='*'
           else
             g = MiniGit.new(dir)
             res = g[key]
           end
+          #ap res
           res
         end # 
 
