@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 22:55 svarrette>
+# Time-stamp: <Jeu 2015-01-22 10:03 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -44,21 +44,25 @@ module FalkorLib
     def trash(path = Dir.pwd, dirname = FalkorLib.config[:templates][:trashdir], options = {})
       #args = method(__method__).parameters.map { |arg| arg[1].to_s }.map { |arg| { arg.to_sym => eval(arg) } }.reduce Hash.new, :merge
       #ap args
-      if Dir.exists?(dirname)
+      exit_status = 0
+      trashdir = File.join(path, dirname)
+      if Dir.exists?(trashdir)
         warning "The trash directory '#{dirname}' already exists"
-        return
+        return 1
       end
       Dir.chdir(path) do
         info "creating the trash directory '#{dirname}'"
-        run %{
-          mkdir #{dirname}
+        exit_status = run %{
+          mkdir -p #{dirname}
           echo '*' > #{dirname}/.gitignore
         }
         if FalkorLib::Git.init?(path)
-          FalkorLib::Git.add(File.join(path, dirname, '.gitignore' ), 'Add Trash directory',
-                             { :force => true } )
+          exit_status = FalkorLib::Git.add(File.join(path, dirname, '.gitignore' ),
+                                           'Add Trash directory',
+                                           { :force => true } )
         end
       end
+      exit_status.to_i
     end # trash
 
     ###### rvm ######
@@ -72,12 +76,13 @@ module FalkorLib
     #  * :commit      [boolean] Commit the changes NOT YET USED
     ##
     def rvm(dir = Dir.pwd, options = {})
-      info "Initialize RVM"
+      info "Initialize Ruby Version Manager (RVM)"
       ap options if options[:debug]
       path = normalized_path(dir)
       use_git = FalkorLib::Git.init?(path)
       rootdir = use_git ? FalkorLib::Git.rootdir(path) : path
       files = {}
+      exit_status = 1
       [:versionfile, :gemsetfile].each do |type|
         f = options[type.to_sym].nil? ? FalkorLib.config[:rvm][type.to_sym] : options[type.to_sym]
         if File.exists?( File.join( rootdir, f ))
@@ -90,6 +95,7 @@ module FalkorLib
       end
       # ==== Ruby version ===
       unless files[:versionfile].nil?
+        file = File.join(rootdir, files[:versionfile])
         v =
           options[:ruby] ?
           options[:ruby] :
@@ -97,24 +103,26 @@ module FalkorLib
                       "Select RVM ruby to configure for this directory",
                       1)
         info " ==>  configuring RVM version file '#{files[:versionfile]}' for ruby version '#{v}'"
-        File.open( File.join(rootdir, files[:versionfile]), 'w') do |f|
+        File.open(file, 'w') do |f|
           f.puts v
         end
+        exit_status = (File.exists?(file) and `cat #{file}`.chomp == v) ? 0 : 1
         FalkorLib::Git.add(File.join(rootdir, files[:versionfile])) if use_git
       end
       # === Gemset ===
       if files[:gemsetfile]
+        file = File.join(rootdir, files[:gemsetfile])
         default_gemset = File.basename(rootdir)
-        if File.exists?( File.join( rootdir, files[:gemsetfile]))
-          default_gemset = `cat #{File.join( rootdir, files[:gemsetfile])}`.chomp
-        end
+        default_gemset = `cat #{file}`.chomp if File.exists?( file )
         g = options[:gemset] ? options[:gemset] : ask("Enter RVM gemset name for this directory", default_gemset)
         info " ==>  configuring RVM gemset file '#{files[:gemsetfile]}' with content '#{g}'"
-        File.open( files[:gemsetfile], 'w') do |f|
+        File.open( File.join(rootdir, files[:gemsetfile]), 'w') do |f|
           f.puts g
         end
+        exit_status = (File.exists?(file) and `cat #{file}`.chomp == g) ? 0 : 1
         FalkorLib::Git.add(File.join(rootdir, files[:gemsetfile])) if use_git
       end
+      exit_status
     end # rvm
 
     ###### repo ######
@@ -131,9 +139,9 @@ module FalkorLib
         warning "Git is already initialized for the repository '#{name}'"
         really_continue? unless options[:force]
       end
-      
+
     end # repo
 
-    
+
   end # module Bootstrap
 end # module FalkorLib
