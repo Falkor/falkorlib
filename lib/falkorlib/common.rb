@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-12-05 15:41 svarrette>
+# Time-stamp: <Mer 2015-01-21 22:36 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -8,6 +8,7 @@ require 'open3'
 require 'erb'      # required for module generation
 require 'diffy'
 require 'json'
+require "pathname"
 
 module FalkorLib #:nodoc:
 
@@ -406,6 +407,24 @@ module FalkorLib #:nodoc:
 
         end
 
+        ###### normalize_path ######
+        # Normalize a path and return the absolute path foreseen
+        # Ex: '.' return Dir.pwd
+        # Supported options:
+        #  * :relative   [boolean] return relative path to the root dir
+        ##
+        def normalized_path(dir = Dir.pwd, options = {})
+          rootdir = FalkorLib::Git.init?(dir) ? FalkorLib::Git.rootdir(dir) : dir
+          path = dir
+          path = Dir.pwd if dir == '.'
+          path = File.join(Dir.pwd,  dir) unless (dir =~ /^\// or dir == '.')
+          if (options[:relative] or options[:relative_to])
+            root = options[:relative_to] ? options[:relative_to] : rootdir
+            relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
+            path = relative_path_to_root.to_s
+          end
+          return path
+        end # normalize_path
 
     end
 end

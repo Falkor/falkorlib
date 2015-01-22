@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2014-08-26 11:57 svarrette>
+# Time-stamp: <Mer 2015-01-21 23:24 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -40,7 +40,10 @@ module FalkorLib
         module_function
 
         ## Initialize a git-flow repository
-        def init(path = Dir.pwd)
+        # Supported options:
+        # :master  [string] Branch name for production releases
+        # :develop [string] Branch name for development commits
+        def init(path = Dir.pwd, options)
             exit_status = FalkorLib::Git.init(path)
             error "you shall install git-flow: see https://github.com/nvie/gitflow/wiki/Installation" unless command?('git-flow')
             remotes      = FalkorLib::Git.remotes(path)
@@ -50,17 +53,21 @@ module FalkorLib
 	                warn "Not yet any commit detected in this repository."
 	                readme = 'README.md'
 	                unless File.exists?( readme )
-		                answer = ask(cyan("=> initialize a commit with a #{readme} file (Y|n)?"), 'Yes')
+		                answer = ask(cyan("=> initialize a commit with an [empty] #{readme} file (Y|n)?"), 'Yes')
 		                exit 0 if answer =~ /n.*/i
 		                FileUtils.touch(readme)
 	                end 
 	                FalkorLib::Git.add(readme, "Initiate the repository with a '#{readme}' file")
                 end
 		        branches     = FalkorLib::Git.list_branch(path)
+                gitflow_branches = FalkorLib.config.gitflow[:branches].clone
+                # correct eventually the considered branch from the options
+                gitflow_branches.each { |t,b| gitflow_branches[t] = options[t.to_sym] if options[t.to_sym] }
                 if remotes.include?( 'origin' )
                     info "=> configure remote (tracked) branches"
                     exit_status = FalkorLib::Git.fetch(path)
                     FalkorLib.config.gitflow[:branches].each do |type,branch|
+                        
                         if branches.include? "remotes/origin/#{branch}"
                             exit_status = FalkorLib::Git.grab(branch, path)
                         else

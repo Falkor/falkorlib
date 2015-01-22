@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 21:51 svarrette>
+# Time-stamp: <Mer 2015-01-21 22:55 svarrette>
 ################################################################################
 
 require 'thor'
@@ -25,7 +25,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
 \x5Otherwise, the NAME subdirectory will be created and bootstraped accordingly.
       REPO_LONG_DESC
       #......................................................
-      method_option :use_make, :aliases => ['-m', '--make'],
+      method_option :make, :aliases => ['-m', '--make'],
         :type => :boolean, :default => true, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :use_rake, :aliases => ['-r', '--rake'],
         :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
@@ -35,8 +35,8 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       method_option :branch_master, :default => 'devel',    :desc => "Branch name for development commits"
       #___________________
       def repo(name = '.')
-        _newrepo(name, options)
-
+       # _newrepo(name, options)
+        FalkorLib::Bootstrap.repo(name, options)
       end # repo
 
 
@@ -66,7 +66,7 @@ It consists of two files:
 
 These files will be committed in Git to ensure a consistent environment for the project.
       RVM_LONG_DESC
-      def rvm(path = Dir.pwd)
+      def rvm(path = '.')
         FalkorLib::Bootstrap.rvm(path, options)
       end # rvm
       

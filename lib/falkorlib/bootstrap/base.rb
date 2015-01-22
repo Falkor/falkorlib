@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 21:50 svarrette>
+# Time-stamp: <Mer 2015-01-21 22:55 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -69,12 +69,15 @@ module FalkorLib
     #  * :versionfile [string]  Ruby Version file
     #  * :gemset      [string]  RVM Gemset to configure
     #  * :gemsetfile  [string]  RVM Gemset file
+    #  * :commit      [boolean] Commit the changes NOT YET USED
     ##
     def rvm(dir = Dir.pwd, options = {})
       info "Initialize RVM"
       ap options if options[:debug]
+      path = normalized_path(dir)
+      use_git = FalkorLib::Git.init?(path)
+      rootdir = use_git ? FalkorLib::Git.rootdir(path) : path
       files = {}
-      rootdir = FalkorLib::Git.init?(dir) ? FalkorLib::Git.rootdir(dir) : dir
       [:versionfile, :gemsetfile].each do |type|
         f = options[type.to_sym].nil? ? FalkorLib.config[:rvm][type.to_sym] : options[type.to_sym]
         if File.exists?( File.join( rootdir, f ))
@@ -97,7 +100,7 @@ module FalkorLib
         File.open( File.join(rootdir, files[:versionfile]), 'w') do |f|
           f.puts v
         end
-        FalkorLib::Git.add(File.join(rootdir, files[:versionfile])) if FalkorLib::Git.init?(dir)
+        FalkorLib::Git.add(File.join(rootdir, files[:versionfile])) if use_git
       end
       # === Gemset ===
       if files[:gemsetfile]
@@ -110,17 +113,27 @@ module FalkorLib
         File.open( files[:gemsetfile], 'w') do |f|
           f.puts g
         end
-        FalkorLib::Git.add(File.join(rootdir, files[:gemsetfile])) if FalkorLib::Git.init?(dir)
+        FalkorLib::Git.add(File.join(rootdir, files[:gemsetfile])) if use_git
       end
     end # rvm
 
-
-
-
     ###### repo ######
-    def repo(path = Dir.pwd)
-
+    # Initialize a Git repository for a project
+    # Supported options:
+    #
+    ##
+    def repo(name, options)
+      path    = normalized_path(name)
+      project = File.basename(path)
+      use_git = FalkorLib::Git.init?(path)
+      info "Bootstrap a [Git] repository for the project '#{project}'"
+      if use_git
+        warning "Git is already initialized for the repository '#{name}'"
+        really_continue? unless options[:force]
+      end
+      
     end # repo
 
+    
   end # module Bootstrap
 end # module FalkorLib

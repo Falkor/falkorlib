@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 09:21 svarrette>
+# Time-stamp: <Mer 2015-01-21 23:09 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -83,7 +83,7 @@ module FalkorLib  #:nodoc:
         end
 
         ## Initialize a git repository
-        def init(path = Dir.pwd)
+        def init(path = Dir.pwd, options)
             # FIXME for travis test: ensure the global git configurations
             # 'user.email' and 'user.name' are set
             [ 'user.name', 'user.email' ].each do |userconf|
@@ -103,7 +103,7 @@ module FalkorLib  #:nodoc:
             Dir.mkdir( path ) unless Dir.exist?( path )
 	        #info "Initialize "
 	        Dir.chdir( path ) do 
-		        execute "git init" unless FalkorLib.config.debug 
+		        execute "git init" unless FalkorLib.config.debug
 		        exit_status = $?.to_i
 	        end
             # #puts "#init #{path}"
