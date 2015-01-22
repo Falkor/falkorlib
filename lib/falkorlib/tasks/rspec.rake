@@ -34,7 +34,8 @@ begin
         #t.pattern = "spec/**/versioning_*spec.rb"
         #t.pattern = "spec/**/puppet*spec.rb"
         t.pattern = "spec/**/bootstrap*spec.rb"
-      
+        #t.pattern = "spec/**/gitf*spec.rb"
+        
         # Whether or not to fail Rake when an error occurs (typically when
         # examples fail).
         t.fail_on_error = true

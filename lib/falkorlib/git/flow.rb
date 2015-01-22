@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2015-01-22 13:57 svarrette>
+# Time-stamp: <Jeu 2015-01-22 22:51 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -39,6 +39,28 @@ module FalkorLib
 
         module_function
 
+        ## OLD version
+        ## Check if git-flow is initialized
+        # def init?(path = Dir.pwd)
+	    #     res = FalkorLib::Git.init?(path)
+	    #     Dir.chdir(path) do 
+		#         gf_check = `git config --get-regexp 'gitflow*'`
+		#         res &= ! gf_check.empty? 
+	    #     end
+	    #     res
+        # end # init?(path = Dir.pwd)
+
+        ###### init? ######
+        # Check if gitflow has been initialized
+        ##
+        def init?(dir = Dir.pwd)
+          res = FalkorLib::Git.init?(dir)
+          if res
+            res &= !FalkorLib::Git.config('gitflow*', dir).empty?
+          end
+          res
+        end # init?
+
         ## Initialize a git-flow repository
         # Supported options:
         # :interactive [boolean] confirm Gitflow branch names
@@ -65,6 +87,10 @@ module FalkorLib
                 # correct eventually the considered branch from the options
                 gitflow_branches.each do |t,b|
                   gitflow_branches[t] = options[t.to_sym] if options[t.to_sym]
+                  confs = FalkorLib::Git.config('gitflow*', path, :hash => true)
+                  unless confs.empty?
+                    gitflow_branches[t] = confs["gitflow.branch.#{t}"]
+                  end
                 end
                 if options[:interactive]
                   gitflow_branches[:master]  = ask("=> branch name for production releases", gitflow_branches[:master])
@@ -79,7 +105,7 @@ module FalkorLib
                             exit_status = FalkorLib::Git.grab(branch, path)
                         else
                             unless branches.include? branch
-                                info "Creating the branch '#{branch}'"
+                                info "=> creating the branch '#{branch}'"
                                 FalkorLib::Git.create_branch( branch, path )
                             end
                             exit_status = FalkorLib::Git.publish(branch, path )
@@ -88,12 +114,12 @@ module FalkorLib
                 else
                     gitflow_branches.each do |type, branch|
                         unless branches.include? branch
-                            info "creating the branch '#{branch}'"
+                            info " => creating the branch '#{branch}'"
                             exit_status = FalkorLib::Git.create_branch( branch, path )
                         end
                     end
                 end
-                info "Initialize git flow configs"
+                #info "initialize git flow configs"
                 gitflow_branches.each do |t,branch|
                     exit_status = execute "git config gitflow.branch.#{t} #{branch}"
                 end
@@ -101,7 +127,7 @@ module FalkorLib
                     exit_status = execute "git config gitflow.prefix.#{t} #{prefix}"
                 end
 		        devel_branch = gitflow_branches[:develop]
-		        info "Checkout to the main development branch '#{devel_branch}'"
+		        #info "checkout to the main development branch '#{devel_branch}'"
 		        exit_status = run %{ 
                    git checkout #{devel_branch}
                 }
@@ -119,17 +145,6 @@ module FalkorLib
             end
 	        exit_status
         end
-
-        ## Check if git-flow is initialized
-        def init?(path = Dir.pwd)
-	        res = FalkorLib::Git.init?(path)
-	        Dir.chdir(path) do 
-		        gf_check = `git config --get-regexp 'gitflow*'`
-		        res &= ! gf_check.empty? 
-	        end
-	        res
-        end # init?(path = Dir.pwd)
-
 
         ## generic function to run any of the gitflow commands
         def command(name, type = 'feature', action = 'start', path = Dir.pwd, optional_args = '')
@@ -155,6 +170,16 @@ module FalkorLib
         def finish (type, name, path = Dir.pwd, optional_args = '')
             command(name, type, 'finish', path, optional_args)
         end
+
+        ###
+        # Return the Gitflow branch 
+        # :master:   Master Branch name for production releases
+        # :develop: 
+        ##
+        def branches(type = :master, dir = Dir.pwd, options = {})
+          FalkorLib::Git.config("gitflow.branch.#{type}", dir)
+          #confs[type.to_sym]
+        end # master_branch
 
 
     end # module FalkorLib::GitFlow

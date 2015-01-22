@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2015-01-22 15:16 svarrette>
+# Time-stamp: <Jeu 2015-01-22 15:38 svarrette>
 #
 # @description Check the Git operations
 #
@@ -162,6 +162,14 @@ describe FalkorLib::Git do
             t = c.is_a? Array
             t.should be_true
             c.length.should == 1
+        end
+
+        it "#config -- return hash" do
+            c = FalkorLib::Git.config('user*', dir, :hash => true)
+            c.should_not be_empty
+            t = c.is_a? Hash
+            t.should be_true
+            c.keys.length.should == 2
         end
 
 

@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2015-01-22 10:31 svarrette>
+# Time-stamp: <Jeu 2015-01-22 10:47 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -46,7 +46,7 @@ describe FalkorLib::Bootstrap do
                     t.should be_true
                 end
             end
-            
+
             ######### Trash creation  #########
             it "#trash" do
                 c = FalkorLib::Bootstrap.trash(dir)
@@ -110,7 +110,7 @@ describe FalkorLib::Bootstrap do
                 content[:versionfile].should == opts[:ruby]
                 content[:gemsetfile].should  == opts[:gemset]
             end
-            
+
         end # context
 
     end # each
