@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2014-08-23 23:18 svarrette>
+# Time-stamp: <Mar 2015-01-13 21:24 svarrette>
 ################################################################################
 #                   _____     _ _              _     _ _
 #                   |  ___|_ _| | | _____  _ __| |   (_) |__
@@ -46,6 +46,7 @@ module FalkorLib
 	end
 
 end # module FalkorLib
+
 
 require "falkorlib/version"
 require "falkorlib/loader"

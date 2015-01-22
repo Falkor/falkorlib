@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-08 16:41 svarrette>
+# Time-stamp: <Lun 2015-01-12 22:09 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -88,7 +88,7 @@ module FalkorLib  #:nodoc:
             ##
             def init(rootdir = Dir.pwd, name = '', options = {})
                 config = {}
-                login = `whoami`.chomp
+                #login = `whoami`.chomp
                 config[:name] = name unless name.empty?
                 moduledir = name.empty? ? rootdir : File.join(rootdir, name)
                 FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata].each do |k,v|

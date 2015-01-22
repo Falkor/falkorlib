@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mar 2014-08-26 11:15 svarrette>
+# Time-stamp: <Jeu 2015-01-22 15:52 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #

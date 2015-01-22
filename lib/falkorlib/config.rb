@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2014-09-01 09:37 svarrette>
+# Time-stamp: <Mer 2015-01-21 09:25 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -44,10 +44,13 @@ module FalkorLib #:nodoc:
             :root       => Dir.pwd,
 		    :custom_cfg => '.falkorlib.yaml',
 		    :rvm => {
-			    :rubies => [ '1.9.3', '2.0.0', '2.1.0']
+               :rubies => [ '1.9.3', '2.0.0', '2.1.0'],
+               :versionfile => '.ruby-version',
+               :gemsetfile  => '.ruby-gemset'
 		    },
 		    :templates => {
-			    :puppet => {}
+                     :trashdir => '.Trash',
+                     :puppet   => {}
 		    },
 		    :tokens => {
 			    :code_climate => ''
