@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    falkorlib (0.3.14)
+    falkorlib (0.4.0)
       awesome_print (~> 1.2)
       configatron (~> 3.2)
       diffy (>= 3.0)
