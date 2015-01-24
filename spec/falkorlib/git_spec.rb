@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sam 2015-01-24 19:34 svarrette>
+# Time-stamp: <Dim 2015-01-25 00:00 svarrette>
 #
 # @description Check the Git operations
 #
@@ -173,6 +173,7 @@ describe FalkorLib::Git do
         end
 
         it "#config -- check hash correctness" do
+            key = 'user.name'
             c = FalkorLib::Git.config('user*', dir, :hash => true)
             n = FalkorLib::Git.config('user.name', dir)
             n.should == c[ key ]
