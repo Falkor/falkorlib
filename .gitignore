@@ -10,3 +10,4 @@ doc/api
 tmp/
 *.noespec
 /.falkorlib.yaml
+/lib/falkorlib/thor.old/
