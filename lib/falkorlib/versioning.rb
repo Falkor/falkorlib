@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2014-08-31 22:00 svarrette>
+# Time-stamp: <Sam 2015-01-24 11:12 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -66,12 +66,16 @@ module FalkorLib #:nodoc:
             res
         end
 
-
-        ## get the current version
-        def get_version(rootdir = Dir.pwd)
-            version = FalkorLib.config[:versioning][:default]
-            type    = FalkorLib.config[:versioning][:type]
-            source  = FalkorLib.config[:versioning][:source][ type ]
+        ######
+        # Get the current version
+        # Supported options:
+        # * :default [string] default version
+        # * :type    in ['file','gem','puppet_module'] type of versionning mechanism
+        # * :source  [Hash] information on the way to retrieve the information
+        def get_version(rootdir = Dir.pwd, options = {})
+            version = options[:default] ? options[:default] : FalkorLib.config[:versioning][:default]
+            type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
+            source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
 	        case type
             when 'file'
                 versionfile = File.join( rootdir, source[:filename] )
@@ -87,11 +91,15 @@ module FalkorLib #:nodoc:
             version
         end
 
-        ## Set the version
-        def set_version(version, rootdir = Dir.pwd)
+        ######
+        # Set the version
+        # Supported options:
+        # * :type    in ['file','gem','puppet_module'] type of versionning mechanism
+        # * :source  [Hash] information on the way to retrieve the information
+        def set_version(version, rootdir = Dir.pwd, options = {})
             exit_status = 0
-            type    = FalkorLib.config[:versioning][:type]
-            source  = FalkorLib.config[:versioning][:source][ type ]
+            type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
+            source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
 	        versionfile = File.join( rootdir, source[:filename] ) unless source[:filename].nil?
             filelist = FalkorLib::Git.list_files( rootdir )
             major, minor, patch =  major(version), minor(version), patch(version)

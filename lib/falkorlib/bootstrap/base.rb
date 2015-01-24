@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-23 00:12 svarrette>
+# Time-stamp: <Sam 2015-01-24 11:13 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -210,7 +210,8 @@ module FalkorLib
         ###### versionfile ######
         # Bootstrap a VERSION file at the root of a project
         # Supported options:
-        # * :file [string] filename
+        # * :file    [string] filename
+        # * :version [string] version to mention in the file
         ##
         def versionfile(dir = Dir.pwd, options = {})
             file    = options[:file]    ? options[:file]    : 'VERSION'
@@ -223,6 +224,7 @@ module FalkorLib
                 really_continue?
                 FileUtils.mkdir_p path
             end
+            #FalkorLib::Versioning.set_version()
             versionfile = File.join(path, file)
             unless File.exists?( versionfile )
                 run %{  echo "#{version}" > #{versionfile} }
