@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-24 11:13 svarrette>
+# Time-stamp: <Sam 2015-01-24 19:26 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -224,7 +224,14 @@ module FalkorLib
                 really_continue?
                 FileUtils.mkdir_p path
             end
-            #FalkorLib::Versioning.set_version()
+            unless File.exists?( versionfile )
+                FalkorLib::Versioning.set_version(version, path, {
+                                                                  :type => 'file',
+                                                                  :source => { :filename => file }
+                                                                 })
+            end
+
+
             versionfile = File.join(path, file)
             unless File.exists?( versionfile )
                 run %{  echo "#{version}" > #{versionfile} }
