@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-24 11:12 svarrette>
+# Time-stamp: <Dim 2015-01-25 15:48 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -16,27 +16,27 @@ module FalkorLib #:nodoc:
         module Versioning
             # Versioning Management defaults
             DEFAULTS = {
-                :default => '0.0.1',
-                :levels  => [ 'major', 'minor', 'patch' ],
-                :type    => 'file',
-                :source  => {
-                    'file' => {
-                        :filename => 'VERSION'
-                    },
-                    'gem' => {
-                        :filename  => 'lib/falkorlib/version.rb',
-                        :getmethod => 'FalkorLib::Version.to_s',
-                        #:setmethod => 'FalkorLib::Version.set',
-                        #:pattern   => '^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)'
-                    },
-			        'puppet_module' => {
-				        :filename => 'metadata.json'
-			        },
-                    'tag' => {
-                        :suffix => 'v'
-                    },
-                }
-            }
+                        :default => '0.0.1',
+                        :levels  => [ 'major', 'minor', 'patch' ],
+                        :type    => 'file',
+                        :source  => {
+                                     'file' => {
+                                                :filename => 'VERSION'
+                                               },
+                                     'gem' => {
+                                               :filename  => 'lib/falkorlib/version.rb',
+                                               :getmethod => 'FalkorLib::Version.to_s',
+                                               #:setmethod => 'FalkorLib::Version.set',
+                                               #:pattern   => '^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)'
+                                              },
+                                     'puppet_module' => {
+                                                         :filename => 'metadata.json'
+                                                        },
+                                     'tag' => {
+                                               :suffix => 'v'
+                                              },
+                                    }
+                       }
         end
     end
 
@@ -76,7 +76,7 @@ module FalkorLib #:nodoc:
             version = options[:default] ? options[:default] : FalkorLib.config[:versioning][:default]
             type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
             source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
-	        case type
+            case type
             when 'file'
                 versionfile = File.join( rootdir, source[:filename] )
                 version = File.read( versionfile ).chomp if File.exist? ( versionfile )
@@ -84,9 +84,9 @@ module FalkorLib #:nodoc:
                 getmethod = source[:getmethod ]
                 version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
             when 'puppet_module'
-	            jsonfile = File.join( rootdir, source[:filename] )
-	            metadata = JSON.parse( IO.read( jsonfile ) )
-	            version  = metadata["version"]
+                jsonfile = File.join( rootdir, source[:filename] )
+                metadata = JSON.parse( IO.read( jsonfile ) )
+                version  = metadata["version"]
             end
             version
         end
@@ -100,59 +100,62 @@ module FalkorLib #:nodoc:
             exit_status = 0
             type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
             source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
-	        versionfile = File.join( rootdir, source[:filename] ) unless source[:filename].nil?
-            filelist = FalkorLib::Git.list_files( rootdir )
+            versionfile = File.join( rootdir, source[:filename] ) unless source[:filename].nil?
+            
             major, minor, patch =  major(version), minor(version), patch(version)
             #tocommit = ""
             case type
             when 'file'
-	            info "writing version changes in #{source[:filename]}"
-	            File.open(versionfile, 'w') {|f| f.puts version } if File.exist? ( versionfile )
+                info "writing version changes in #{source[:filename]}"
+                File.open(versionfile, 'w') {|f| f.puts version } #if File.exist? ( versionfile )
             when 'gem'
-	            info "=> writing version changes in #{source[:filename]}"
-	            File.open(versionfile, 'r+') do |f|
+                info "=> writing version changes in #{source[:filename]}"
+                File.open(versionfile, 'r+') do |f|
                     text = f.read
-			        text.gsub!(/^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(.*)$/, 
-			                   '\1' + "MAJOR, MINOR, PATCH = #{major}, #{minor}, #{patch}" + '\5')
+                    text.gsub!(/^(\s*)MAJOR\s*,\s*MINOR,\s*PATCH\s*=\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(.*)$/,
+                      '\1' + "MAJOR, MINOR, PATCH = #{major}, #{minor}, #{patch}" + '\5')
                     f.rewind
                     f.write(text)
                 end
             when 'puppet_module'
-	            info "=> writing version changes in #{source[:filename]}"
-	            metadata = JSON.parse( IO.read( versionfile ) )
-	            metadata["version"] = version
-	            File.open(versionfile,"w") do |f|
-			        f.write JSON.pretty_generate( metadata )
+                info "=> writing version changes in #{source[:filename]}"
+                metadata = JSON.parse( IO.read( versionfile ) )
+                metadata["version"] = version
+                File.open(versionfile,"w") do |f|
+                    f.write JSON.pretty_generate( metadata )
                 end
-	            #exit 1
+                #exit 1
             end
-            Dir.chdir( rootdir ) do
-                next if source[:filename].nil?
-                unless filelist.include?(  source[:filename] )
-                    warning "The version file #{source[:filename]} is not part of the Git repository"
-                    answer = ask("Adding the file to the repository? (Y|n)", 'Yes')
+            if FalkorLib::Git.init?(rootdir)
+                filelist = FalkorLib::Git.list_files( rootdir )
+                Dir.chdir( rootdir ) do
+                    next if source[:filename].nil?
+                    unless filelist.include?(  source[:filename] )
+                        warning "The version file #{source[:filename]} is not part of the Git repository"
+                        answer = ask("Adding the file to the repository? (Y|n)", 'Yes')
+                        next if answer =~ /n.*/i
+                        exit_status = FalkorLib::Git.add(versionfile, "Adding the version file '#{source[:filename]}', inialized to the '#{version}' version" )
+                        next
+                    end
+                    run %{
+                   git diff #{source[:filename]}
+                    }
+                    answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
                     next if answer =~ /n.*/i
-                    exit_status = FalkorLib::Git.add(versionfile, "Adding the version file '#{source[:filename]}', inialized to the '#{version}' version" )
-                    next
+                    run %{
+                   git commit -s -m "bump to version '#{version}'" #{source[:filename]}
+                    }
+                    exit_status = $?.to_i
+                    # if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
+                    #     run %{
+                    #        sleep 2
+                    #        bundle update falkorlib
+                    #        git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
+                    #     } if command?( 'bundle' )
+                    # end
                 end
-		        run %{ 
-                   git diff #{source[:filename]} 
-                }
-		        answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
-		        next if answer =~ /n.*/i
-		        run %{ 
-                   git commit -s -m "bump to version '#{version}'" #{source[:filename]} 
-                }
-		        exit_status = $?.to_i
-		        # if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
-			    #     run %{
-                #        sleep 2 
-                #        bundle update falkorlib
-                #        git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
-                #     } if command?( 'bundle' )
-		        # end 
             end
-	        exit_status
+            exit_status
         end
 
         ## Return a new version number based on

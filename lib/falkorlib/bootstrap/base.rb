@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-24 19:26 svarrette>
+# Time-stamp: <Dim 2015-01-25 15:40 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -224,26 +224,32 @@ module FalkorLib
                 really_continue?
                 FileUtils.mkdir_p path
             end
+            versionfile = File.join(path, file)
             unless File.exists?( versionfile )
                 FalkorLib::Versioning.set_version(version, path, {
                                                                   :type => 'file',
                                                                   :source => { :filename => file }
                                                                  })
-            end
-
-
-            versionfile = File.join(path, file)
-            unless File.exists?( versionfile )
-                run %{  echo "#{version}" > #{versionfile} }
-                if FalkorLib::Git.init?(path)
-                    FalkorLib::Git.add(versionfile, "Initialize #{file} file")
-                    Dir.chdir( path ) do
-                        run %{ git tag #{options[:tag]} } if options[:tag]
-                    end
+                Dir.chdir( path ) do
+                    run %{ git tag #{options[:tag]} } if options[:tag]
                 end
             else
                 puts "  ... not overwriting the #{file} file which already exists"
             end
+
+
+            # 
+            # unless File.exists?( versionfile )
+            #     run %{  echo "#{version}" > #{versionfile} }
+            #     if FalkorLib::Git.init?(path)
+            #         FalkorLib::Git.add(versionfile, "Initialize #{file} file")
+            #         Dir.chdir( path ) do
+            #             run %{ git tag #{options[:tag]} } if options[:tag]
+            #         end
+            #     end
+            # else
+            #     puts "  ... not overwriting the #{file} file which already exists"
+            # end
         end # versionfile
 
     end # module Bootstrap
