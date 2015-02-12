@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2015-01-22 15:38 svarrette>
+# Time-stamp: <Dim 2015-01-25 00:00 svarrette>
 #
 # @description Check the Git operations
 #
@@ -172,6 +172,12 @@ describe FalkorLib::Git do
             c.keys.length.should == 2
         end
 
+        it "#config -- check hash correctness" do
+            key = 'user.name'
+            c = FalkorLib::Git.config('user*', dir, :hash => true)
+            n = FalkorLib::Git.config('user.name', dir)
+            n.should == c[ key ]
+        end
 
         # ---------- Submodules ---------------
         it "#submodules_init" do

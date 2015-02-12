@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-23 00:12 svarrette>
+# Time-stamp: <Dim 2015-02-01 14:43 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -17,14 +17,27 @@ module FalkorLib  #:nodoc:
         module Bootstrap
             DEFAULTS =
               {
+               :metadata => {
+                             :name         => '',
+                             :version      => '0.0.1',
+                             :author       => "#{ENV['GIT_AUTHOR_NAME']}",
+                             :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
+                             :summary      => "rtfm",
+                             :description  => '',
+                             :source       => '',
+                             :project_page => '',
+                             :issues_url   => '',
+                             :tags         => []
+                            },
                :trashdir => '.Trash',
                :types    => [ 'article', 'slides', 'gem', 'octopress', 'puppet_module', 'rvm' ],
-               :rvm => {
-                        :version     => '1.9.3',
-                        :versionfile => '.ruby-version',
-                        :gemsetfile  => '.ruby-gemset'
-                       },
                :puppet   => {},
+               :forge => {
+                          :gforge => { :url => 'http://gforge.uni.lu', :name => 'GForge @ Uni.lu' },
+                          :github => { :url => 'http://github.com',    :name => 'Github', :login => 'ULHPC' },
+                          :gitlab => { :url => 'http://gitlab.uni.lu', :name => 'Gitlab @ Uni.lu' },
+                          :none   => { :url => '', :name => "None"}
+                         },
               }
 
 
@@ -210,7 +223,8 @@ module FalkorLib
         ###### versionfile ######
         # Bootstrap a VERSION file at the root of a project
         # Supported options:
-        # * :file [string] filename
+        # * :file    [string] filename
+        # * :version [string] version to mention in the file
         ##
         def versionfile(dir = Dir.pwd, options = {})
             file    = options[:file]    ? options[:file]    : 'VERSION'
@@ -225,17 +239,74 @@ module FalkorLib
             end
             versionfile = File.join(path, file)
             unless File.exists?( versionfile )
-                run %{  echo "#{version}" > #{versionfile} }
-                if FalkorLib::Git.init?(path)
-                    FalkorLib::Git.add(versionfile, "Initialize #{file} file")
-                    Dir.chdir( path ) do
-                        run %{ git tag #{options[:tag]} } if options[:tag]
-                    end
+                FalkorLib::Versioning.set_version(version, path, {
+                                                                  :type => 'file',
+                                                                  :source => { :filename => file }
+                                                                 })
+                Dir.chdir( path ) do
+                    run %{ git tag #{options[:tag]} } if options[:tag]
                 end
             else
                 puts "  ... not overwriting the #{file} file which already exists"
             end
+
+            # unless File.exists?( versionfile )
+            #     run %{  echo "#{version}" > #{versionfile} }
+            #     if FalkorLib::Git.init?(path)
+            #         FalkorLib::Git.add(versionfile, "Initialize #{file} file")
+            #         Dir.chdir( path ) do
+            #             run %{ git tag #{options[:tag]} } if options[:tag]
+            #         end
+            #     end
+            # else
+            #     puts "  ... not overwriting the #{file} file which already exists"
+            # end
         end # versionfile
 
+
+        ###### readme ######
+        # Bootstrap a README file for various context
+        # Supported options:
+        #  * :force     [boolean] force overwritting
+        #  * :latex     [boolean] describe a LaTeX project
+        #  * :octopress [boolean] octopress site
+        ##
+        def readme(dir = Dir.pwd, type = 'latex', options = {})
+            info "Bootstrap a README file"
+            #if File.exists?(File.join(dir, ))
+            config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
+            config[:filename] = options[:filename] ? options[:filename] : 'README.md'
+            config[:name]     = options[:name] ? options[:name] : File.basename(dir)
+            default_forge     = options[:forge] ? options[:forge] : :github
+            forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
+            case select_forge(default_forge)
+            when :gforge
+                config[:project_page] = forges[:url] + "/projects/"
+            end
+
+
+            # config[:project_page] = case forge
+            #                         when :gforge
+                                        
+            #                         end
+        end # readme
+
+        ###
+        # Select the forge (gforge, github, etc.) hosting the project sources
+        ##
+        def select_forge(default = :gforge, options = {})
+            forge = FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
+            ap forge
+            default_idx = forge.keys.index(default)
+            default_idx = 0 if default_idx.nil? 
+            v = select_from(forge.map{ |k,v| v[:name] },
+                            "Select the Forge hosting the project sources",
+                            default_idx+1,
+                            forge.keys)
+            ap v
+        end # select_forge
+
+
+        
     end # module Bootstrap
 end # module FalkorLib

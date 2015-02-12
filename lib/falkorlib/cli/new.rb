@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-23 00:00 svarrette>
+# Time-stamp: <Ven 2015-01-30 15:20 svarrette>
 ################################################################################
 
 require 'thor'
@@ -88,7 +88,13 @@ These files will be committed in Git to ensure a consistent environment for the 
           FalkorLib::Bootstrap.versionfile(path, options)
       end # versionfile
 
-      
+
+      ###### readme ######
+      #......................................
+      desc "readme PATH [options]", "Initiate a README file in the PATH directory"
+      def readme(path = '.')
+          FalkorLib::Bootstrap.readme(path, options)
+      end # readme
     end # class Init
   end # module CLI
 end # module FalkorLib

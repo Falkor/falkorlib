@@ -12,7 +12,7 @@ describe FalkorLib::Common do
 		FileUtils.touch File.join(dir, 'file2.txt')
 		FileUtils.mkdir File.join(dir, 'dir1')
 		FileUtils.mkdir File.join(dir, 'dir2')
-	end 
+	end
 
     after :all do
         FileUtils.remove_entry_secure dir
@@ -137,7 +137,7 @@ describe FalkorLib::Common do
 	it "#nice_execute -- check stderr output" do
 		b = capture(:stderr) {
 			nice_execute("echo 'toto' 1>&2")
-		}		
+		}
 		b.should == red("** [err] toto\n")
 	end
 
@@ -150,7 +150,7 @@ describe FalkorLib::Common do
 		b = capture(:stderr) {
 			expect { not_implemented }.to raise_error (SystemExit)
 		}
-		b.should =~ /NOT YET IMPLEMENTED/ 
+		b.should =~ /NOT YET IMPLEMENTED/
 	end
 
 	it "#exec_or_exit - should exit" do
@@ -179,25 +179,25 @@ describe FalkorLib::Common do
     context "Test (common) YAML functions" do
 
 		it "#load_config - load the correct hash from YAML" do
-			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}                              
-			YAML.stub(:load_file).and_return(file_config)  
-			loaded = load_config('toto')
+			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}
+			YAML.stub(:load_file).and_return(file_config)
+			loaded = load_config('/tmp')  # /tmp to ensure existing target
 			loaded.should == file_config
-		end 
+		end
 
 		it "#store_config - should store the correct hash to YAML" do
-			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}    
+			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}
 			f = Tempfile.new('toto')
 			store_config(f.path, file_config)
 			copy_file_config = YAML::load_file(f.path)
 			copy_file_config.should == file_config
-		end 
+		end
 
-	end 
+	end
 
 	############################################
 	context 'Test list selection functions' do
-		
+
 		it "#list_items - Exit on 0" do
 			STDIN.should_receive(:gets).and_return('0')
 			expect { list_items("#{dir}/*") }.to raise_error (SystemExit)

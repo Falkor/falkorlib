@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2015-01-22 10:47 svarrette>
+# Time-stamp: <Sam 2015-01-24 19:05 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -12,7 +12,7 @@
 
 require 'spec_helper'
 require 'tmpdir'
-require 'FileUtils'
+require 'fileutils'
 
 describe FalkorLib::Bootstrap do
 
