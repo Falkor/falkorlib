@@ -132,6 +132,7 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency("awesome_print", "~> 1.2")
 	s.add_runtime_dependency("json", "~> 1.8")
 	s.add_runtime_dependency("license-generator", '~> 0')
+	s.add_runtime_dependency("deep_merge", '~> 1.0.1')
 	s.add_runtime_dependency("diffy", '>= 3.0')
 	s.add_runtime_dependency("logger", '>= 1.2.8')
     s.add_runtime_dependency("thor",      '>= 0.19')

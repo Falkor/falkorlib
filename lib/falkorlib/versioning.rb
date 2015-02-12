@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2015-01-25 15:48 svarrette>
+# Time-stamp: <Dim 2015-01-25 16:04 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -101,7 +101,6 @@ module FalkorLib #:nodoc:
             type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
             source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
             versionfile = File.join( rootdir, source[:filename] ) unless source[:filename].nil?
-            
             major, minor, patch =  major(version), minor(version), patch(version)
             #tocommit = ""
             case type

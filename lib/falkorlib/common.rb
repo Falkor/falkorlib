@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 22:36 svarrette>
+# Time-stamp: <Sam 2015-01-31 23:54 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -244,8 +244,15 @@ module FalkorLib #:nodoc:
         ###############################
 
         # Return the yaml content as a Hash object
-        def load_config(filepath)
-            YAML::load_file(filepath)
+        def load_config(file)
+            unless File.exists?(file)
+                raise FalkorLib::Error, "Unable to find the YAML file '#{file}'"
+            end
+            loaded = YAML::load_file(file)
+            unless loaded.is_a?(Hash)
+                raise FalkorLib::Error, "Corrupted or invalid YAML file '#{file}'"
+            end
+            loaded
         end
 
         # Store the Hash object as a Yaml file
@@ -273,11 +280,11 @@ module FalkorLib #:nodoc:
         #   :erb_exclude [array of strings]: pattern(s) to exclude from erb file
         #                                    interpretation and thus to copy 'as is'
         #   :no_interaction [boolean]: do not interact
-        def init_from_template(templatedir, rootdir, config = {}, 
+        def init_from_template(templatedir, rootdir, config = {},
                                options = {
-	                               :erb_exclude    => [],
-	                               :no_interaction => false
-                               })
+                                          :erb_exclude    => [],
+                                          :no_interaction => false
+                                         })
             error "Unable to find the template directory" unless File.directory?(templatedir)
             warning "about to initialize/update the directory #{rootdir}"
             really_continue?
@@ -307,61 +314,61 @@ module FalkorLib #:nodoc:
             end
         end
 
-        ### 
+        ###
         # ERB generation of the file `outfile` using the source template file `erbfile`
         # Supported options:
         #   :no_interaction [boolean]: do not interact
-        def write_from_erb_template(erbfile, outfile, config = {}, 
+        def write_from_erb_template(erbfile, outfile, config = {},
                                     options = {
-                                        :no_interaction => false
-                                    })
+                                               :no_interaction => false
+                                              })
             error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
             template = File.read("#{erbfile}")
             output   = ERB.new(template, nil, '<>')
             content  = output.result(binding)
-	        show_diff_and_write(content, outfile, options)
+            show_diff_and_write(content, outfile, options)
         end
 
         ## Show the difference between a `content` string and an destination file (using Diff algorithm).
-        # Obviosuly, if the outfile does not exists, no difference is proposed. 
+        # Obviosuly, if the outfile does not exists, no difference is proposed.
         # Supported options:
         #   :no_interaction [boolean]: do not interact
         #   :json_pretty_format [boolean]: write a json content, in pretty format
         #
         # return 0 if nothing happened, 1 if a write has been done
         def show_diff_and_write(content, outfile, options = {
-	                                :no_interaction     => false,
-	                                :json_pretty_format => false,
-                                })
-	        if File.exists?( outfile )
-		        ref = File.read( outfile )
-		        if options[:json_pretty_format]
-			        ref = JSON.pretty_generate (JSON.parse( IO.read( outfile ) ))
-		        end 
-		        if ref == content
-			        warn "Nothing to update"
-			        return 0
-		        end 
-		        warn "the file '#{outfile}' already exists and will be overwritten."
-		        warn "Expected difference: \n------"
-		        Diffy::Diff.default_format = :color
-		        puts Diffy::Diff.new(ref, content, :context => 1)
-	        else
-		        watch =  options[:no_interaction] ? 'no' : ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
-		        puts content if watch =~ /y.*/i
-	        end
-	        proceed = options[:no_interaction] ? 'yes' : ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
+                                                             :no_interaction     => false,
+                                                             :json_pretty_format => false,
+                                                            })
+            if File.exists?( outfile )
+                ref = File.read( outfile )
+                if options[:json_pretty_format]
+                    ref = JSON.pretty_generate (JSON.parse( IO.read( outfile ) ))
+                end
+                if ref == content
+                    warn "Nothing to update"
+                    return 0
+                end
+                warn "the file '#{outfile}' already exists and will be overwritten."
+                warn "Expected difference: \n------"
+                Diffy::Diff.default_format = :color
+                puts Diffy::Diff.new(ref, content, :context => 1)
+            else
+                watch =  options[:no_interaction] ? 'no' : ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
+                puts content if watch =~ /y.*/i
+            end
+            proceed = options[:no_interaction] ? 'yes' : ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
             return 0 if proceed =~ /n.*/i
             info("=> writing #{outfile}")
             File.open("#{outfile}", "w+") do |f|
-		        f.write content
+                f.write content
             end
-	        if FalkorLib::Git.init?(File.dirname(outfile))
-		        do_commit = options[:no_interaction] ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
-		        FalkorLib::Git.add(outfile, "update content of '#{File.basename(outfile)}'") if do_commit =~ /y.*/i
-	        end
-	        return 1
-        end 
+            if FalkorLib::Git.init?(File.dirname(outfile))
+                do_commit = options[:no_interaction] ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
+                FalkorLib::Git.add(outfile, "update content of '#{File.basename(outfile)}'") if do_commit =~ /y.*/i
+            end
+            return 1
+        end
 
 
         ## Blind copy of a source file `src` into its destination directory `dstdir`
@@ -370,26 +377,26 @@ module FalkorLib #:nodoc:
         #   :srcdir [string]: source directory, make the `src` file relative to that directory
         #   :outfile [string]: alter the outfile name (File.basename(src) by default)
         def write_from_template(src,dstdir,options = {
-	                               :no_interaction => false,
-	                               :srcdir         => '', 
-	                               :outfile        => ''
-                               })
-	        srcfile = options[:srcdir].nil? ? src : File.join(options[:srcdir], src)
-	        error "Unable to find the source file #{srcfile}" unless File.exists? ( srcfile )
-	        error "The destination directory '#{dstdir}' do not exist" unless File.directory?( dstdir )
-	        dstfile = options[:outfile].nil? ? File.basename(srcfile) : options[:outfile]
-	        outfile = File.join(dstdir, dstfile)
-	        content = File.read( srcfile )
-	        show_diff_and_write(content, outfile, options)
+                                                      :no_interaction => false,
+                                                      :srcdir         => '',
+                                                      :outfile        => ''
+                                                     })
+            srcfile = options[:srcdir].nil? ? src : File.join(options[:srcdir], src)
+            error "Unable to find the source file #{srcfile}" unless File.exists? ( srcfile )
+            error "The destination directory '#{dstdir}' do not exist" unless File.directory?( dstdir )
+            dstfile = options[:outfile].nil? ? File.basename(srcfile) : options[:outfile]
+            outfile = File.join(dstdir, dstfile)
+            content = File.read( srcfile )
+            show_diff_and_write(content, outfile, options)
         end # copy_from_template
 
 
         ### RVM init
         def init_rvm(rootdir = Dir.pwd, gemset = '')
             rvm_files = {
-                :version => File.join(rootdir, '.ruby-version'),
-                :gemset  => File.join(rootdir, '.ruby-gemset')
-            }
+                         :version => File.join(rootdir, '.ruby-version'),
+                         :gemset  => File.join(rootdir, '.ruby-gemset')
+                        }
             unless File.exists?( "#{rvm_files[:version]}")
                 v = select_from(FalkorLib.config[:rvm][:rubies],
                                 "Select RVM ruby to configure for this directory",
@@ -414,16 +421,16 @@ module FalkorLib #:nodoc:
         #  * :relative   [boolean] return relative path to the root dir
         ##
         def normalized_path(dir = Dir.pwd, options = {})
-          rootdir = FalkorLib::Git.init?(dir) ? FalkorLib::Git.rootdir(dir) : dir
-          path = dir
-          path = Dir.pwd if dir == '.'
-          path = File.join(Dir.pwd,  dir) unless (dir =~ /^\// or dir == '.')
-          if (options[:relative] or options[:relative_to])
-            root = options[:relative_to] ? options[:relative_to] : rootdir
-            relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
-            path = relative_path_to_root.to_s
-          end
-          return path
+            rootdir = FalkorLib::Git.init?(dir) ? FalkorLib::Git.rootdir(dir) : dir
+            path = dir
+            path = Dir.pwd if dir == '.'
+            path = File.join(Dir.pwd,  dir) unless (dir =~ /^\// or dir == '.')
+            if (options[:relative] or options[:relative_to])
+                root = options[:relative_to] ? options[:relative_to] : rootdir
+                relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
+                path = relative_path_to_root.to_s
+            end
+            return path
         end # normalize_path
 
     end

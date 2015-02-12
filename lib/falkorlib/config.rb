@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 09:25 svarrette>
+# Time-stamp: <Jeu 2015-02-12 11:07 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -11,6 +11,7 @@ require "falkorlib"
 
 require "configatron"
 require "configatron/store"
+require "deep_merge"
 
 module FalkorLib #:nodoc:
 
@@ -40,74 +41,68 @@ module FalkorLib #:nodoc:
     module Config #:nodoc:
         # Defaults global settings
         DEFAULTS = {
-            :debug      => false,
-            :root       => Dir.pwd,
-		    :custom_cfg => '.falkorlib.yaml',
-		    :rvm => {
-               :rubies => [ '1.9.3', '2.0.0', '2.1.0'],
-               :versionfile => '.ruby-version',
-               :gemsetfile  => '.ruby-gemset'
-		    },
-		    :templates => {
-                     :trashdir => '.Trash',
-                     :puppet   => {}
-		    },
-		    :tokens => {
-			    :code_climate => ''
-		    }
-        }
+                    :debug        => false,
+                    :verbose      => false,
+                    :root         => Dir.pwd,
+                    :config_files => {
+                                      :local   => '.falkor/config',
+                                      :private => '.falkor/private',
+                                      #:project => '.falkor/project',
+                                     },
+                    #:custom_cfg   => '.falkorlib.yaml',
+                    :rvm => {
+                             :rubies      => [ '1.9.3', '2.0.0', '2.1.0'],
+                             :version     => '1.9.3',
+                             :versionfile => '.ruby-version',
+                             :gemsetfile  => '.ruby-gemset'
+                            },
+                    :templates => {
+                                   :trashdir => '.Trash',
+                                   :puppet   => {}
+                                  },
+                    :tokens  => { :code_climate => '' },
+                    :project => {}
+                   }
 
         module_function
 
         ## Build the default configuration hash, to be used to initiate the default.
-        # The hash is built depending on the loaded files. 
+        # The hash is built depending on the loaded files.
         def default
             res = FalkorLib::Config::DEFAULTS
-	        $LOADED_FEATURES.each do |path|
+            $LOADED_FEATURES.each do |path|
                 res[:git]        = FalkorLib::Config::Git::DEFAULTS        if path.include?('lib/falkorlib/git.rb')
                 res[:gitflow]    = FalkorLib::Config::GitFlow::DEFAULTS    if path.include?('lib/falkorlib/git.rb')
-		        res[:versioning] = FalkorLib::Config::Versioning::DEFAULTS if path.include?('lib/falkorlib/versioning.rb')
-		        if path.include?('lib/falkorlib/puppet.rb')
-			        res[:puppet]     = FalkorLib::Config::Puppet::DEFAULTS     
-			        res[:templates][:puppet][:modules] = FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata]
-		        end 
+                res[:versioning] = FalkorLib::Config::Versioning::DEFAULTS if path.include?('lib/falkorlib/versioning.rb')
+                if path.include?('lib/falkorlib/puppet.rb')
+                    res[:puppet]     = FalkorLib::Config::Puppet::DEFAULTS
+                    res[:templates][:puppet][:modules] = FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata]
+                end
             end
-	        # Check the potential local customizations
-	        custom_cfg = File.join( res[:root], res[:custom_cfg])
-	        if File.exists?( custom_cfg )
-		        res.merge!( load_config( custom_cfg ) )
-	        end 
+            # Check the potential local customizations
+            [:local, :private].each do |type|
+                custom_cfg = File.join( res[:root], res[:config_files][type.to_sym])
+                if File.exists?( custom_cfg )
+                    res.deep_merge!( load_config( custom_cfg ) )
+                end
+            end
             res
         end
 
+        ###### load_project ######
+        # Return the local project configuration
+        ##
+        def load_project(dir = Dir.pwd, options = {})
+            project_file = options[:file] ? options[:file] : FalkorLib.config[:config_files][:local]
+            path = normalized_path(dir)
+            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+            res = {}
+            #if File.exists?( )
+        end # load_project
+
+
     end
 
-    # config = Thread.current[:config] ||= Configatron::Store.new
-
-    # # Singleton configuration class
-    # class Config
-    #     include Singleton
-
-    #     # Give memoized defaults for locked configuration options found in /config/falkorlib.yml file
-    #     #
-    #     # @example Usage
-    #     #   conf = Configuration.instance.defaults
-    #     #   conf.base_url       #=> "http://ambito.com/economia/mercados/monedas/dolar/"
-    #     #   conf.blue.buy.xpath #=> "//*[@id=\"contenido\"]/div[1]/div[2]/div/div/div[2]/big"
-    #     #
-    #     # @return [Configatron::Store] the magic configuration instance with hash and dot '.' indifferent access
-    #     def defaults
-    #       return @config if @config
-
-    #       @config = Configatron::Store.new
-    #       file_path   = File.expand_path('../../../config/falkorlib.yml', __FILE__)
-    #       hash_config = YAML::load_file(file_path)
-
-    #       @config.configure_from_hash(hash_config)
-    #       @config.lock!
-    #       @config
-    #     end
-    # end
 
 
 end # module FalkorLib
