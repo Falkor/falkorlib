@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sam 2015-01-24 19:05 svarrette>
+# Time-stamp: <Mer 2015-02-25 00:03 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -20,9 +20,9 @@ describe FalkorLib::Bootstrap do
 
     dirs = {
         :without_git => Dir.mktmpdir,
-        :with_git    => Dir.mktmpdir
+        :with_git    => Dir.mktmpdir,
+        :default     => Dir.mktmpdir
     }
-
     before :all do
         $stdout.sync = true
     end
@@ -31,6 +31,7 @@ describe FalkorLib::Bootstrap do
         dirs.each do |t,d|
             FileUtils.remove_entry_secure d
         end
+        FalkorLib.config[:no_interaction] = false
     end
 
     [ :without_git, :with_git ].each do |ctx|
@@ -111,8 +112,59 @@ describe FalkorLib::Bootstrap do
                 content[:gemsetfile].should  == opts[:gemset]
             end
 
+            it "#select_forge - none" do
+			    STDIN.should_receive(:gets).and_return('1')
+                t = FalkorLib::Bootstrap.select_forge()
+                t.should == :none
+            end
+
+            it "#select_forge -- default to github" do
+                STDIN.should_receive(:gets).and_return('')
+                t = FalkorLib::Bootstrap.select_forge(:github)
+                t.should == :github
+            end
+
+            FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.each do |lic|
+                it "#select_licence -- default to #{lic}" do
+                    STDIN.should_receive(:gets).and_return('')
+                    t = FalkorLib::Bootstrap.select_licence(lic)
+                    t.should == lic
+                end
+            end
+
+            it "#get_badge " do
+                subject = 'licence'
+                status  = 'GPL-2.0'
+                t = FalkorLib::Bootstrap.get_badge(subject, status)
+                t.should =~ /#{subject}/
+                t.should =~ /#{status.sub(/-/, '--')}/
+            end
+
+            it "#readme" do
+                #Array.new(6).each { |e|  STDIN.should_receive(:gets).and_return('') }
+                #STDIN.should_receive(:gets).and_return('')
+                #STDIN.should_receive(:gets).and_return('1')
+                FalkorLib.config[:no_interaction] = true
+                FalkorLib::Bootstrap.readme(dir, { :no_interaction => true })
+                t = File.exists?(File.join(dir, 'README.md'))
+                t.should be_true
+                FalkorLib.config[:no_interaction] = false
+            end
         end # context
 
     end # each
+    
+    ############################################
+    context 'boostrap repo' do
+        dir = dirs[:default]
+        
+        it '#repo' do
+            FalkorLib.config[:no_interaction] = true
+            FalkorLib::Bootstrap.repo(dir, { :no_interaction => true })
+            FalkorLib.config[:no_interaction] = false
+        end
 
+    end
+
+    
 end

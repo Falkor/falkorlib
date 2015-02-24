@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 11:58 svarrette>
+# Time-stamp: <Mer 2015-02-25 00:19 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -41,14 +41,15 @@ module FalkorLib #:nodoc:
     module Config #:nodoc:
         # Defaults global settings
         DEFAULTS = {
-                    :debug        => false,
-                    :verbose      => false,
-                    :root         => Dir.pwd,
-                    :config_files => {
-                                      :local   => '.falkor/config',
-                                      :private => '.falkor/private',
-                                      #:project => '.falkor/project',
-                                     },
+                    :debug          => false,
+                    :verbose        => false,
+                    :no_interaction => false,
+                    :root           => Dir.pwd,
+                    :config_files   => {
+                                        :local   => '.falkor/config',
+                                        :private => '.falkor/private',
+                                        #:project => '.falkor/project',
+                                       },
                     #:custom_cfg   => '.falkorlib.yaml',
                     :rvm => {
                              :rubies      => [ '1.9.3', '2.0.0', '2.1.0'],
@@ -69,7 +70,7 @@ module FalkorLib #:nodoc:
         ## Build the default configuration hash, to be used to initiate the default.
         # The hash is built depending on the loaded files.
         def default
-            res = FalkorLib::Config::DEFAULTS
+            res = FalkorLib::Config::DEFAULTS.clone
             $LOADED_FEATURES.each do |path|
                 res[:git]        = FalkorLib::Config::Git::DEFAULTS        if path.include?('lib/falkorlib/git.rb')
                 res[:gitflow]    = FalkorLib::Config::GitFlow::DEFAULTS    if path.include?('lib/falkorlib/git.rb')
@@ -95,31 +96,37 @@ module FalkorLib #:nodoc:
         #  * :file [string] filename for the local configuration
         ##
         def get(dir = Dir.pwd, type = :local, options = {})
-            path = normalized_path(dir)
-            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
-            raise FalkorLib::Error, "Wrong FalkorLib configuration type" unless FalkorLib.config[:config_files].keys.include?( type.to_sym)
-            local_config_file = options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+            conffile = config_file(dir,type,options)
             res = {}
-            res = load_config( local_config_file ) if File.exists?( local_config_file )
+            res = load_config( conffile ) if File.exists?( conffile )
             res
         end # get
 
+        ###### get_or_save ######
+        # wrapper for get and save operations
+        ##
+        def config_file(dir = Dir.pwd, type = :local, options = {})
+            path = normalized_path(dir)
+            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+            raise FalkorLib::Error, "Wrong FalkorLib configuration type" unless FalkorLib.config[:config_files].keys.include?( type.to_sym)
+            return options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+        end # get_or_save
+
+        
         ###### save ######
         # save the { local | private } configuration on YAML format
         # Supported options:
         #  * :file [string] filename for the saved configuration
+        #  * :no_interaction [boolean]: do not interact
         ##
         def save(dir = Dir.pwd, config = {}, type = :local, options = {})
-            path = normalized_path(dir)
-            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
-            raise FalkorLib::Error, "Wrong FalkorLib configuration type"unless  FalkorLib.config[:config_files].keys.include?( type.to_sym)
-            conffile = options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+            conffile = config_file(dir,type,options)
             confdir  = File.dirname( conffile )
             unless File.directory?( confdir )
-                really_continue? "about to create the configuration directory #{confdir}"
+                really_continue? "about to create the configuration directory #{confdir}" unless options[:no_interaction]
                 run %{ mkdir -p #{confdir} }
             end
-            store_config(conffile, config)
+            store_config(conffile, config, options)
         end # save
 
     end

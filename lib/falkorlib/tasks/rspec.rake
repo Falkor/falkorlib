@@ -36,6 +36,7 @@ begin
         #t.pattern = "spec/**/bootstrap*spec.rb"
         #t.pattern = "spec/**/gitf*spec.rb"
         #t.pattern = "spec/**/error*spec.rb"
+        #t.pattern = "spec/**/config*spec.rb"
 
         # Whether or not to fail Rake when an error occurs (typically when
         # examples fail).
