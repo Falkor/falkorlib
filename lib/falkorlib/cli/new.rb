@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 22:03 svarrette>
+# Time-stamp: <Mer 2015-02-25 00:05 svarrette>
 ################################################################################
 
 require 'thor'
@@ -107,7 +107,6 @@ These files will be committed in Git to ensure a consistent environment for the 
       #......................................
       desc "readme PATH [options]", "Initiate a README file in the PATH directory ('./' by default)"
       def readme(path = '.')
-          ap options
           FalkorLib::Bootstrap.readme(path, options)
       end # readme
     end # class Init

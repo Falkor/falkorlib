@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 23:42 svarrette>
+# Time-stamp: <Mer 2015-02-25 00:19 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -96,15 +96,23 @@ module FalkorLib #:nodoc:
         #  * :file [string] filename for the local configuration
         ##
         def get(dir = Dir.pwd, type = :local, options = {})
-            path = normalized_path(dir)
-            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
-            raise FalkorLib::Error, "Wrong FalkorLib configuration type" unless FalkorLib.config[:config_files].keys.include?( type.to_sym)
-            local_config_file = options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+            conffile = config_file(dir,type,options)
             res = {}
-            res = load_config( local_config_file ) if File.exists?( local_config_file )
+            res = load_config( conffile ) if File.exists?( conffile )
             res
         end # get
 
+        ###### get_or_save ######
+        # wrapper for get and save operations
+        ##
+        def config_file(dir = Dir.pwd, type = :local, options = {})
+            path = normalized_path(dir)
+            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+            raise FalkorLib::Error, "Wrong FalkorLib configuration type" unless FalkorLib.config[:config_files].keys.include?( type.to_sym)
+            return options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+        end # get_or_save
+
+        
         ###### save ######
         # save the { local | private } configuration on YAML format
         # Supported options:
@@ -112,10 +120,7 @@ module FalkorLib #:nodoc:
         #  * :no_interaction [boolean]: do not interact
         ##
         def save(dir = Dir.pwd, config = {}, type = :local, options = {})
-            path = normalized_path(dir)
-            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
-            raise FalkorLib::Error, "Wrong FalkorLib configuration type"unless  FalkorLib.config[:config_files].keys.include?( type.to_sym)
-            conffile = options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+            conffile = config_file(dir,type,options)
             confdir  = File.dirname( conffile )
             unless File.directory?( confdir )
                 really_continue? "about to create the configuration directory #{confdir}" unless options[:no_interaction]
