@@ -3,7 +3,7 @@ cache: bundler
 bundler_args: "--without=release doc"
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y git-flow git-core
+  - sudo apt-get install -qq git-flow git-core
 rvm:
  - 1.9.2
  - 1.9.3
