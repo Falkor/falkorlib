@@ -1,0 +1,18 @@
+## <%= config[:name] %> Gem Installation
+
+You'll typically want to install <%= config[:name] %> using [Bundler](http://bundler.io/).
+To do this, simply add this line to your application's `Gemfile`:
+
+	gem '<%= config[:name].downcase %>'
+	
+And then execute:
+
+	$> bundle
+
+Or install it yourself as:
+
+	$> gem install <%= config[:name].downcase %>
+
+**Note** you probably wants to do the above within an isolated environment. See
+  below for some explanation on this setup.
+

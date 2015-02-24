@@ -1,0 +1,22 @@
+### Ruby stuff: RVM, Rakefile and Ruby gems
+
+The various operations that can be conducted from this repository are piloted from a [`Rakefile`](https://github.com/ruby/rake) and assumes you have a running [Ruby](https://www.ruby-lang.org/en/) installation. You'll also need [Ruby Gems](https://rubygems.org/) to facilitate the installation of ruby libraries.
+
+       $> apt-get install ruby rubygems  # On Debian-like systems
+
+Install the [rake](https://rubygems.org/gems/rake) gem as follows:
+
+       $> gem install rake
+
+In order to have a consistent environment among the collaborators of this project, [Bundler](http://bundler.io/) is also used. Configuration of [Bundler](http://bundler.io/) is made via the [`Gemfile[.lock]` files](http://bundler.io/v1.3/gemfile.html).
+
+Last but not least, I like to work on [Sandboxed environments](https://hpc.uni.lu/blog/2014/create-a-sandboxed-python-slash-ruby-environment/) and a great tool for that is [RVM](https://rvm.io/).
+[RVM](https://rvm.io/) gives you compartmentalized independent ruby setups. 
+This means that ruby, gems and irb are all separate and self-contained - from the system, and from each other.  Sandboxing with [RVM](https://rvm.io/) is straight-forward via the [notion of gemsets](https://rvm.io/gemsets) and is managed via the `.ruby-{version,gemset}` files. 
+
+If things are fine, you should  be able to access the list of available tasks by running:
+
+       $> rake -T
+
+You probably want to activate the bash-completion for rake tasks.
+I personally use the one provided [here](https://github.com/ai/rake-completion).
