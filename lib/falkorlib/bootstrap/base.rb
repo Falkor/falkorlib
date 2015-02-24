@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 21:58 svarrette>
+# Time-stamp: <Mer 2015-02-25 00:02 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -34,7 +34,7 @@ module FalkorLib  #:nodoc:
                              :tags         => []
                             },
                :trashdir => '.Trash',
-               :types    => [ :latex, :gem, :octopress, :puppet_module, :rvm, :pyenv ],
+               :types    => [ :none, :latex, :gem, :octopress, :puppet_module, :rvm, :pyenv ],
                :licenses => {
                              "none"       => {},
                              "Apache-2.0" => {
@@ -181,6 +181,7 @@ module FalkorLib
         ###### repo ######
         # Initialize a Git repository for a project with my favorite layout
         # Supported options:
+        # * :no_interaction [boolean]: do not interact
         # :interactive [boolean] Confirm Gitflow branch names
         # :master      [string]  Branch name for production releases
         # :develop     [string]  Branch name for development commits
@@ -315,6 +316,7 @@ module FalkorLib
         ###### readme ######
         # Bootstrap a README file for various context
         # Supported options:
+        #  * :no_interaction [boolean]: do not interact
         #  * :force     [boolean] force overwritting
         #  * :latex     [boolean] describe a LaTeX project
         #  * :octopress [boolean] octopress site
@@ -333,7 +335,7 @@ module FalkorLib
             config[:type] << :latex if options[:latex]
             if config[:type].empty?
                 t = select_from( FalkorLib::Config::Bootstrap::DEFAULTS[:types],
-                                'Select the type of project to describe:')
+                                'Select the type of project to describe:', 1)
                 config[:type] << t
                 config[:type] << [ :ruby, :rvm ] if [ :gem, :rvm, :octopress, :puppet_module ].include?( t )
                 config[:type] << :python if t == :pyenv

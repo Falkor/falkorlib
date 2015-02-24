@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 22:48 svarrette>
+# Time-stamp: <Mar 2015-02-24 23:42 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -41,14 +41,15 @@ module FalkorLib #:nodoc:
     module Config #:nodoc:
         # Defaults global settings
         DEFAULTS = {
-                    :debug        => false,
-                    :verbose      => false,
-                    :root         => Dir.pwd,
-                    :config_files => {
-                                      :local   => '.falkor/config',
-                                      :private => '.falkor/private',
-                                      #:project => '.falkor/project',
-                                     },
+                    :debug          => false,
+                    :verbose        => false,
+                    :no_interaction => false,
+                    :root           => Dir.pwd,
+                    :config_files   => {
+                                        :local   => '.falkor/config',
+                                        :private => '.falkor/private',
+                                        #:project => '.falkor/project',
+                                       },
                     #:custom_cfg   => '.falkorlib.yaml',
                     :rvm => {
                              :rubies      => [ '1.9.3', '2.0.0', '2.1.0'],

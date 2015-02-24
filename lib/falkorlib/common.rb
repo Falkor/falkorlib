@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 22:49 svarrette>
+# Time-stamp: <Mar 2015-02-24 23:50 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -84,6 +84,7 @@ module FalkorLib #:nodoc:
 
         ## Ask a question
         def ask(question, default_answer='')
+            return default_answer if FalkorLib.config[:no_interaction]
             print "#{question} "
             print "[Default: #{default_answer}]" unless default_answer == ''
             print ": "
@@ -94,6 +95,7 @@ module FalkorLib #:nodoc:
 
         ## Ask whether or not to really continue
         def really_continue?(default_answer = 'Yes')
+            return if FalkorLib.config[:no_interaction]
             pattern = (default_answer =~ /yes/i) ? '(Y|n)' : '(y|N)'
             answer = ask( cyan("=> Do you really want to continue #{pattern}?"), default_answer)
             exit 0 if answer =~ /n.*/i
