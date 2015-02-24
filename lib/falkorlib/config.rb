@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 11:58 svarrette>
+# Time-stamp: <Mar 2015-02-24 22:48 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -69,7 +69,7 @@ module FalkorLib #:nodoc:
         ## Build the default configuration hash, to be used to initiate the default.
         # The hash is built depending on the loaded files.
         def default
-            res = FalkorLib::Config::DEFAULTS
+            res = FalkorLib::Config::DEFAULTS.clone
             $LOADED_FEATURES.each do |path|
                 res[:git]        = FalkorLib::Config::Git::DEFAULTS        if path.include?('lib/falkorlib/git.rb')
                 res[:gitflow]    = FalkorLib::Config::GitFlow::DEFAULTS    if path.include?('lib/falkorlib/git.rb')
@@ -108,6 +108,7 @@ module FalkorLib #:nodoc:
         # save the { local | private } configuration on YAML format
         # Supported options:
         #  * :file [string] filename for the saved configuration
+        #  * :no_interaction [boolean]: do not interact
         ##
         def save(dir = Dir.pwd, config = {}, type = :local, options = {})
             path = normalized_path(dir)
@@ -116,10 +117,10 @@ module FalkorLib #:nodoc:
             conffile = options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
             confdir  = File.dirname( conffile )
             unless File.directory?( confdir )
-                really_continue? "about to create the configuration directory #{confdir}"
+                really_continue? "about to create the configuration directory #{confdir}" unless options[:no_interaction]
                 run %{ mkdir -p #{confdir} }
             end
-            store_config(conffile, config)
+            store_config(conffile, config, options)
         end # save
 
     end
