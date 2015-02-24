@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    falkorlib (0.4.1)
+    falkorlib (0.4.2)
+      artii (>= 2.1)
       awesome_print (~> 1.2)
       configatron (~> 3.2)
       deep_merge (~> 1.0.1)
@@ -19,6 +20,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.3.6)
+    artii (2.1.1)
     awesome_print (1.6.1)
     backports (3.6.0)
     codeclimate-test-reporter (0.3.0)

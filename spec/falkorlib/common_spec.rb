@@ -188,7 +188,7 @@ describe FalkorLib::Common do
 		it "#store_config - should store the correct hash to YAML" do
 			file_config = {:domain => "foo.com", :nested => { 'a1' => 2 }}
 			f = Tempfile.new('toto')
-			store_config(f.path, file_config)
+			store_config(f.path, file_config, { :no_interaction => true })
 			copy_file_config = YAML::load_file(f.path)
 			copy_file_config.should == file_config
 		end

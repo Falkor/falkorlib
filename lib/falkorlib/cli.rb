@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-01-20 23:25 svarrette>
+# Time-stamp: <Mar 2015-02-24 11:04 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -43,7 +43,7 @@ module FalkorLib
       end
 
       ###### config ######
-      desc "config", "Print the current configuration of FalkorLib", :hide => true
+      desc "config", "Print the current configuration of FalkorLib" #, :hide => true
       def config
         info "Thor options:"
         puts options.to_yaml

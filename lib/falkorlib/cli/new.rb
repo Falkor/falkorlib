@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2015-01-30 15:20 svarrette>
+# Time-stamp: <Mar 2015-02-24 22:03 svarrette>
 ################################################################################
 
 require 'thor'
@@ -37,6 +37,11 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
         :default => 'production', :banner => 'BRANCH', :desc => "Master Branch name for production releases"
       method_option :develop, :aliases => [ '-b', '--branch', '--devel'],
         :default => 'devel', :banner => 'BRANCH', :desc => "Branch name for development commits"
+      method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
+      method_option :gem,   :type => :boolean, :desc => "Initiate a Ruby gem project"
+      method_option :rvm,   :type => :boolean, :desc => "Initiate a RVM-based Ruby project"
+      method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
+      method_option :octopress, :aliases => ['-o', '--www'], :type => :boolean, :desc => "Initiate an Octopress web site"
       #___________________
       def repo(name = '.')
        # _newrepo(name, options)
@@ -90,9 +95,19 @@ These files will be committed in Git to ensure a consistent environment for the 
 
 
       ###### readme ######
+      method_option :make, :default => true,
+        :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
+      method_option :rake,
+        :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
+      method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Describe a LaTeX project"
+      method_option :gem,   :type => :boolean, :desc => "Describe a Ruby gem project"
+      method_option :rvm,   :type => :boolean, :desc => "Describe a RVM-based Ruby project"
+      method_option :pyenv, :type => :boolean, :desc => "Describe a pyenv-based Python project"
+      method_option :octopress, :aliases => '--www', :type => :boolean, :desc => "Describe an Octopress web site"
       #......................................
-      desc "readme PATH [options]", "Initiate a README file in the PATH directory"
+      desc "readme PATH [options]", "Initiate a README file in the PATH directory ('./' by default)"
       def readme(path = '.')
+          ap options
           FalkorLib::Bootstrap.readme(path, options)
       end # readme
     end # class Init

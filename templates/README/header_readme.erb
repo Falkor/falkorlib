@@ -1,17 +1,36 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
-`<%= config[:filename] %>`
 
-      Time-stamp: <Lun 2015-01-26 10:39 svarrette>
+<% unless (config[:license].empty? or config[:license] == "none") %>
+[![Licence](<%= FalkorLib::Bootstrap::get_badge("license", config[:license], 'blue') %>)](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
+<% end %>
 
-------------------
+       Time-stamp: <Mar 2015-02-24 21:23 svarrette>
 
-# <%= config[:shortname].capitalize %>
+       <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
+       Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
 
 <%= config[:summary] %>
 
-    Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
+<% unless (config[:license].empty? or config[:license] == "none") %>
+* [<%= config[:license] %> Licence](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
+<% end %>
+* [Sources](<%= config[:source] %>)
 
 ## Synopsis
 
 <%= config[:description] %>
+
+## Installation 
+
+This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %>](<%= config[:project_page] %>). 
+
+**`/!\ IMPORTANT`**: Once cloned, initiate your local copy of the repository by running: 
+
+    $> cd <%= config[:name].downcase %>
+<% if options[:make] %>
+    $> make setup
+<% else %>
+    $> gem install rake    # the very first time
+    $> rake setup
+<% end %>
 

@@ -136,6 +136,7 @@ Gem::Specification.new do |s|
 	s.add_runtime_dependency("diffy", '>= 3.0')
 	s.add_runtime_dependency("logger", '>= 1.2.8')
     s.add_runtime_dependency("thor",      '>= 0.19')
+    s.add_runtime_dependency("artii",     '>= 2.1')
     #s.add_runtime_dependency("mercenary", '>= 0.3.5')
 
     #
