@@ -1,12 +1,14 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2015-02-01 14:43 svarrette>
+# Time-stamp: <Mar 2015-02-24 21:58 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
 
 require "falkorlib"
 require "falkorlib/common"
+require 'erb'      # required for module generation
+require 'artii'
 
 include FalkorLib::Common
 
@@ -19,24 +21,62 @@ module FalkorLib  #:nodoc:
               {
                :metadata => {
                              :name         => '',
-                             :version      => '0.0.1',
+                             :type         => [],
                              :author       => "#{ENV['GIT_AUTHOR_NAME']}",
                              :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
                              :summary      => "rtfm",
                              :description  => '',
+                             :forge        => :gforge,
                              :source       => '',
                              :project_page => '',
+                             :license      => '',
                              :issues_url   => '',
                              :tags         => []
                             },
                :trashdir => '.Trash',
-               :types    => [ 'article', 'slides', 'gem', 'octopress', 'puppet_module', 'rvm' ],
+               :types    => [ :latex, :gem, :octopress, :puppet_module, :rvm, :pyenv ],
+               :licenses => {
+                             "none"       => {},
+                             "Apache-2.0" => {
+                                              :url  => "http://www.apache.org/licenses/LICENSE-2.0",
+                                              :logo => "https://www.apache.org/images/feather-small.gif"
+                                             },
+                             "BSD"        => {
+                                              :url  => "http://www.linfo.org/bsdlicense.html",
+                                              :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/License_icon-bsd.svg/200px-License_icon-bsd.svg.png"
+                                             },
+                             "CC by-nc-sa" => {
+                                               :name => "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+                                               :url  => "http://creativecommons.org/licenses/by-nc-sa/4.0",
+                                               :logo => "https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"
+                                              },
+                             "GPL-2.0"    => {
+                                              :url  => "http://www.gnu.org/licenses/gpl-2.0.html",
+                                              :logo => "https://licensebuttons.net/l/GPL/2.0/88x62.png"
+                                             },
+                             "GPL-3.0"    => {
+                                              :url  => "http://www.gnu.org/licenses/gpl-3.0.html",
+                                              :logo => "https://www.gnu.org/graphics/gplv3-88x31.png",
+                                             },
+                             "LGPL-2.1"   => {
+                                              :url  => "https://www.gnu.org/licenses/lgpl-2.1.html",
+                                              :logo => "https://licensebuttons.net/l/LGPL/2.1/88x62.png",
+                                             },
+                             "LGPL-3.0"   => {
+                                              :url  => "https://www.gnu.org/licenses/lgpl.html",
+                                              :logo => "https://www.gnu.org/graphics/lgplv3-88x31.png",
+                                             },
+                             "MIT"        => {
+                                              :url  => "http://opensource.org/licenses/MIT",
+                                              :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/License_icon-mit-2.svg/200px-License_icon-mit-2.svg.png"
+                                             },
+                            },
                :puppet   => {},
                :forge => {
-                          :gforge => { :url => 'http://gforge.uni.lu', :name => 'GForge @ Uni.lu' },
-                          :github => { :url => 'http://github.com',    :name => 'Github', :login => 'ULHPC' },
-                          :gitlab => { :url => 'http://gitlab.uni.lu', :name => 'Gitlab @ Uni.lu' },
-                          :none   => { :url => '', :name => "None"}
+                          :none   => { :url => '', :name => "None"},
+                          :gforge => { :url => 'https://gforge.uni.lu', :name => 'GForge @ Uni.lu' },
+                          :github => { :url => 'https://github.com',    :name => 'Github', :login => "#{`whoami`.chomp.capitalize}" },
+                          :gitlab => { :url => 'https://gitlab.uni.lu', :name => 'Gitlab @ Uni.lu' },
                          },
               }
 
@@ -147,6 +187,11 @@ module FalkorLib
         # :make        [boolean] Use a Makefile to pilot the repository actions
         # :rake        [boolean] Use a Rakefile (and FalkorLib) to pilot the repository action
         # :remote_sync [boolean] Operate a git remote synchronization
+        # :latex       [boolean] Initiate a LaTeX project
+        # :gem         [boolean] Initiate a Ruby gem project
+        # :rvm         [boolean] Initiate a RVM-based Ruby project
+        # :pyenv       [boolean] Initiate a pyenv-based Python project
+        # :octopress   [boolean] Initiate an Octopress web site
         ##
         def repo(name, options = {})
             ap options if options[:debug]
@@ -204,6 +249,9 @@ module FalkorLib
 
             # === VERSION file ===
             FalkorLib::Bootstrap.versionfile(path, :tag => 'v0.0.0')
+
+            # === README ===
+            FalkorLib::Bootstrap.readme(path, options)
 
             #===== remote synchro ========
             if options[:remote_sync]
@@ -271,24 +319,99 @@ module FalkorLib
         #  * :latex     [boolean] describe a LaTeX project
         #  * :octopress [boolean] octopress site
         ##
-        def readme(dir = Dir.pwd, type = 'latex', options = {})
-            info "Bootstrap a README file"
-            #if File.exists?(File.join(dir, ))
+        def readme(dir = Dir.pwd, options = {})
+            info "Bootstrap a README file for this project"
+            # get the local configuration
+            local_config = FalkorLib::Config.get(dir)
             config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
-            config[:filename] = options[:filename] ? options[:filename] : 'README.md'
-            config[:name]     = options[:name] ? options[:name] : File.basename(dir)
-            default_forge     = options[:forge] ? options[:forge] : :github
-            forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
-            case select_forge(default_forge)
-            when :gforge
-                config[:project_page] = forges[:url] + "/projects/"
+            if local_config[:project]
+                config.deep_merge!( local_config[:project])
+            else
+                config[:name]     = ask("\tProject name: ", get_project_name(dir)) unless options[:name]
             end
+            # Type of project
+            config[:type] << :latex if options[:latex]
+            if config[:type].empty?
+                t = select_from( FalkorLib::Config::Bootstrap::DEFAULTS[:types],
+                                'Select the type of project to describe:')
+                config[:type] << t
+                config[:type] << [ :ruby, :rvm ] if [ :gem, :rvm, :octopress, :puppet_module ].include?( t )
+                config[:type] << :python if t == :pyenv
+            end
+            config[:type] = config[:type].uniq.flatten
+            # Apply options (if provided)
+            [ :name, :forge ].each do |k|
+                config[k.to_sym] = options[k.to_sym] if options[k.to_sym]
+            end
+            path = normalized_path(dir)
+            config[:filename] = options[:filename] ? options[:filename] : File.join(path, 'README.md')
+            config[:forge] = select_forge(config[:forge]).to_sym if config[:forge].empty?
+            forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ]
+            default_source = case config[:forge]
+                             when :gforge
+                                 forges[:url] + "/projects/" + config[:name].downcase
+                             when :github
+                                 forges[:url] + "/" + forges[:login] + "/" + config[:name].downcase
+                             when :gitlab
+                                 forges[:url] + "/" + forges[:name].downcase
+                             end
 
+            FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].each do |k,v|
+                next if v.kind_of?(Array) or [ :license, :forge ].include?( k )
+                next if k == :name and ! name.empty?
+                next if k == :issues_url and ! [ :github, :gitlab ].include?( config[:forge] )
+                #next unless [ :name, :summary, :description ].include?(k.to_sym)
+                default_answer = case k
+                                 when :description
+                                     config[:description].empty? ? "#{config[:summary]}" : "#{config[:description]}" 
+                                 when :source
+                                     config[:source].empty? ? default_source : "#{config[:source]}"
+                                 when :project_page
+                                     config[:source].empty? ? v : config[:source]
+                                 when :issues_url
+                                     config[:project_page].empty? ? v : "#{config[:project_page]}/issues"
+                                 else
+                                     config[k.to_sym].empty? ? v : config[k.to_sym]
+                                 end
+                 config[k.to_sym] = ask( "\t" + sprintf("Project %-20s", "#{k}"), default_answer)
+            end
+            tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
+            config[:tags]    = tags.split(',')
+            config[:license] = select_licence() if config[:license].empty?
+            # stack the ERB files required to generate the README
+            templatedir = File.join( FalkorLib.templates, 'README')
+            erbfiles = [ 'header_readme.erb',  ]
+            [ :latex ].each do |type|
+                erbfiles << "readme_#{type}.erb" if options[type.to_sym] and File.exist?( File.join(templatedir, "readme_#{type}.erb"))
+            end
+            erbfiles << "readme_git.erb"     if FalkorLib::Git.init?(dir)
+            erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
+            erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)
+            erbfiles << "footer_readme.erb"
 
-            # config[:project_page] = case forge
-            #                         when :gforge
-                                        
-            #                         end
+            content = ""
+            erbfiles.each do |f|
+                erbfile = File.join(templatedir, f)
+                content += ERB.new(File.read("#{erbfile}"), nil, '<>').result(binding)
+            end
+            show_diff_and_write(content, config[:filename], options)
+
+            # Eventually save/upgrade local config
+            info "=> saving customization of the FalkorLib configuration in #{FalkorLib.config[:config_files][:local]}"
+            really_continue?
+            FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].keys.each do |k|
+                local_config[:project] = {} unless local_config[:project]
+                local_config[:project][k.to_sym] = config[k.to_sym]
+            end
+            if FalkorLib::GitFlow.init?(dir)
+                local_config[:gitflow]  = {} unless local_config[:gitflow]
+                local_config[:gitflow][:branches] = FalkorLib.config[:gitflow][:branches].clone unless local_config[:gitflow][:branches]
+                [ :master, :develop ].each do |b|
+                    local_config[:gitflow][:branches][b.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
+                end
+            end
+            FalkorLib::Config.save(dir, local_config, :local)
+            #
         end # readme
 
         ###
@@ -296,17 +419,51 @@ module FalkorLib
         ##
         def select_forge(default = :gforge, options = {})
             forge = FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
-            ap forge
+            #ap forge
             default_idx = forge.keys.index(default)
-            default_idx = 0 if default_idx.nil? 
+            default_idx = 0 if default_idx.nil?
             v = select_from(forge.map{ |k,v| v[:name] },
                             "Select the Forge hosting the project sources",
                             default_idx+1,
                             forge.keys)
-            ap v
+            v
         end # select_forge
 
+        ###### select_licence ######
+        # Select a given licence for the project
+        ##
+        def select_licence(default_licence = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:license],
+                           options = {})
+            list_license    = FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys
+            idx = list_license.index(default_licence) unless default_licence.nil?
+            select_from(list_license,
+                        'Select the license index for this project:',
+                        idx.nil? ? 1 : idx + 1)
+            #licence
+        end # select_licence
 
-        
+        ###### get_badge ######
+        # Return a Markdown-formatted string for a badge to display, typically in a README.
+        # Based on http://shields.io/
+        # Supported options:
+        #  * :style [string] style of the badge, Elligible: ['plastic', 'flat', 'flat-square'] 
+        ##
+        def get_badge(subject, status, color = 'blue', options = {})
+            st = status.gsub(/-/, '--').gsub(/_/, '__')
+            res = "https://img.shields.io/badge/#{subject}-#{st}-#{color}.svg"
+            res += "?style=#{options[:style]}" if options[:style]
+            res
+        end # get_licence_badge
+
+        ###### get_project_name ######
+        # Return a "reasonable" project name from a given [sub] directory i.e. its basename
+        ##
+        def get_project_name(dir = Dir.pwd, options = {})
+            path = normalized_path(dir)
+            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+            File.basename(path)
+        end # get_project_name
+
+
     end # module Bootstrap
 end # module FalkorLib
