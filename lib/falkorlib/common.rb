@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 23:50 svarrette>
+# Time-stamp: <Lun 2015-03-09 17:02 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -335,14 +335,26 @@ module FalkorLib #:nodoc:
         # ERB generation of the file `outfile` using the source template file `erbfile`
         # Supported options:
         #   :no_interaction [boolean]: do not interact
+        #   :srcdir         [string]: source dir for all considered ERB files
         def write_from_erb_template(erbfile, outfile, config = {},
                                     options = {
-                                               :no_interaction => false
+                                               :no_interaction => false,
                                               })
-            error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
-            template = File.read("#{erbfile}")
-            output   = ERB.new(template, nil, '<>')
-            content  = output.result(binding)
+            erbfiles = erbfile.is_a?(Array) ? erbfile : [ erbfile ]
+            content = ""
+            erbfiles.each do |f|
+                erb = options[:srcdir].nil? ? f : File.join(options[:srcdir], f)
+                unless File.exists? (erb)
+                    warning "Unable to find the template ERBfile '#{erb}'"
+                    really_continue? unless options[:no_interaction]
+                    next
+                end 
+                content += ERB.new(File.read("#{erb}"), nil, '<>').result(binding)
+            end
+            # error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
+            # template = File.read("#{erbfile}")
+            # output   = ERB.new(template, nil, '<>')
+            # content  = output.result(binding)
             show_diff_and_write(content, outfile, options)
         end
 

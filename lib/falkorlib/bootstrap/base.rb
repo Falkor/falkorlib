@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-02-25 00:02 svarrette>
+# Time-stamp: <Lun 2015-03-09 17:07 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -182,33 +182,39 @@ module FalkorLib
         # Initialize a Git repository for a project with my favorite layout
         # Supported options:
         # * :no_interaction [boolean]: do not interact
-        # :interactive [boolean] Confirm Gitflow branch names
-        # :master      [string]  Branch name for production releases
-        # :develop     [string]  Branch name for development commits
-        # :make        [boolean] Use a Makefile to pilot the repository actions
-        # :rake        [boolean] Use a Rakefile (and FalkorLib) to pilot the repository action
-        # :remote_sync [boolean] Operate a git remote synchronization
-        # :latex       [boolean] Initiate a LaTeX project
-        # :gem         [boolean] Initiate a Ruby gem project
-        # :rvm         [boolean] Initiate a RVM-based Ruby project
-        # :pyenv       [boolean] Initiate a pyenv-based Python project
-        # :octopress   [boolean] Initiate an Octopress web site
+        # * :gitflow     [boolean]: bootstrap with git-flow
+        # * :interactive [boolean] Confirm Gitflow branch names
+        # * :master      [string]  Branch name for production releases
+        # * :develop     [string]  Branch name for development commits
+        # * :make        [boolean] Use a Makefile to pilot the repository actions
+        # * :rake        [boolean] Use a Rakefile (and FalkorLib) to pilot the repository action
+        # * :remote_sync [boolean] Operate a git remote synchronization
+        # * :latex       [boolean] Initiate a LaTeX project
+        # * :gem         [boolean] Initiate a Ruby gem project
+        # * :rvm         [boolean] Initiate a RVM-based Ruby project
+        # * :pyenv       [boolean] Initiate a pyenv-based Python project
+        # * :octopress   [boolean] Initiate an Octopress web site
         ##
         def repo(name, options = {})
             ap options if options[:debug]
             path    = normalized_path(name)
             project = File.basename(path)
             use_git = FalkorLib::Git.init?(path)
+            options[:make] = false if options[:rake]
             info "Bootstrap a [Git] repository for the project '#{project}'"
             if use_git
                 warning "Git is already initialized for the repository '#{name}'"
                 really_continue? unless options[:force]
             end
-            info " ==> initialize Git flow in #{path}"
-            FalkorLib::GitFlow.init(path, options)
-            gitflow_branches = {}
-            [ :master, :develop ].each do |t|
-                gitflow_branches[t.to_sym] = FalkorLib::GitFlow.branches(t, path)
+            if options[:git_flow]
+                info " ==> initialize Git flow in #{path}"
+                FalkorLib::GitFlow.init(path, options)
+                gitflow_branches = {}
+                [ :master, :develop ].each do |t|
+                    gitflow_branches[t.to_sym] = FalkorLib::GitFlow.branches(t, path)
+                end
+            else
+                FalkorLib::Git.init(path, options)
             end
             # === prepare Git submodules ===
             info " ==> prepare the relevant Git submodules"
@@ -245,11 +251,22 @@ module FalkorLib
                 end
             end
             if options[:rake]
-                warning "TODO: setup Rakefile"
+                info " ==> prepare Root Rakefile"
+                rakefile = File.join(path, "Rakefile")
+                unless File.exist?( rakefile )
+                    templatedir = File.join( FalkorLib.templates, 'Rakefile')
+                    erbfiles = [ 'header_rakefile.erb' ]
+                    erbfiles << 'rakefile_gitflow.erb' if FalkorLib::GitFlow.init?(path)
+                    erbfiles << 'footer_rakefile.erb'
+                    write_from_erb_template(erbfiles, rakefile, {}, { :srcdir => "#{templatedir}" })
+                end
             end
 
             # === VERSION file ===
             FalkorLib::Bootstrap.versionfile(path, :tag => 'v0.0.0')
+
+            # === RVM ====
+            FalkorLib::Bootstrap.rvm(path, options) if options[:rvm]
 
             # === README ===
             FalkorLib::Bootstrap.readme(path, options)
@@ -365,7 +382,7 @@ module FalkorLib
                 #next unless [ :name, :summary, :description ].include?(k.to_sym)
                 default_answer = case k
                                  when :description
-                                     config[:description].empty? ? "#{config[:summary]}" : "#{config[:description]}" 
+                                     config[:description].empty? ? "#{config[:summary]}" : "#{config[:description]}"
                                  when :source
                                      config[:source].empty? ? default_source : "#{config[:source]}"
                                  when :project_page
@@ -375,7 +392,7 @@ module FalkorLib
                                  else
                                      config[k.to_sym].empty? ? v : config[k.to_sym]
                                  end
-                 config[k.to_sym] = ask( "\t" + sprintf("Project %-20s", "#{k}"), default_answer)
+                config[k.to_sym] = ask( "\t" + sprintf("Project %-20s", "#{k}"), default_answer)
             end
             tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
             config[:tags]    = tags.split(',')
@@ -448,7 +465,7 @@ module FalkorLib
         # Return a Markdown-formatted string for a badge to display, typically in a README.
         # Based on http://shields.io/
         # Supported options:
-        #  * :style [string] style of the badge, Elligible: ['plastic', 'flat', 'flat-square'] 
+        #  * :style [string] style of the badge, Elligible: ['plastic', 'flat', 'flat-square']
         ##
         def get_badge(subject, status, color = 'blue', options = {})
             st = status.gsub(/-/, '--').gsub(/_/, '__')
