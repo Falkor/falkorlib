@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mer 2015-02-25 00:03 svarrette>
+# Time-stamp: <Lun 2015-03-09 17:09 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -160,7 +160,7 @@ describe FalkorLib::Bootstrap do
         
         it '#repo' do
             FalkorLib.config[:no_interaction] = true
-            FalkorLib::Bootstrap.repo(dir, { :no_interaction => true })
+            FalkorLib::Bootstrap.repo(dir, { :no_interaction => true, :git_flow => false })
             FalkorLib.config[:no_interaction] = false
         end
 

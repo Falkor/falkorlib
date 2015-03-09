@@ -1,0 +1,8 @@
+
+# Git flow customization
+FalkorLib.config.gitflow do |c|
+    c[:branches] = {
+        :master  => '<%= FalkorLib::GitFlow.branches(:master) %>',
+        :develop => '<%= FalkorLib::GitFlow.branches(:develop) %>'
+    }
+end

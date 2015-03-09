@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-02-25 00:19 svarrette>
+# Time-stamp: <Lun 2015-03-09 12:02 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -123,7 +123,8 @@ module FalkorLib #:nodoc:
             conffile = config_file(dir,type,options)
             confdir  = File.dirname( conffile )
             unless File.directory?( confdir )
-                really_continue? "about to create the configuration directory #{confdir}" unless options[:no_interaction]
+                warning "about to create the configuration directory #{confdir}"
+                really_continue?  unless options[:no_interaction]
                 run %{ mkdir -p #{confdir} }
             end
             store_config(conffile, config, options)

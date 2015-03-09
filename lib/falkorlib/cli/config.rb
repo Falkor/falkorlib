@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 11:04 svarrette>
+# Time-stamp: <Ven 2015-02-27 20:59 svarrette>
 ################################################################################
 # Management of the configuration specializations
 #
@@ -13,6 +13,7 @@ module FalkorLib
         class Config #< ::Thor
             
 
+            
 
 
             

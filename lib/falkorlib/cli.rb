@@ -1,15 +1,17 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-02-24 11:04 svarrette>
+# Time-stamp: <Lun 2015-03-09 11:57 svarrette>
 ################################################################################
 # Interface for the CLI
 #
 
 require 'thor'
 require 'thor/actions'
+require 'thor/group'
 require "falkorlib"
 
 require "falkorlib/cli/new"
+require "falkorlib/cli/link"
 
 
 
@@ -37,14 +39,21 @@ module FalkorLib
       class_option :dry_run, :aliases => '-n', :type => :boolean
 
       ###### commands ######
-      desc "commands", "Lists all available commands", :hide => true
-      def commands
-        puts App.all_commands.keys - ["commands", "completions"]
-      end
+      # desc "commands", "Lists all available commands", :hide => true
+      # def commands
+      #   puts App.all_commands.keys - ["commands", "completions"]
+      # end
 
       ###### config ######
-      desc "config", "Print the current configuration of FalkorLib" #, :hide => true
-      def config
+      desc "config [option] [KEY]", "Print the current configuration of FalkorLib" #, :hide => true
+      long_desc <<-CONFIG_LONG_DESC
+This command allows you to interact with FalkorLib's configuration system.
+FalkorLib retrieves its configuration from the local repository (in '<git_rootdir>/.falkor/config'),
+environment variables (NOT YET IMPLEMENTED), and the user's home directory (~/.falkor/config), in that order of priority.
+CONFIG_LONG_DESC
+      method_option :global, :aliases => '-g', :type => :boolean, :desc => 'Operate on the global configuration (in ~/.falkor/config)'
+      method_option :local,  :aliases => '-l', :type => :boolean, :desc => 'Operate on the local configuration of the repository (in <git_rootdir>/.falkor/config)'
+      def config(key = '')
         info "Thor options:"
         puts options.to_yaml
         info "FalkorLib internal configuration:"
@@ -54,10 +63,13 @@ module FalkorLib
 
       # map %w[--help -h] => :help
 
-      ###### init ######
-      desc "new TYPE", "Initialize the directory PATH with FalkorLib's template(s)"
+      ###### new ######
+      desc "new <type> [<path>]", "Initialize the directory PATH with FalkorLib's template(s)"
       subcommand "new", FalkorLib::CLI::New
 
+      ###### link  ######
+      desc "link <type> [<path>]", "Initialize a special symlink in <path> (the current directory by default)"
+      subcommand "link", FalkorLib::CLI::Link
 
 
       map %w[--version -V] => :version
