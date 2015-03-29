@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-03-09 12:09 svarrette>
+# Time-stamp: <Dim 2015-03-29 17:52 svarrette>
 ################################################################################
 
 require 'thor'
@@ -102,6 +102,20 @@ RVM_LONG_DESC
                 FalkorLib::Bootstrap.versionfile(path, options)
             end # versionfile
 
+            ###### motd ######
+            method_option :file,     :aliases => '-f', :default => '/etc/motd', :desc => "File storing the message of the day"
+            method_option :width,    :aliases => '-w', :default => 80, :type => :numeric, :desc => "Width for the text"
+            method_option :title,    :aliases => '-t', :default => "Title", :desc => "Title to place in the motd"
+            method_option :subtitle, :desc => "Eventual subtitle to place below the title"
+            method_option :hostname, :aliases => '-h', :default => `hostname -f`, :desc => "Hostname"
+            method_option :support,  :aliases => '-s', :default => "#{ENV['GIT_AUTHOR_EMAIL']}", :desc => "Support/Contact mail"
+            method_option :desc,     :aliases => '-d', :desc => "Short Description of the host"
+            method_option :nodemodel,:aliases => '-n', :desc => "Node Model"
+            #......................................
+            desc "motd PATH [options]", "Initiate a 'motd' file - message of the day"
+            def motd(path = '.')
+                FalkorLib::Bootstrap.motd(path, options)
+            end # motd
 
             ###### readme ######
             method_option :make, :default => true,

@@ -4,7 +4,7 @@
 [![Licence](<%= FalkorLib::Bootstrap::get_badge("license", config[:license], 'blue') %>)](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
 <% end %>
 
-       Time-stamp: <Mar 2015-02-24 21:23 svarrette>
+       Time-stamp: <Dim 2015-03-29 14:28 svarrette>
 
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
@@ -19,6 +19,7 @@
 ## Synopsis
 
 <%= config[:description] %>
+
 
 ## Installation 
 

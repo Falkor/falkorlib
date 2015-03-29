@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-03-09 17:07 svarrette>
+# Time-stamp: <Dim 2015-03-29 21:12 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -9,6 +9,7 @@ require "falkorlib"
 require "falkorlib/common"
 require 'erb'      # required for module generation
 require 'artii'
+require 'facter'
 
 include FalkorLib::Common
 
@@ -26,7 +27,7 @@ module FalkorLib  #:nodoc:
                              :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
                              :summary      => "rtfm",
                              :description  => '',
-                             :forge        => :gforge,
+                             :forge        => '',
                              :source       => '',
                              :project_page => '',
                              :license      => '',
@@ -330,6 +331,23 @@ module FalkorLib
         end # versionfile
 
 
+        ###### motd ######
+        # Generate a new motd (Message of the Day) file
+        # Supported options:
+        #  * :force [boolean] force action 
+        ##
+        def motd(dir = Dir.pwd, options = {})
+            path = normalized_path(dir)
+            erbfile = File.join( FalkorLib.templates, 'motd', 'motd.erb')
+            outfile = options[:file]
+            info "Generate a motd (Message of the Day) file '#{outfile}'"
+            options[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
+            options[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
+            write_from_erb_template(erbfile, outfile, options)
+        end # motd
+
+
+        
         ###### readme ######
         # Bootstrap a README file for various context
         # Supported options:

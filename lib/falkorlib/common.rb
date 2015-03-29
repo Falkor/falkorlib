@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-03-09 17:02 svarrette>
+# Time-stamp: <Dim 2015-03-29 18:47 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -9,6 +9,7 @@ require 'erb'      # required for module generation
 require 'diffy'
 require 'json'
 require "pathname"
+require "facter"
 
 module FalkorLib #:nodoc:
 
