@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-03-09 17:07 svarrette>
+# Time-stamp: <Dim 2015-03-29 22:25 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -9,6 +9,7 @@ require "falkorlib"
 require "falkorlib/common"
 require 'erb'      # required for module generation
 require 'artii'
+require 'facter'
 
 include FalkorLib::Common
 
@@ -19,6 +20,12 @@ module FalkorLib  #:nodoc:
         module Bootstrap
             DEFAULTS =
               {
+               :motd    => {
+                            :title    => "Title",
+                            :support  => "#{ENV['GIT_AUTHOR_EMAIL']}",
+                            :width    => 80,
+                            :hostname => "`hostname -f`",
+                           },
                :metadata => {
                              :name         => '',
                              :type         => [],
@@ -26,7 +33,7 @@ module FalkorLib  #:nodoc:
                              :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
                              :summary      => "rtfm",
                              :description  => '',
-                             :forge        => :gforge,
+                             :forge        => '',
                              :source       => '',
                              :project_page => '',
                              :license      => '',
@@ -330,6 +337,24 @@ module FalkorLib
         end # versionfile
 
 
+        ###### motd ######
+        # Generate a new motd (Message of the Day) file
+        # Supported options:
+        #  * :force [boolean] force action 
+        ##
+        def motd(dir = Dir.pwd, options = {})
+            config = FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
+            path = normalized_path(dir)
+            erbfile = File.join( FalkorLib.templates, 'motd', 'motd.erb')
+            outfile = (options[:file] =~ /^\//) ? options[:file] : File.join(path, options[:file])
+            info "Generate a motd (Message of the Day) file '#{outfile}'"
+            config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
+            config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
+            write_from_erb_template(erbfile, outfile, config, options)
+        end # motd
+
+
+        
         ###### readme ######
         # Bootstrap a README file for various context
         # Supported options:
@@ -373,11 +398,13 @@ module FalkorLib
                                  forges[:url] + "/" + forges[:login] + "/" + config[:name].downcase
                              when :gitlab
                                  forges[:url] + "/" + forges[:name].downcase
+                             else
+                                 ""
                              end
-
+            ap config
             FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].each do |k,v|
                 next if v.kind_of?(Array) or [ :license, :forge ].include?( k )
-                next if k == :name and ! name.empty?
+                next if k == :name and ! config[:name].empty?
                 next if k == :issues_url and ! [ :github, :gitlab ].include?( config[:forge] )
                 #next unless [ :name, :summary, :description ].include?(k.to_sym)
                 default_answer = case k

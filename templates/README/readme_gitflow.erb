@@ -12,7 +12,7 @@ Thus you are more than encouraged to install the [git-flow](https://github.com/n
 
 ### Releasing mechanism
 
-The operation consisting of releasing a new version of this repository is automated by a set of tasks within the root `<%= config[:rake] ? 'R' : 'M' %>akefile`.
+The operation consisting of releasing a new version of this repository is automated by a set of tasks within the root `<%= options[:rake] ? 'R' : 'M' %>akefile`.
 
 In this context, a version number have the following format:
 
@@ -31,16 +31,16 @@ The current version number is stored in the root file `VERSION`. __/!\ NEVER MAK
 
 For more information on the version, run:
 
-     $> <%= config[:make] ? 'make versioninfo' : 'rake version:info' %>
+     $> <%= options[:make] ? 'make versioninfo' : 'rake version:info' %>
 
 If a new version number such be bumped, you simply have to run:
 
-      $> <%= config[:make] ? 'make start_bump_{major,minor,patch}' : 'rake version:{major,minor,patch}' %>
+      $> <%= options[:make] ? 'make start_bump_{major,minor,patch}' : 'rake version:{major,minor,patch}' %>
 
 This will start the release process for you using `git-flow`.
 Once you have finished to commit your last changes, make the release effective by running:
 
-      $> <%= config[:make] ? 'make release' : 'rake version:release' %>
+      $> <%= options[:make] ? 'make release' : 'rake version:release' %>
 
 it will finish the release using `git-flow`, create the appropriate tag in the `<%=  FalkorLib::GitFlow.branches(:master) %>` branch and merge all things the way they should be.
 

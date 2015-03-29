@@ -1,0 +1,17 @@
+<%= ("=" * config[:width]) + "\n" %>
+Welcome to <%= config[:hostname].chomp %>
+<%= ("=" * config[:width]) + "\n" %>
+    <%= ::Artii::Base.new().asciify( config[:title] ).split("\n").join("\n    ") %>
+<% if config[:subtitle] %>
+    <%= ::Artii::Base.new().asciify( config[:subtitle] ).split("\n").join("\n    ") %>
+<% end %>
+<%= ("=" * config[:width]) + "\n" %>
+  Hostname: <%= config[:hostname].chomp %>
+  OS:       <%= config[:os] %>
+  Support:  <%= config[:support] %>
+
+ === <%= config[:desc] %> ===
+ <%= config[:nodemodel] %> (<%= Facter.value(:physicalprocessorcount) %> <%= Facter.value(:processor0) %>)
+ RAM: <%= Facter.value(:memorysize) %> -- Swap size: <%= Facter.value(:swapsize) %>
+
+<%= ("=" * config[:width]) + "\n" %>
