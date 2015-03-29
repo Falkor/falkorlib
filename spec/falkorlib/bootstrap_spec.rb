@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Lun 2015-03-09 17:09 svarrette>
+# Time-stamp: <Dim 2015-03-29 22:28 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -150,6 +150,7 @@ describe FalkorLib::Bootstrap do
                 t.should be_true
                 FalkorLib.config[:no_interaction] = false
             end
+
         end # context
 
     end # each
@@ -157,14 +158,22 @@ describe FalkorLib::Bootstrap do
     ############################################
     context 'boostrap repo' do
         dir = dirs[:default]
-        
         it '#repo' do
             FalkorLib.config[:no_interaction] = true
             FalkorLib::Bootstrap.repo(dir, { :no_interaction => true, :git_flow => false })
             FalkorLib.config[:no_interaction] = false
         end
-
     end
 
+    ############################################
+    context 'boostrap motd' do
+        dir = dirs[:default]
+        it "#motd" do
+            motdfile = File.join(dir, 'motd1')
+            FalkorLib::Bootstrap.motd(dir, { :file => "#{motdfile}", :no_interaction => true })
+            t = File.exists?(motdfile)
+            t.should be_true
+        end
+    end 
     
 end
