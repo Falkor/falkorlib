@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-01-12 22:09 svarrette>
+# Time-stamp: <Thu 2015-05-07 17:18 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -71,6 +71,7 @@ module FalkorLib  #:nodoc:
                 error "Undefined type #{type}" if t.empty?
                 result = []
                 Dir["#{moduledir}/manifests/**/*.pp"].each do |ppfile|
+                    puts "=> testing #{ppfile}"
                     File.read(ppfile).scan(/^[ \t]*#{t}[\s]+([0-9a-zA-z:-]+).*$/).each do |line|
                         result << line[0]
                     end
@@ -78,7 +79,6 @@ module FalkorLib  #:nodoc:
                 result.uniq!
                 result.sort
             end
-
 
 
             ####
