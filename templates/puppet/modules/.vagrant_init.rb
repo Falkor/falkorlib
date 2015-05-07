@@ -2,7 +2,7 @@
 ##########################################################################
 # vagrant_init.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Ven 2014-09-05 11:39 svarrette>
+# Time-stamp: <Lun 2015-03-30 22:42 svarrette>
 #
 # @description 
 #
@@ -31,8 +31,8 @@ end
 modulepath=`puppet config print modulepath`.chomp
 moduledir=modulepath.split(':').first
 
-puts "#{modulepath}"
-puts "#{moduledir}" 
+puts "Module path: #{modulepath}"
+puts "Moduledir:   #{moduledir}" 
 
-info "set symlink to the '#{modulepath} module for loca developments"
+info "set symlink to the '#{basedir}' module for local developments"
 run %{ ln -s #{basedir} #{moduledir}/#{name}  } unless File.exists?("#{moduledir}/#{name}")
