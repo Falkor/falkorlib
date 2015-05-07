@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Lun 2014-09-08 17:19 svarrette>
+# Time-stamp: <Thu 2015-05-07 17:38 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -194,26 +194,26 @@ PuppetSyntax.exclude_paths = exclude_tests_paths
 #.........................................................................
 # rspec-puppet tasks -- see http://rspec-puppet.com/tutorial/
 #
-require 'rspec/core/rake_task'
+# require 'rspec/core/rake_task'
 
-########## rspec #################
-desc "Run all RSpec code examples"
-RSpec::Core::RakeTask.new(:rspec) do |t|
-	t.rspec_opts = File.read("spec/spec.opts").chomp || ""
-end
+# ########## rspec #################
+# desc "Run all RSpec code examples"
+# RSpec::Core::RakeTask.new(:rspec) do |t|
+# 	t.rspec_opts = File.read("spec/spec.opts").chomp || ""
+# end
 
-SPEC_SUITES = (Dir.entries('spec') - ['.', '..','fixtures']).select {|e| File.directory? "spec/#{e}" }
-namespace :rspec do
-	SPEC_SUITES.each do |suite|
-		############ rspec:{classes,defines...} ##########
-		desc "Run #{suite} RSpec code examples"
-		RSpec::Core::RakeTask.new(suite) do |t|
-			t.pattern = "spec/#{suite}/**/*_spec.rb"
-			t.rspec_opts = File.read("spec/spec.opts").chomp || ""
-		end
-	end
-end
-task :default => :rspec
+# SPEC_SUITES = (Dir.entries('spec') - ['.', '..','fixtures']).select {|e| File.directory? "spec/#{e}" }
+# namespace :rspec do
+# 	SPEC_SUITES.each do |suite|
+# 		############ rspec:{classes,defines...} ##########
+# 		desc "Run #{suite} RSpec code examples"
+# 		RSpec::Core::RakeTask.new(suite) do |t|
+# 			t.pattern = "spec/#{suite}/**/*_spec.rb"
+# 			t.rspec_opts = File.read("spec/spec.opts").chomp || ""
+# 		end
+# 	end
+# end
+# task :default => :rspec
 
 
 
