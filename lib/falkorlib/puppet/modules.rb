@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2015-05-07 17:18 svarrette>
+# Time-stamp: <Thu 2015-05-07 18:14 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -130,7 +130,7 @@ module FalkorLib  #:nodoc:
                                              "name"          => "puppetlabs-stdlib",
                                              "version_range" => ">= 1.0.0"
                                          }]
-                config[:params] = ["ensure", "protocol", "port", "packagename" ]
+                config[:params] = [ 'ensure', 'protocol', 'port', 'packagename' ]
                 #ap config
                 # Bootstrap the directory
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
@@ -260,7 +260,7 @@ module FalkorLib  #:nodoc:
                     if File.exist?(params_manifest)
                         params = []
                         File.read(params_manifest).scan(/^\s*\$(.*)\s*=/) do |m|
-                            params << $1 unless $1.nil?
+                            params << $1.gsub(/\s+$/,'') unless $1.nil?
                         end
                         metadata[:params] = params.uniq
                     end
@@ -329,7 +329,7 @@ module FalkorLib  #:nodoc:
                                           :no_interaction => false
                                       })
                 metadata = metadata(moduledir)
-                #ap metadata
+                ap metadata
                 i = 0
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules', subdir)
                 error "Unable to find the template directory '#{templatedir}" unless File.directory?( templatedir )
