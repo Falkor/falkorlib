@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Thu 2015-05-07 17:38 svarrette>
+# Time-stamp: <Thu 2015-05-07 18:51 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -69,7 +69,7 @@ namespace :puppet do
 			###########   puppet:module:validate   ###########
 			desc "Validate the module by checking the syntax and programming style of the module"
 			task :validate => [
-			                :syntax,
+			                #:syntax,
 			                :lint
 			               ]
 #			do
