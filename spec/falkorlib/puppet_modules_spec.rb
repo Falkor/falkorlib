@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Ven 2014-12-05 22:56 svarrette>
+# Time-stamp: <Fri 2015-05-08 11:23 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -142,7 +142,7 @@ describe FalkorLib::Puppet::Modules do
 			diff = (metadata.to_a - ref.to_a).flatten
 			diff.should == [
 			                'dependencies',
-			                {"name"=>"puppetlabs-stdlib", "version_range"=>">= 1.0.0"}, 
+			                {"name"=>"puppetlabs-stdlib", "version_requirement"=>">=4.2.2 <5.0.0"}, 
 			                {"name"=>"svarrette/tata", "version_requirement"=>"1.2"}
 			               ]
 		end
