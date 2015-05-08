@@ -14,12 +14,16 @@ If you want to contribute to the code, you shall be aware of the way this module
            `-- manifests/
                 `-- init.pp      # Main manifests file which defines the <%= config[:shortname] %> class 
                 `-- params.pp    # <%= config[:name] %> module variables 
-<% config[:classes].each do |cl| %>
-<% next if cl =~ /params/ %>
+<% unless config[:classes].nil? %>
+<%     config[:classes].each do |cl| %>
+<%        next if cl =~ /params/ %>
                 `-- <%= cl.gsub(/::/, '/') %>.pp 
+<%     end %>
 <% end %>
-<% config[:definitions].each do |de| %>
+<% unless config[:definitions].nil? %>
+<%     config[:definitions].each do |de| %>
                 `-- <%= de.gsub(/::/, '/') %>.pp 
+<%     end %>
 <% end %>
            `-- templates/        # Module ERB template files
            `-- tests/            # Contains examples showing how to declare the module’s classes and defined type

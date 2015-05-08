@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-08 15:37 svarrette>
+# Time-stamp: <Fri 2015-05-08 16:19 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -301,6 +301,7 @@ module FalkorLib  #:nodoc:
                     ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
                     next if ans =~ /n.*/i
                     if update_from_erb.include?(f)
+                        ap "=> updating #{f}.erb"
                         i += write_from_erb_template(File.join(templatedir, "#{f}.erb"),
                                                      File.join(moduledir,  f),
                                                      metadata,

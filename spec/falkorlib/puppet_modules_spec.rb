@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2015-05-08 11:23 svarrette>
+# Time-stamp: <Fri 2015-05-08 16:21 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -71,8 +71,8 @@ describe FalkorLib::Puppet::Modules do
                     "toto::params",
                     "toto",
                     "toto::common",
-                    "toto::debian",
-                    "toto::redhat"
+                    "toto::common::debian",
+                    "toto::common::redhat"
                    ]
             c.size.should == ref.size
             c.each { |e| ref.should include(e) }
@@ -110,10 +110,10 @@ describe FalkorLib::Puppet::Modules do
                             'definitions',
                             'toto',
                             'toto::common',
-                            'toto::debian',
+                            'toto::common::debian',
+                            'toto::common::redhat',
                             'toto::mydef',
                             'toto::params',
-                            'toto::redhat',
                            ]
         end
 
@@ -147,12 +147,12 @@ describe FalkorLib::Puppet::Modules do
 			               ]
 		end
 
-		upgraded_files_default = 1
+		upgraded_files_default = 2
 		it "#upgrade" do
 			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
 				                                       :no_interaction => true
 			                                       })
-			d.should == upgraded_files_default
+            d.should == upgraded_files_default
 		end
 
 		it "#upgrade -- with only a subset of files" do
@@ -168,7 +168,8 @@ describe FalkorLib::Puppet::Modules do
 				                                       :no_interaction => true, 
 				                                       :exclude => [ 'README.md']
 			                                       })
-			d.should == (upgraded_files_default - 1)
+            d.should == 0
+			#d.should == (upgraded_files_default - 1)
 		end
 
 		it "#upgrade -- both include and exclude files" do

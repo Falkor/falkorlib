@@ -21,13 +21,17 @@
 This module implements the following elements: 
 
 * __Puppet classes__:
-<% config[:classes].each do |cl| %>
+<% unless config[:classes].nil? %>
+<%    config[:classes].each do |cl| %>
     - `<%= cl %>` 
+<%    end %>
 <% end %>
 
 * __Puppet definitions__: 
-<% config[:definitions].each do |de| %>
+<% unless config[:definitions].nil? %>
+<%    config[:definitions].each do |de| %>
     - `<%= de %>` 
+<%    end %>
 <% end %>
 
 All these components are configured through a set of variables you will find in
@@ -59,14 +63,16 @@ Use is as follows:
 
 See also [`tests/init.pp`](tests/init.pp)
 
-<% config[:classes].each do |cl| %>
+<% unless config[:classes].nil? %>
+<%    config[:classes].each do |cl| %>
 ### Class `<%= cl %>`
 
 See `tests/<%= cl.gsub(/::/, '/') %>.pp`
+<%    end %>
 <% end %>
 
-
-<% config[:definitions].each do |de| %>
+<% unless config[:definitions].nil? %>
+<%    config[:definitions].each do |de| %>
 ### Definition `<%= de %>`
 
 The definition `<%= de %>` provides ...
@@ -82,8 +88,9 @@ Example:
 		      ensure => 'present',
         }
 
-See also `tests/<%= cl.gsub(/::/, '/') %>.pp`
+See also `tests/<%= de.gsub(/::/, '/') %>.pp`
 
+<%    end %>
 <% end %>
 
 ## Librarian-Puppet / R10K Setup
