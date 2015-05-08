@@ -1,0 +1,127 @@
+# File::      <tt>common.pp</tt>
+# Author::    <%= config[:author] %> (<%= config[:mail] %>)
+# Copyright:: Copyright (c) <%= Time.now.year %> <%= config[:author] %>
+# License::   <%= config[:license].capitalize %>
+#
+# ------------------------------------------------------------------------------
+# = Class: <%= config[:shortname] %>::common
+#
+# Base class to be inherited by the other <%= config[:shortname] %> classes, containing the common code.
+#
+# Note: respect the Naming standard provided here[http://projects.puppetlabs.com/projects/puppet/wiki/Module_Standards]
+
+class <%= config[:shortname] %>::common {
+
+    # Load the variables used in this module. Check the params.pp file
+    require <%= config[:shortname] %>::params
+
+    package { '<%= config[:shortname] %>':
+        name    => "${<%= config[:shortname] %>::params::packagename}",
+        ensure  => "${<%= config[:shortname] %>::ensure}",
+    }
+    # package { $<%= config[:shortname] %>::params::extra_packages:
+    #     ensure => 'present'
+    # }
+
+    if $<%= config[:shortname] %>::ensure == 'present' {
+
+        # Prepare the log directory
+        file { "${<%= config[:shortname] %>::params::logdir}":
+            ensure => 'directory',
+            owner  => "${<%= config[:shortname] %>::params::logdir_owner}",
+            group  => "${<%= config[:shortname] %>::params::logdir_group}",
+            mode   => "${<%= config[:shortname] %>::params::logdir_mode}",
+            require => Package['<%= config[:shortname] %>'],
+        }
+
+        # Configuration file
+        # file { "${<%= config[:shortname] %>::params::configdir}":
+        #     ensure => 'directory',
+        #     owner  => "${<%= config[:shortname] %>::params::configdir_owner}",
+        #     group  => "${<%= config[:shortname] %>::params::configdir_group}",
+        #     mode   => "${<%= config[:shortname] %>::params::configdir_mode}",
+        #     require => Package['<%= config[:shortname] %>'],
+        # }
+        # Regular version using file resource
+        file { '<%= config[:shortname] %>.conf':
+            path    => "${<%= config[:shortname] %>::params::configfile}",
+            owner   => "${<%= config[:shortname] %>::params::configfile_owner}",
+            group   => "${<%= config[:shortname] %>::params::configfile_group}",
+            mode    => "${<%= config[:shortname] %>::params::configfile_mode}",
+            ensure  => "${<%= config[:shortname] %>::ensure}",
+            #content => template("<%= config[:shortname] %>/<%= config[:shortname] %>conf.erb"),
+            #source => "puppet:///modules/<%= config[:shortname] %>/<%= config[:shortname] %>.conf",
+            #notify  => Service['<%= config[:shortname] %>'],
+            require => [
+                        #File["${<%= config[:shortname] %>::params::configdir}"],
+                        Package['<%= config[:shortname] %>']
+                        ],
+        }
+
+        # # Concat version -- see https://forge.puppetlabs.com/puppetlabs/concat
+        # include concat::setup
+        # concat { "${<%= config[:shortname] %>::params::configfile}":
+        #     warn    => false,
+        #     owner   => "${<%= config[:shortname] %>::params::configfile_owner}",
+        #     group   => "${<%= config[:shortname] %>::params::configfile_group}",
+        #     mode    => "${<%= config[:shortname] %>::params::configfile_mode}",
+        #     #notify  => Service['<%= config[:shortname] %>'],
+        #     require => Package['<%= config[:shortname] %>'],
+        # }
+        # # Populate the configuration file
+        # concat::fragment { "${<%= config[:shortname] %>::params::configfile}_header":
+        #     target  => "${<%= config[:shortname] %>::params::configfile}",
+        #     ensure  => "${<%= config[:shortname] %>::ensure}",
+        #     content => template("<%= config[:shortname] %>/<%= config[:shortname] %>_header.conf.erb"),
+        #     #source => "puppet:///modules/<%= config[:shortname] %>/<%= config[:shortname] %>_header.conf",
+        #     order   => '01',
+        # }
+        # concat::fragment { "${<%= config[:shortname] %>::params::configfile}_footer":
+        #     target  => "${<%= config[:shortname] %>::params::configfile}",
+        #     ensure  => "${<%= config[:shortname] %>::ensure}",
+        #     content => template("<%= config[:shortname] %>/<%= config[:shortname] %>_footer.conf.erb"),
+        #     #source => "puppet:///modules/<%= config[:shortname] %>/<%= config[:shortname] %>_footer.conf",
+        #     order   => '99',
+        # }
+
+        # PID file directory
+        # file { "${<%= config[:shortname] %>::params::piddir}":
+        #     ensure  => 'directory',
+        #     owner   => "${<%= config[:shortname] %>::params::piddir_user}",
+        #     group   => "${<%= config[:shortname] %>::params::piddir_group}",
+        #     mode    => "${<%= config[:shortname] %>::params::piddir_mode}",
+        # }
+
+        file { "${<%= config[:shortname] %>::params::configfile_init}":
+            owner   => "${<%= config[:shortname] %>::params::configfile_owner}",
+            group   => "${<%= config[:shortname] %>::params::configfile_group}",
+            mode    => "${<%= config[:shortname] %>::params::configfile_mode}",
+            ensure  => "${<%= config[:shortname] %>::ensure}",
+            #content => template("<%= config[:shortname] %>/default/<%= config[:shortname] %>.erb"),
+            #source => "puppet:///modules/<%= config[:shortname] %>/default/<%= config[:shortname] %>.conf",
+            notify  =>  Service['<%= config[:shortname] %>'],
+            require =>  Package['<%= config[:shortname] %>']
+        }
+
+        service { '<%= config[:shortname] %>':
+            name       => "${<%= config[:shortname] %>::params::servicename}",
+            enable     => true,
+            ensure     => running,
+            hasrestart => "${<%= config[:shortname] %>::params::hasrestart}",
+            pattern    => "${<%= config[:shortname] %>::params::processname}",
+            hasstatus  => "${<%= config[:shortname] %>::params::hasstatus}",
+            require    => [
+                           Package['<%= config[:shortname] %>'],
+                           File["${<%= config[:shortname] %>::params::configfile_init}"]
+                           ],
+            subscribe  => File['<%= config[:shortname] %>.conf'],
+        }
+    }
+    else
+    {
+        # Here $<%= config[:shortname] %>::ensure is 'absent'
+
+    }
+
+}
+

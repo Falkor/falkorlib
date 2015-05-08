@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-08 11:21 svarrette>
+# Time-stamp: <Fri 2015-05-08 16:19 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -126,8 +126,8 @@ module FalkorLib  #:nodoc:
                 # Supported platforms
                 config[:platforms] = [ 'debian' ]
                 config[:dependencies] = [{
-                                             "name"          => "puppetlabs-stdlib",
-                                             "version_range" => ">= 1.0.0"
+                                             "name"                => "puppetlabs-stdlib",
+                                             "version_requirement" => ">=4.2.2 <5.0.0"
                                          }]
                 config[:params] = [ 'ensure', 'protocol', 'port', 'packagename' ]
                 #ap config
@@ -164,11 +164,11 @@ module FalkorLib  #:nodoc:
                 if FalkorLib::Git.init?(moduledir)
                     if FalkorLib::GitFlow.init?(moduledir)
                         info "=> preparing git-flow feature for the newly created module '#{config[:name]}'"
-                        FalkorLib::GitFlow.start('feature', "bootstraping", moduledir)
+                        FalkorLib::GitFlow.start('feature', "bootstrapping", moduledir)
                     end
                     [ 'metadata.json',
-                      'doc/', 'LICENSE', '.gitignore',
-                      'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
+                     'doc/', 'LICENSE', '.gitignore', '.ruby-version', '.ruby-gemset',
+                     'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
                 end
@@ -301,6 +301,7 @@ module FalkorLib  #:nodoc:
                     ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
                     next if ans =~ /n.*/i
                     if update_from_erb.include?(f)
+                        ap "=> updating #{f}.erb"
                         i += write_from_erb_template(File.join(templatedir, "#{f}.erb"),
                                                      File.join(moduledir,  f),
                                                      metadata,

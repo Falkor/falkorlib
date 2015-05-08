@@ -2,7 +2,7 @@
 #########################################
 # versioning_puppet_module_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Ven 2014-09-05 10:53 svarrette>
+# Time-stamp: <Fri 2015-05-08 16:28 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -51,14 +51,14 @@ describe FalkorLib::Versioning::Puppet do
         ###################################################################
         context 'Test Puppet Module versioning operations within temporary directory' do
 
-
+            ap default_version
             it "#get_version -- get default version #{default_version} after initialization" do
                 Array.new(16).each { |e|  STDIN.should_receive(:gets).and_return('') }
                 FalkorLib::Puppet::Modules.init(moduledir)
                 v = FalkorLib::Versioning.get_version(moduledir)
                 v.should == default_version
                 if command?('git-flow')
-                    a = FalkorLib::GitFlow.finish('feature', 'bootstraping', moduledir)
+                    a = FalkorLib::GitFlow.finish('feature', 'bootstrapping', moduledir)
                     a.should == 0
                 end
             end
