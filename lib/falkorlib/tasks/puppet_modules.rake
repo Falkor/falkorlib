@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Thu 2015-05-07 18:51 svarrette>
+# Time-stamp: <Fri 2015-05-08 15:33 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -130,10 +130,11 @@ namespace :templates do
 
 		[ 'readme', 'rake', 'vagrant' ].each do |t|
 			###########   templates:upgrade:{readme,rake,vagrant}   ###########
+            desc "Upgrade (overwrite) #{t.capitalize} using the current FalkorLib template"
 			task t.to_sym do
 				list = case t
 				       when 'readme'
-					       [ 'README.md', 'doc/contributing.md' ]
+					       [ 'README.md', 'doc/contributing.md', 'doc/vagrant.md' ]
 				       when 'rake' 
 					       [ 'Gemfile', 'Rakefile' ]
 				       when 'vagrant'
@@ -169,7 +170,7 @@ exclude_tests_paths = ['pkg/**/*','spec/**/*']
 #
 require 'puppet-lint/tasks/puppet-lint'
 
-PuppetLint.configuration.send('disable_autoloader_layout')
+#PuppetLint.configuration.send('disable_autoloader_layout')
 PuppetLint.configuration.send('disable_class_inherits_from_params_class')
 PuppetLint.configuration.send('disable_80chars')
 PuppetLint.configuration.ignore_paths = exclude_tests_paths
