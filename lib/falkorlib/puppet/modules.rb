@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-08 14:27 svarrette>
+# Time-stamp: <Fri 2015-05-08 15:37 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -126,8 +126,8 @@ module FalkorLib  #:nodoc:
                 # Supported platforms
                 config[:platforms] = [ 'debian' ]
                 config[:dependencies] = [{
-                                             "name"          => "puppetlabs-stdlib",
-                                             "version_range" => ">= 1.0.0"
+                                             "name"                => "puppetlabs-stdlib",
+                                             "version_requirement" => ">=4.2.2 <5.0.0"
                                          }]
                 config[:params] = [ 'ensure', 'protocol', 'port', 'packagename' ]
                 #ap config
