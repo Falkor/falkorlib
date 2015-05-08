@@ -57,7 +57,7 @@ It accepts the following parameters:
 
 * `$ensure`: default to 'present', can be 'absent'
 
-Use is as follows:
+Use it as follows:
 
      include ' <%= config[:shortname] %>'
 
@@ -66,6 +66,8 @@ See also [`tests/init.pp`](tests/init.pp)
 <% unless config[:classes].nil? %>
 <%    config[:classes].each do |cl| %>
 <%       next if cl == config[:shortname] %>
+<%       next if cl =~ /common/ %>
+<%       next if cl =~ /params/ %>
 ### Class `<%= cl %>`
 
 See [`tests/<%= cl.gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp`](tests/<%= cl.gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp)
@@ -105,8 +107,8 @@ You can of course configure the <%= config[:shortname] %> module in your `Puppet
 or, if you prefer to work on the git version: 
 
      mod "<%= config[:name] %>", 
-         :git => <%= config[:source] %>,
-         :ref => <%= FalkorLib.config[:gitflow][:branches][:master] %> 
+         :git => '<%= config[:source] %>',
+         :ref => '<%= FalkorLib.config[:gitflow][:branches][:master] %>' 
 
 ## Issues / Feature request
 
