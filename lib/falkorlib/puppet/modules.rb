@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2015-05-07 18:14 svarrette>
+# Time-stamp: <Fri 2015-05-08 11:21 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -42,8 +42,7 @@ module FalkorLib  #:nodoc:
                                   "GPL-3.0",
                                   "LGPL-2.1",
                                   "LGPL-3.0",
-                                  "MIT",
-                                  "Mozilla-2.0"
+                                  "MIT"
                                  ]
                 }
             end
@@ -121,7 +120,7 @@ module FalkorLib  #:nodoc:
                 license = select_from(list_license,
                                       'Select the license index for the Puppet module:',
                                       idx.nil? ? 1 : idx + 1)
-                config[:license] = license.downcase unless license.empty?
+                config[:license] = license unless license.empty?
                 puts "\t" + sprintf("%-20s", "Module License:") + config[:license]
 
                 # Supported platforms
@@ -149,7 +148,7 @@ module FalkorLib  #:nodoc:
                 info "Generating the License file"
                 authors = config[:author].empty? ? 'UNKNOWN' : config[:author]
                 Dir.chdir(moduledir) do
-                    run %{ licgen #{config[:license]} #{authors} }
+                    run %{ licgen #{config[:license].downcase} #{authors} }
                 end
                 info "Initialize RVM"
                 init_rvm(moduledir)
