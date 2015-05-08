@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-08 16:19 svarrette>
+# Time-stamp: <Fri 2015-05-08 16:33 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -293,7 +293,7 @@ module FalkorLib  #:nodoc:
                 metadata = metadata(moduledir)
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 i = 0
-                update_from_erb = [ 'README.md', 'doc/contributing.md']
+                update_from_erb = [ 'README.md', 'doc/contributing.md', 'doc/vagrant.md']
                 (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
                     next unless options[:exclude].nil? or ! options[:exclude].include?( f )
                     next unless options[:only].nil?    or options[:only].include?(f)
