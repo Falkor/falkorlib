@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Fri 2015-05-08 15:33 svarrette>
+# Time-stamp: <Fri 2015-05-08 17:06 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -170,7 +170,7 @@ exclude_tests_paths = ['pkg/**/*','spec/**/*']
 #
 require 'puppet-lint/tasks/puppet-lint'
 
-#PuppetLint.configuration.send('disable_autoloader_layout')
+PuppetLint.configuration.send('disable_autoloader_layout')
 PuppetLint.configuration.send('disable_class_inherits_from_params_class')
 PuppetLint.configuration.send('disable_80chars')
 PuppetLint.configuration.ignore_paths = exclude_tests_paths

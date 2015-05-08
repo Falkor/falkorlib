@@ -65,9 +65,10 @@ See also [`tests/init.pp`](tests/init.pp)
 
 <% unless config[:classes].nil? %>
 <%    config[:classes].each do |cl| %>
+<%       next if cl == config[:shortname] %>
 ### Class `<%= cl %>`
 
-See `tests/<%= cl.gsub(/::/, '/') %>.pp`
+See [`tests/<%= cl.gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp`](tests/<%= cl.gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp)
 <%    end %>
 <% end %>
 
@@ -88,7 +89,7 @@ Example:
 		      ensure => 'present',
         }
 
-See also `tests/<%= de.gsub(/::/, '/') %>.pp`
+See also [`tests/<%= de.gsub("#{config[:shortname]}::", "").gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp`](tests/<%= de.gsub("#{config[:shortname]}::", "").gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp)
 
 <%    end %>
 <% end %>
