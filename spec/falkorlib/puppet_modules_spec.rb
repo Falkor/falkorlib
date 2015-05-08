@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2015-05-08 16:21 svarrette>
+# Time-stamp: <Fri 2015-05-08 16:36 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -169,7 +169,7 @@ describe FalkorLib::Puppet::Modules do
 				                                       :exclude => [ 'README.md']
 			                                       })
             d.should == 0
-			#d.should == (upgraded_files_default - 1)
+            #d.should == (upgraded_files_default - 1)
 		end
 
 		it "#upgrade -- both include and exclude files" do
