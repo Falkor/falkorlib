@@ -17,12 +17,12 @@ If you want to contribute to the code, you shall be aware of the way this module
 <% unless config[:classes].nil? %>
 <%     config[:classes].each do |cl| %>
 <%        next if cl =~ /params/ %>
-                `-- <%= cl.gsub(/::/, '/') %>.pp 
+                `-- <%= cl.gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp 
 <%     end %>
 <% end %>
 <% unless config[:definitions].nil? %>
 <%     config[:definitions].each do |de| %>
-                `-- <%= de.gsub(/::/, '/') %>.pp 
+                `-- <%= de.gsub("#{config[:shortname]}::", "").gsub(/::/, '/') %>.pp 
 <%     end %>
 <% end %>
            `-- templates/        # Module ERB template files
