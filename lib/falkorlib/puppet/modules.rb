@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-08 11:16 svarrette>
+# Time-stamp: <Fri 2015-05-08 11:21 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -42,8 +42,7 @@ module FalkorLib  #:nodoc:
                                   "GPL-3.0",
                                   "LGPL-2.1",
                                   "LGPL-3.0",
-                                  "MIT",
-                                  "Mozilla-2.0"
+                                  "MIT"
                                  ]
                 }
             end
