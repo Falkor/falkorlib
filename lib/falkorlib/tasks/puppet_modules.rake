@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Fri 2015-05-08 17:06 svarrette>
+# Time-stamp: <Fri 2015-05-15 18:24 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -24,10 +24,10 @@ namespace :bootstrap do
             name = args.name == 'name' ? ask("Enter the module name") : args.name
             error "You need to provide a module name" unless name != ''
             error "The module name cannot contain spaces" if name =~ /\s+/
-            moduledir = File.join( FalkorLib.config[:puppet][:modulesdir], name)
+            moduledir = File.join( FalkorLib.config[:puppet][:modulesdir], name.gsub(/^\w*\//,'puppet-'))
             dir = ask("Destination directory:", moduledir)
             error "The module '#{name}' already exists" if File.directory?(dir)
-            FalkorLib::Puppet::Modules.init(dir)
+            FalkorLib::Puppet::Modules.init(dir, name)
         end
 
 
@@ -128,14 +128,16 @@ namespace :templates do
 			FalkorLib::Puppet::Modules.upgrade()
 		end 
 
-		[ 'readme', 'rake', 'vagrant' ].each do |t|
+		[ 'docs', 'readme', 'rake', 'vagrant' ].each do |t|
 			###########   templates:upgrade:{readme,rake,vagrant}   ###########
             desc "Upgrade (overwrite) #{t.capitalize} using the current FalkorLib template"
 			task t.to_sym do
 				list = case t
 				       when 'readme'
-					       [ 'README.md', 'doc/contributing.md', 'doc/vagrant.md' ]
-				       when 'rake' 
+					       [ 'README.md' ]
+                       when 'docs'
+                           [ 'contacts.md',  'contributing/index.md', 'contributing/layout.md', 'contributing/setup.md', 'contributing/versioning.md', 'index.md', 'rtfd.md', 'vagrant.md' ]
+                       when 'rake' 
 					       [ 'Gemfile', 'Rakefile' ]
 				       when 'vagrant'
 					       [ 'Vagrantfile', '.vagrant_init.rb']
