@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-15 23:24 svarrette>
+# Time-stamp: <Fri 2015-05-15 23:58 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -70,7 +70,7 @@ module FalkorLib  #:nodoc:
                 error "Undefined type #{type}" if t.empty?
                 result = []
                 Dir["#{moduledir}/manifests/**/*.pp"].each do |ppfile|
-                    puts "=> testing #{ppfile}"
+                    #puts "=> testing #{ppfile}"
                     File.read(ppfile).scan(/^[ \t]*#{t}[\s]+([0-9a-zA-z:-]+).*$/).each do |line|
                         result << line[0]
                     end
@@ -191,7 +191,6 @@ module FalkorLib  #:nodoc:
                                         :extras         => false,
                                         :no_interaction => options[:no_interaction]
                                     })
-                puts "**********************"
                 puts metadata.to_yaml
                 # error "The module #{name} does not exist" unless File.directory?( moduledir )
                 jsonfile = File.join( moduledir, 'metadata.json')
@@ -253,8 +252,8 @@ module FalkorLib  #:nodoc:
                 jsonfile = File.join( moduledir, 'metadata.json')
                 error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
                 metadata = JSON.parse( IO.read( jsonfile ) )
+                metadata["docs_project"] = ask("\tRead the Docs (RTFD) project:", "#{metadata['name'].downcase.gsub(/\//,'-puppet-')}") if metadata["docs_project"].nil?
                 if add_extras
-                    metadata["docs_project"] = ask("\tRead the Docs (RTFD) project:", "#{name.downcase.gsub(/\//,'-puppet-')}") if metadata["docs_project"].nil?
                     metadata[:shortname] = name.gsub(/.*-/, '')
                     metadata[:platforms] = []
                     metadata["operatingsystem_support"].each do |e|
