@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2015-05-08 16:36 svarrette>
+# Time-stamp: <Fri 2015-05-15 23:24 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -40,7 +40,7 @@ describe FalkorLib::Puppet::Modules do
 
         it "#init -- create a puppet module" do
             # Prepare answer to the questions
-            Array.new(16).each { |e|  STDIN.should_receive(:gets).and_return('') }
+            Array.new(17).each { |e|  STDIN.should_receive(:gets).and_return('') }
             FalkorLib::Puppet::Modules.init(moduledir)
             templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
             s = true
@@ -52,7 +52,7 @@ describe FalkorLib::Puppet::Modules do
                 filename = File.basename(file)
                 filename = File.basename(file, '.erb') unless file =~ /templates\/toto-variables\.erb/ 
                 f = File.join(moduledir, relative_dir, filename)
-                #puts "checking #{f} - #{File.exists?( f )}"
+                puts "checking #{f} - #{File.exists?( f )}"
                 s &= File.exists?( f )
             end
             s.should be_true
@@ -147,7 +147,7 @@ describe FalkorLib::Puppet::Modules do
 			               ]
 		end
 
-		upgraded_files_default = 2
+		upgraded_files_default = 1
 		it "#upgrade" do
 			d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
 				                                       :no_interaction => true
