@@ -2,7 +2,7 @@
 #########################################
 # versioning_puppet_module_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2015-05-08 16:28 svarrette>
+# Time-stamp: <Fri 2015-05-15 23:28 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -53,7 +53,7 @@ describe FalkorLib::Versioning::Puppet do
 
             ap default_version
             it "#get_version -- get default version #{default_version} after initialization" do
-                Array.new(16).each { |e|  STDIN.should_receive(:gets).and_return('') }
+                Array.new(17).each { |e|  STDIN.should_receive(:gets).and_return('') }
                 FalkorLib::Puppet::Modules.init(moduledir)
                 v = FalkorLib::Versioning.get_version(moduledir)
                 v.should == default_version

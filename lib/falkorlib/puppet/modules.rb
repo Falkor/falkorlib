@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-15 18:47 svarrette>
+# Time-stamp: <Fri 2015-05-15 23:24 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -187,8 +187,9 @@ module FalkorLib  #:nodoc:
                       })
                 name = File.basename(moduledir)
                 metadata = metadata(moduledir, {
-                                        :use_symbols => false,
-                                        :extras      => false
+                                        :use_symbols    => false,
+                                        :extras         => false,
+                                        :no_interaction => options[:no_interaction]
                                     })
                 puts "**********************"
                 puts metadata.to_yaml
@@ -243,7 +244,8 @@ module FalkorLib  #:nodoc:
             #
             def metadata(moduledir = Dir.pwd, options = {
                              :use_symbols => true,
-                             :extras      => true
+                             :extras      => true,
+                             :no_interaction => false
                          })
                 add_extras = options[:extras].nil? ? true : options[:extras]
                 name     = File.basename( moduledir )
@@ -252,7 +254,7 @@ module FalkorLib  #:nodoc:
                 error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
                 metadata = JSON.parse( IO.read( jsonfile ) )
                 if add_extras
-                    metadata[:docs_project] = ask("\tRead the Docs (RTFD) project:", "#{name.downcase.gsub(/\//,'-puppet-')}") if metadata[:docs_project].nil?
+                    metadata["docs_project"] = ask("\tRead the Docs (RTFD) project:", "#{name.downcase.gsub(/\//,'-puppet-')}") if metadata["docs_project"].nil?
                     metadata[:shortname] = name.gsub(/.*-/, '')
                     metadata[:platforms] = []
                     metadata["operatingsystem_support"].each do |e|
