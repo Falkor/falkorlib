@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Fri 2015-05-15 18:24 svarrette>
+# Time-stamp: <Fri 2015-05-15 23:41 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -136,7 +136,7 @@ namespace :templates do
 				       when 'readme'
 					       [ 'README.md' ]
                        when 'docs'
-                           [ 'contacts.md',  'contributing/index.md', 'contributing/layout.md', 'contributing/setup.md', 'contributing/versioning.md', 'index.md', 'rtfd.md', 'vagrant.md' ]
+                           [ 'docs/contacts.md',  'docs/contributing/index.md', 'docs/contributing/layout.md', 'docs/contributing/setup.md', 'docs/contributing/versioning.md', 'docs/index.md', 'docs/rtfd.md', 'docs/vagrant.md' ]
                        when 'rake' 
 					       [ 'Gemfile', 'Rakefile' ]
 				       when 'vagrant'
