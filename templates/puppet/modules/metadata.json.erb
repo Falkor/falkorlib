@@ -7,6 +7,9 @@
   "description": "<%= config[:description] %>",
   "license": "<%= config[:license] %>",
   "source": "<%= config[:source] %>",
+<% unless config[:rtfd].nil? %>
+  "docs_url": "<%= config[:docs_url] %>"
+<% end %>
   "project_page": "<%= config[:project_page] %>",
   "issues_url": "<%= config[:issues_url] %>",
   "forge_url": "<%= config[:forge_url] %>",

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2015-05-08 16:33 svarrette>
+# Time-stamp: <Fri 2015-05-15 18:47 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -24,7 +24,7 @@ module FalkorLib  #:nodoc:
                         :version      => '0.0.1',
                         :author       => "#{ENV['GIT_AUTHOR_NAME']}",
                         :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
-                        :summary      => "rtfm",
+                        :summary      => "Configure and manage rtfm",
                         :description  => '',
                         :license      => 'Apache-2.0',
                         :source       => '',
@@ -89,7 +89,8 @@ module FalkorLib  #:nodoc:
                 config = {}
                 #login = `whoami`.chomp
                 config[:name] = name unless name.empty?
-                moduledir = name.empty? ? rootdir : File.join(rootdir, name)
+                moduledir     = rootdir
+                  #name.empty? ? rootdir : File.join(rootdir, name)
                 FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata].each do |k,v|
                     next if v.kind_of?(Array) or k == :license
                     next if k == :name and ! name.empty?
@@ -111,8 +112,9 @@ module FalkorLib  #:nodoc:
                                      end
                     config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
                 end
-                config[:shortname] = name = config[:name].gsub(/.*-/, '')
-                tags = ask("\tKeywords (comma-separated list of tags)", name)
+                config[:shortname] = name = config[:name].gsub(/.*[-\/]/, '')
+                config[:docs_project] = ask("\tRead the Docs (RTFD) project:", config[:name].downcase.gsub(/\//,'-puppet-'))
+                tags = ask("\tKeywords (comma-separated list of tags)", config[:shortname])
                 config[:tags] = tags.split(',')
                 list_license    = FalkorLib::Config::Puppet::Modules::DEFAULTS[:licenses]
                 default_license = FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata][:license]
@@ -144,7 +146,8 @@ module FalkorLib  #:nodoc:
                     newname = e.gsub(/templatename/, "#{name}")
                     run %{ mv #{e} #{newname} }
                 end
-
+                # Update docs directory
+                run %{ ln -s ../README.md #{moduledir}/docs/overview.md }
                 info "Generating the License file"
                 authors = config[:author].empty? ? 'UNKNOWN' : config[:author]
                 Dir.chdir(moduledir) do
@@ -167,7 +170,7 @@ module FalkorLib  #:nodoc:
                         FalkorLib::GitFlow.start('feature', "bootstrapping", moduledir)
                     end
                     [ 'metadata.json',
-                     'doc/', 'LICENSE', '.gitignore', '.ruby-version', '.ruby-gemset',
+                     'docs/', 'LICENSE', '.gitignore', '.ruby-version', '.ruby-gemset',
                      'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
@@ -249,6 +252,7 @@ module FalkorLib  #:nodoc:
                 error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
                 metadata = JSON.parse( IO.read( jsonfile ) )
                 if add_extras
+                    metadata[:docs_project] = ask("\tRead the Docs (RTFD) project:", "#{name.downcase.gsub(/\//,'-puppet-')}") if metadata[:docs_project].nil?
                     metadata[:shortname] = name.gsub(/.*-/, '')
                     metadata[:platforms] = []
                     metadata["operatingsystem_support"].each do |e|
@@ -293,7 +297,12 @@ module FalkorLib  #:nodoc:
                 metadata = metadata(moduledir)
                 templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
                 i = 0
-                update_from_erb = [ 'README.md', 'doc/contributing.md', 'doc/vagrant.md']
+                update_from_erb = [
+                                   'README.md',
+                                   'docs/contacts.md',
+                                   'docs/contributing/index.md', 'docs/contributing/layout.md', 'docs/contributing/setup.md', 'docs/contributing/versioning.md',
+                                   'docs/index.md', 'docs/rtfd.md', 'docs/vagrant.md'
+                                  ]
                 (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
                     next unless options[:exclude].nil? or ! options[:exclude].include?( f )
                     next unless options[:only].nil?    or options[:only].include?(f)
@@ -301,7 +310,7 @@ module FalkorLib  #:nodoc:
                     ans = options[:no_interaction] ? 'Yes' : ask(cyan("==> procceed? (Y|n)"), 'Yes')
                     next if ans =~ /n.*/i
                     if update_from_erb.include?(f)
-                        ap "=> updating #{f}.erb"
+                        puts "=> updating #{f}.erb"
                         i += write_from_erb_template(File.join(templatedir, "#{f}.erb"),
                                                      File.join(moduledir,  f),
                                                      metadata,
