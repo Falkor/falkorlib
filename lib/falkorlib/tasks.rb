@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-12-12 19:01 svarrette>
+# Time-stamp: <Tue 2015-05-19 17:59 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -20,7 +20,20 @@ namespace :falkorlib do
 	desc "Print the current configuration of FalkorLib"
 	task :conf do
 		puts FalkorLib.config.to_yaml
-	end 
+	end
+
+    ###########  falkorlib:upgrade   ###########
+    desc "Upgrade FalkorLib to the latest version using Bundle"
+    task :upgrade do |t|
+        info "#{t.comment}"
+        error "Unable to find the 'bundle' command" unless command?('bundle')
+        run %{ bundle update falkorlib }
+        if FalkorLib::Git.init?
+            gemfile_lock = File.join(FalkorLib::Git.rootdir, 'Gemfile.lock')
+            run %{git commit -s -m "Upgrade FalkorLib to the latest version" #{gemfile_lock} } if File.exist?(gemfile_lock)
+        end
+    end
+
 end # namespace falkorlib
 
 

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Fri 2015-05-15 23:41 svarrette>
+# Time-stamp: <Tue 2015-05-19 10:51 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -21,7 +21,7 @@ namespace :bootstrap do
         desc "Bootstrap a new Puppet module"
         task :module, [:name] do |t, args|
             info "#{t.comment}"
-            name = args.name == 'name' ? ask("Enter the module name") : args.name
+            name = (args.name.nil? or args.name.empty? or args.name == 'name') ? ask("Enter the module name (ex: 'ULHPC/modulename')") : args.name
             error "You need to provide a module name" unless name != ''
             error "The module name cannot contain spaces" if name =~ /\s+/
             moduledir = File.join( FalkorLib.config[:puppet][:modulesdir], name.gsub(/^\w*\//,'puppet-'))
