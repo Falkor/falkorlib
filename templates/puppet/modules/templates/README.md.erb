@@ -10,15 +10,15 @@ Learn more [here](http://projects.puppetlabs.com/projects/puppet/wiki/Puppet_Tem
 
 You can use templates like this: 
 
-    class <%= config[:name] %> {
-        package { <%= config[:name].gsub(/^puppet-/, '') %>: ensure => latest }
-        file { "/etc/<%= config[:name] %>.conf":
-             content => template("<%= config[:name] %>/myfile.erb")
+    class <%= config[:shortname] %> {
+        package { <%= config[:shortname] %>: ensure => latest }
+        file { "/etc/<%= config[:shortname] %>.conf":
+             content => template("<%= config[:shortname] %>/myfile.erb")
         }
     }
 
 The templates are searched for in:
 
-    $templatedir/<%= config[:name] %>/myfile.erb
-    $modulepath/<%= config[:name] %>/templates/myfile.erb
+    $templatedir/<%= config[:shortname] %>/myfile.erb
+    $modulepath/<%= config[:shortname] %>/templates/myfile.erb
 
