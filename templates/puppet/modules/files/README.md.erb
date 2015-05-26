@@ -8,14 +8,14 @@ file objects. Learn more [here](http://projects.puppetlabs.com/projects/puppet/w
 
 You can use managed files like this:
 
-    class <%= config[:name] %> {
-      package { <%= config[:name].gsub(/^puppet-/, '') %>: ensure => latest }
-      file { "/etc/<%= config[:name] %>.conf":
-        source => "puppet://$servername/modules/<%= config[:name] %>/myfile"
+    class <%= config[:shortname] %> {
+      package { <%= config[:shortname] %>: ensure => latest }
+      file { "/etc/<%= config[:shortname] %>.conf":
+        source => "puppet://$servername/modules/<%= config[:shortname] %>/myfile"
       }
     }
 
 The files are searched for in:
 	
-	$modulepath/<%= config[:name] %>/files/myfile
+	$modulepath/<%= config[:shortname] %>/files/myfile
 
