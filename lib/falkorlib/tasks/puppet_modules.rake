@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Tue 2015-05-19 10:51 svarrette>
+# Time-stamp: <Tue 2015-05-26 19:21 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -126,7 +126,7 @@ namespace :templates do
 		task :all do 
 			info "Upgrade all key module files from FalkorLib templates"
 			FalkorLib::Puppet::Modules.upgrade()
-		end 
+		end
 
 		[ 'docs', 'readme', 'rake', 'vagrant' ].each do |t|
 			###########   templates:upgrade:{readme,rake,vagrant}   ###########
