@@ -13,7 +13,7 @@
       Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
       
 
-| [Project Page](<%= config[:project_page] %>) | [Sources](<%= config[:source] %>) | [Documentation](httpd://<%= config[:docs_project] %>.readthedocs.org/en/latest/) | [Issues](<%= config[:issues_url] %>) |
+| [Project Page](<%= config[:project_page] %>) | [Sources](<%= config[:source] %>) | [Documentation](https://<%= config[:docs_project] %>.readthedocs.org/en/latest/) | [Issues](<%= config[:issues_url] %>) |
 
 ## Synopsis
 
@@ -118,7 +118,7 @@ You can submit bug / issues / feature request using the [<%= config[:name] %> Pu
 ## Developments / Contributing to the code 
 
 If you want to contribute to the code, you shall be aware of the way this module is organized. 
-These elements are detailed on [`docs/contributing.md`](contributing.md).
+These elements are detailed on [`docs/contributing.md`](contributing/index.md).
 
 You are more than welcome to contribute to its development by [sending a pull request](https://help.github.com/articles/using-pull-requests). 
 
@@ -131,7 +131,21 @@ See [`docs/vagrant.md`](vagrant.md) for more details.
 
 ## Online Documentation
 
-[Read the Docs](https://readthedocs.org/) aka RTFD hosts documentation for the open source community and the [<%= config[:name] %>](<%= config[:projects_url] %>) puppet module has its documentation (see the `docs/` directly) hosted on [readthedocs](http://<%= config[:docs_project] %>.rtfd.org).
+[Read the Docs](https://readthedocs.org/) aka RTFD hosts documentation for the open source community and the [<%= config[:name] %>](<%= config[:project_page] %>) puppet module has its documentation (see the `docs/` directly) hosted on [readthedocs](http://<%= config[:docs_project] %>.rtfd.org).
 
 See [`docs/rtfd.md`](rtfd.md) for more details.
 
+## Licence
+
+This project and the sources proposed within this repository are released under the terms of the [<%= config[:license] %>](LICENCE) licence.
+
+<% logos = {
+   "Apache-2.0" => "https://www.apache.org/images/feather-small.gif",
+   "BSD"        => "http://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/License_icon-bsd.svg/200px-License_icon-bsd.svg.png",
+   "GPL-2.0"    => "https://licensebuttons.net/l/GPL/2.0/88x62.png",
+   "GPL-3.0"    => "https://www.gnu.org/graphics/gplv3-88x31.png",
+   "LGPL-2.1"   => "https://www.gnu.org/graphics/lgplv3-88x31.png",
+   "LGPL-3.0"   => "https://www.gnu.org/graphics/lgplv3-88x31.png",
+   "MIT"        => "http://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/License_icon-mit-2.svg/200px-License_icon-mit-2.svg.png"
+   } %>
+[![Licence](<%= logos[config[:license]] %>)](LICENSE)

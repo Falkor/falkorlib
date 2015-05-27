@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2015-05-20 16:18 svarrette>
+# Time-stamp: <Tue 2015-05-26 19:03 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -170,8 +170,9 @@ module FalkorLib  #:nodoc:
                         FalkorLib::GitFlow.start('feature', "bootstrapping", moduledir)
                     end
                     [ 'metadata.json',
-                     'docs/', 'mkdocs.yml', 'LICENSE', '.gitignore', '.ruby-version', '.ruby-gemset', 
-                     'Gemfile', '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
+                     'docs/', 'mkdocs.yml', 'LICENSE', '.gitignore', '.pmignore',
+                     '.ruby-version', '.ruby-gemset', 'Gemfile',
+                     '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
                     end
                 end
