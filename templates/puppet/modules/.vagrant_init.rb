@@ -2,7 +2,7 @@
 ##########################################################################
 # vagrant_init.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Tue 2015-06-02 21:37 svarrette>
+# Time-stamp: <Tue 2015-06-02 22:43 svarrette>
 #
 # @description 
 #
@@ -58,8 +58,10 @@ end
 # # hieracfg[:hierarchy] = [] if hieracfg[:hierarchy].nil?
 # # hieracfg[:hierarchy] << 'common' unless hieracfg[:hierarchy].include?('common')
 hieracfg = {
-    :backend   => 'yaml',
+    :backends  => [ 'yaml' ],
     :hierarchy => [ 'defaults', 'common' ],
-    :datadir   => '/vagrant/tests/hiera',
+    :yaml      => {
+        :datadir   => '/vagrant/tests/hiera',
+    }
 }
 FalkorLib::Common.store_config('/etc/hiera.yaml', hieracfg, {:no_interaction => true})
