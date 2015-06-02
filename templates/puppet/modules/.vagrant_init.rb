@@ -2,7 +2,7 @@
 ##########################################################################
 # vagrant_init.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Tue 2015-06-02 10:36 svarrette>
+# Time-stamp: <Tue 2015-06-02 10:46 svarrette>
 #
 # @description 
 #
@@ -30,7 +30,7 @@ moduledir=modulepath.split(':').first
 metadata["dependencies"].each do |dep|
 	lib = dep["name"]
     shortname = lib.gsub(/^.*[\/-]/,'')
-    action = File.directory?("#{moduledir}/#{shortname}") ? 'upgrade --force' : 'install'
+    action = File.directory?("#{moduledir}/#{shortname}") ? 'upgrade --force' : 'install --ignore-dependencies'
 	run %{ puppet module #{action} #{lib} } 
 end
 
@@ -48,5 +48,5 @@ hieracfg = YAML::load_file('/etc/hiera.yaml')
 [ '/vagrant/hiera', '/vagrant/tests/hiera' ].each do |d|
     hieracfg[:datadir] << d if File.directory?('#{d}')
 end
-hieracfg[:hierarchy] << common unless hieracfg[:hierarchy].include?('common')
-FalkorLib::Common.store_config('/etc/hiera.yaml', hieracfg)
+hieracfg[:hierarchy] << 'common' unless hieracfg[:hierarchy].include?('common')
+FalkorLib::Common.store_config('/etc/hiera.yaml', hieracfg, {:no_interaction => true})
