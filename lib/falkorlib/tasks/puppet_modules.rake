@@ -165,7 +165,7 @@ end # namespace module
 require 'rake/clean'
 CLEAN.add   'pkg'
 
-exclude_tests_paths = ['pkg/**/*','spec/**/*']
+exclude_tests_paths = ['pkg/**/*','spec/**/*','manifests.old/**/*']
 
 #.........................................................................
 # puppet-lint tasks -- see http://puppet-lint.com/checks/

@@ -2,7 +2,7 @@
 ##########################################################################
 # vagrant_init.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2015-05-28 14:06 svarrette>
+# Time-stamp: <Tue 2015-06-02 10:36 svarrette>
 #
 # @description 
 #
@@ -11,6 +11,7 @@
 ##############################################################################
 
 require 'json'
+require 'yaml'
 require 'falkorlib'
 
 include FalkorLib::Common
@@ -29,13 +30,23 @@ moduledir=modulepath.split(':').first
 metadata["dependencies"].each do |dep|
 	lib = dep["name"]
     shortname = lib.gsub(/^.*[\/-]/,'')
-    action = File.directory?("#{moduledir}/#{shortname}") ? 'upgrade' : 'install'
+    action = File.directory?("#{moduledir}/#{shortname}") ? 'upgrade --force' : 'install'
 	run %{ puppet module #{action} #{lib} } 
 end
-
 
 puts "Module path: #{modulepath}"
 puts "Moduledir:   #{moduledir}" 
 
 info "set symlink to the '#{basedir}' module for local developments"
 run %{ ln -s #{basedir} #{moduledir}/#{name}  } unless File.exists?("#{moduledir}/#{name}")
+
+# Prepare hiera
+unless File.exists?('/etc/puppet/hiera.yaml')
+    run %{ ln -s /etc/hiera.yaml /etc/puppet/hiera.yaml } if File.exists?("/etc/hiera.yaml")
+end
+hieracfg = YAML::load_file('/etc/hiera.yaml')
+[ '/vagrant/hiera', '/vagrant/tests/hiera' ].each do |d|
+    hieracfg[:datadir] << d if File.directory?('#{d}')
+end
+hieracfg[:hierarchy] << common unless hieracfg[:hierarchy].include?('common')
+FalkorLib::Common.store_config('/etc/hiera.yaml', hieracfg)

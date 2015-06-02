@@ -170,7 +170,7 @@ module FalkorLib  #:nodoc:
                         FalkorLib::GitFlow.start('feature', "bootstrapping", moduledir)
                     end
                     [ 'metadata.json',
-                     'docs/', 'mkdocs.yml', 'LICENSE', '.gitignore', '.pmignore',
+                     'docs/', 'mkdocs.yml', 'LICENSE', '.gitignore', '.pmtignore',
                      '.ruby-version', '.ruby-gemset', 'Gemfile',
                      '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
                         FalkorLib::Git.add(File.join(moduledir, f))
