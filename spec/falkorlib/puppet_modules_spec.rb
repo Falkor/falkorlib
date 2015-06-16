@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2015-05-15 23:24 svarrette>
+# Time-stamp: <Tue 2015-06-16 10:12 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
