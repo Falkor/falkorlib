@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2015-05-26 19:03 svarrette>
+# Time-stamp: <Tue 2015-06-16 10:12 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -156,7 +156,7 @@ module FalkorLib  #:nodoc:
                 info "Initialize RVM"
                 init_rvm(moduledir)
                 unless FalkorLib::Git.init?(moduledir)
-                    init_gitflow = command?('git-flow')
+                    init_gitflow = FalkorLib::Git.command?('flow')
                     warn "Git #{init_gitflow ? '[Flow]' : ''} is not initialized in #{moduledir}."
                     a = ask("Proceed to git-flow initialization (Y|n)", 'Yes')
                     return if a =~ /n.*/i

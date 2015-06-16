@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2015-03-29 22:25 svarrette>
+# Time-stamp: <Tue 2015-06-16 10:03 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -26,6 +26,15 @@ module FalkorLib  #:nodoc:
                             :width    => 80,
                             :hostname => "`hostname -f`",
                            },
+               :latex => {
+                          :name     => '',
+                          :author   => "#{ENV['GIT_AUTHOR_NAME']}",
+                          :mail     => "#{ENV['GIT_AUTHOR_EMAIL']}",
+                          :title    => 'Title',
+                          :subtitle => '',
+                          :image    => 'images/logo_ULHPC.pdf',
+                          :logo     => 'images/logo_UL.pdf'
+                         },
                :metadata => {
                              :name         => '',
                              :type         => [],
@@ -340,7 +349,7 @@ module FalkorLib
         ###### motd ######
         # Generate a new motd (Message of the Day) file
         # Supported options:
-        #  * :force [boolean] force action 
+        #  * :force [boolean] force action
         ##
         def motd(dir = Dir.pwd, options = {})
             config = FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
@@ -354,7 +363,7 @@ module FalkorLib
         end # motd
 
 
-        
+
         ###### readme ######
         # Bootstrap a README file for various context
         # Supported options:
@@ -459,6 +468,144 @@ module FalkorLib
             FalkorLib::Config.save(dir, local_config, :local)
             #
         end # readme
+
+        ###### rootlink ######
+        # Create a symlink '.root' targeting the relative path to the git root directory
+        # Supported options:
+        #  * :name [string] name of the symlink ('.root' by default)
+        ##
+        def rootlink(dir = Dir.pwd, options = {})
+            raise FalkorLib::ExecError "Not used in a Git repository" unless FalkorLib::Git.init?
+            path  = normalized_path(dir)
+            relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path)))
+            FalkorLib::Common.error "Already at the root directory of the Git repository" if "#{relative_path_to_root}" == "."
+            target = options[:name] ? options[:name] : '.root'
+            unless File.exists?( File.join(path, target))
+                warning "creating the symboling link '#{target}' which points to '#{relative_path_to_root}'" if options[:verbose]
+                # Format: ln_s(old, new, options = {}) -- Creates a symbolic link new which points to old.
+                #FileUtils.ln_s "#{relative_path_to_root}", "#{target}"
+                Dir.chdir( path ) do
+                    run %{ ln -s #{relative_path_to_root} #{target} }
+                end
+                FalkorLib::Git.add(File.join(path, target), "Add symlink to the root directory as .root")
+            end
+        end # rootlink
+
+        ###### latex ######
+        # Bootstrap a LaTeX sub-project within a given repository
+        # Supported options:
+        #  * :force [boolean] force action
+        ##
+        def latex(dir = Dir.pwd, type = :beamer, options = {})
+            ap options if options[:debug]
+            path   = normalized_path(dir)
+            config = FalkorLib::Config::Bootstrap::DEFAULTS[:latex].clone
+            # initiate the repository if needed
+            unless File.directory?( path )
+                warn "The directory '#{path}' does not exists and will be created"
+                really_continue? unless options[:force]
+                run %{ mkdir -p #{path} }
+            end
+            repo(path, options) unless FalkorLib::Git.init?(path)
+            rootdir = FalkorLib::Git.rootdir(path)
+            info "Initiate a LaTeX project from the Git root directory: '#{rootdir}'"
+            really_continue? unless options[:force]
+            relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path))).to_s
+            config[:name] = options[:name] ? options[:name] : ask("\tEnter the name of the #{type} project: ", File.basename(path))
+            raise FalkorLib::ExecError "Empty project name" if config[:name].empty?
+            default_project_dir =  (Pathname.new( File.realpath(path) ).relative_path_from Pathname.new( FalkorLib::Git.rootdir(dir))).to_s
+            if relative_path_to_root == '.'
+                default_project_dir = case type
+                                      when :article
+                                          "articles/#{Time.now.year}/#{config[:name]}"
+                                      when :beamer
+                                          "slides/#{Time.now.year}/#{config[:name]}/"
+                                      when :bookchapter
+                                          "chapters/#{config[:name]}"
+                                      else
+                                          "#{config[:name]}"
+                                      end
+            else
+                default_project_dir += "/#{config[:name]}" unless default_project_dir =~ /#{config[:name]}$/
+            end
+            project_dir = ask("\tLaTeX Project directory (relative to the Git root directory)", default_project_dir)
+            raise FalkorLib::ExecError "Empty project directory" if project_dir.empty?
+            subdir = File.join(rootdir, project_dir)
+            if File.exists?(File.join(subdir, '.root'))
+                warn "The directory '#{project_dir}' seems to have been already initialized"
+                really_continue? unless options[:force]
+            end
+            FalkorLib::GitFlow.start('feature', config[:name], rootdir) if FalkorLib::GitFlow.init?(rootdir)
+            # === prepare Git submodules ===
+            info " ==> prepare the relevant Git submodules"
+            submodules = {}
+            submodules['Makefiles'] = { :url   => 'https://github.com/Falkor/Makefiles.git',
+                                       :branch => 'devel'
+                                      } if [ :article, :beamer, :bookchapter].include?(type)
+            submodules['beamerthemeFalkor'] = { :url => 'https://github.com/Falkor/beamerthemeFalkor' } if type == :beamer
+            FalkorLib::Git.submodule_init(rootdir, submodules)
+            info "bootstrapping the #{type} project '#{project_dir}'"
+            # Create the project directory
+            Dir.chdir( rootdir ) do
+                run %{ mkdir -p #{project_dir}/images } unless File.directory?("#{subdir}/images")
+            end
+            info "populating '#{project_dir}'"
+            rootlink(subdir, { :verbose => true} )
+            # Prepare the links from the sub-module files
+            [ 'Makefile', '_style.sty', '.gitignore', 'beamerthemeFalkor.sty' ].each do |f|
+                next if (f =~ /beamer/) and (type != :beamer)
+                submoduledir = (f =~ /beamer/) ? 'beamerthemeFalkor' : 'Makefiles/latex'
+                dst = "#{FalkorLib.config[:git][:submodulesdir]}/#{submoduledir}/#{f}"
+                Dir.chdir( subdir ) do
+                    run %{ ln -s .root/#{dst} #{f} } unless File.exist?( File.join(subdir, f) )
+                end
+            end
+            # Bootstrap the directory
+            templatedir = File.join( FalkorLib.templates, 'latex', "#{type}")
+            unless File.exists?( File.join(subdir, "#{config[:name]}.tex"))
+                info "gathering information for the LaTeX templates"
+                prefix = case type
+                         when :article
+                             'Article '
+                         when :beamer
+                             'Slides '
+                         when :bookchapter
+                             'Book Chapter '
+                         else
+                             ''
+                         end
+                config.each do |k,v|
+                    next if k == :name
+                    config[k.to_sym] = ask( "\t" + sprintf("%-20s", "#{prefix}#{k.capitalize}"), v)
+                end
+                init_from_template(templatedir, subdir, config, {:no_interaction => true,
+                                                                 :no_commit      => true })
+                # Rename the main file
+                Dir.chdir( subdir ) do
+                    run %{ mv main.tex #{config[:name]}.tex }
+                end
+            end
+            # Create the trash directory
+            trash(subdir)
+            
+            # populate the images/ directory
+            baseimages  = File.join( FalkorLib.templates, 'latex', 'images')
+            images_makefile_src = "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles/generic/Makefile.insubdir"
+            images = File.join(subdir, 'images')
+            info "populating the image directory"
+            Dir.chdir( images ) do
+                run %{ rsync -avzu #{baseimages}/ . }
+                run %{ ln -s ../.root .root } unless File.exists?(File.join(images, '.root'))
+                run %{ ln -s .root/#{images_makefile_src} Makefile } unless File.exists?(File.join(images, 'Makefile'))
+            end
+
+
+            # default_project_dir = case type
+            #               when :beamer
+            #                   "slides/#{Time.new.yea}"
+            #               end
+        end # project
+
 
         ###
         # Select the forge (gforge, github, etc.) hosting the project sources

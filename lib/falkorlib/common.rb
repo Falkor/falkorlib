@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2015-03-29 18:47 svarrette>
+# Time-stamp: <Tue 2015-06-16 09:33 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -362,13 +362,14 @@ module FalkorLib #:nodoc:
         ## Show the difference between a `content` string and an destination file (using Diff algorithm).
         # Obviosuly, if the outfile does not exists, no difference is proposed.
         # Supported options:
-        #   :no_interaction [boolean]: do not interact
+        #   :no_interaction [boolean]:     do not interact
         #   :json_pretty_format [boolean]: write a json content, in pretty format
-        #
+        #   :no_commit [boolean]:          do not (offer to) commit the changes
         # return 0 if nothing happened, 1 if a write has been done
         def show_diff_and_write(content, outfile, options = {
                                                              :no_interaction     => false,
                                                              :json_pretty_format => false,
+                                                             :no_commit      => false,
                                                             })
             if File.exists?( outfile )
                 ref = File.read( outfile )
@@ -393,7 +394,7 @@ module FalkorLib #:nodoc:
             File.open("#{outfile}", "w+") do |f|
                 f.write content
             end
-            if FalkorLib::Git.init?(File.dirname(outfile))
+            if FalkorLib::Git.init?(File.dirname(outfile)) and ! options[:no_commit]
                 do_commit = options[:no_interaction] ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
                 FalkorLib::Git.add(outfile, "update content of '#{File.basename(outfile)}'") if do_commit =~ /y.*/i
             end
@@ -406,8 +407,10 @@ module FalkorLib #:nodoc:
         #   :no_interaction [boolean]: do not interact
         #   :srcdir [string]: source directory, make the `src` file relative to that directory
         #   :outfile [string]: alter the outfile name (File.basename(src) by default)
+        #   :no_commit [boolean]:          do not (offer to) commit the changes
         def write_from_template(src,dstdir,options = {
                                                       :no_interaction => false,
+                                                      :no_commit      => false,
                                                       :srcdir         => '',
                                                       :outfile        => ''
                                                      })

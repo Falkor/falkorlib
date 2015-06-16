@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sam 2015-01-24 19:33 svarrette>
+# Time-stamp: <Tue 2015-06-16 10:12 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -54,8 +54,8 @@ module FalkorLib  #:nodoc:
         end 
 
         ## Check the availability of a given git command
-        def command?(cmd, path = Dir.pwd)
-            cg = MiniGit::Capturing.new(path)
+        def command?(cmd)
+            cg = MiniGit::Capturing.new()
             cmd_list = cg.help :a => true
             # typical run:
             # usage: git [--version] [--help] [-C <path>] [-c name=value]
