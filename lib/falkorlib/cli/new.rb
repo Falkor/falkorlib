@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2015-06-16 09:05 svarrette>
+# Time-stamp: <Tue 2015-06-16 10:22 svarrette>
 ################################################################################
 
 require 'thor'
@@ -61,6 +61,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
             #......................................
             desc "slides [options]", "Bootstrap LaTeX Beamer slides"
             method_option :name, :aliases => '-n', :desc => 'Name of the LaTeX project'
+            method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
             #___________________
             def slides(path = Dir.pwd)
                 FalkorLib::Bootstrap.latex(path, :beamer, options)
