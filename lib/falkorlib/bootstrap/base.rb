@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2015-06-16 10:19 svarrette>
+# Time-stamp: <Wed 2015-09-16 21:37 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -293,7 +293,7 @@ module FalkorLib
                 if remotes.include?( 'origin' )
                     info "perform remote synchronization"
                     [ :master, :develop ].each do |t|
-                        FalkorLib::Git.publish(gitflow_branch[t.to_sym], path, 'origin')
+                        FalkorLib::Git.publish(gitflow_branches[t.to_sym], path, 'origin')
                     end
                 else
                     warning "no Git remote  'origin' found, thus no remote synchronization performed"
