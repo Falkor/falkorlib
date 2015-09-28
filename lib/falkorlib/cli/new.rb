@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2015-06-16 10:22 svarrette>
+# Time-stamp: <Wed 2015-09-16 21:59 svarrette>
 ################################################################################
 
 require 'thor'
@@ -56,6 +56,18 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
                 # _newrepo(name, options)
                 FalkorLib::Bootstrap.repo(name, options)
             end # repo
+
+            ###### articles ######
+            #......................................
+            # desc "article [options]", "Bootstrap LaTeX Article"
+            # method_option :name, :aliases => '-n', :desc => 'Name of the LaTeX project'
+            # method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
+            # method_option :type, :default => 'ieee', :aliases => '-t', :desc => 'LaTeX Style to apply'
+            # #___________________
+            # def article(path = Dir.pwd)
+            #     FalkorLib::Bootstrap.latex(path, :article, options)
+            # end # article
+
 
             ###### slides ######
             #......................................
