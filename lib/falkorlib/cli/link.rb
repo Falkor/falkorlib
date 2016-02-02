@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2015-06-15 18:15 svarrette>
+# Time-stamp: <Thu 2015-10-22 20:16 svarrette>
 ################################################################################
 
 require 'thor'
@@ -24,6 +24,20 @@ module FalkorLib
                 FalkorLib::Bootstrap.rootlink(dir, options)
             end # rootdir
 
+
+            ###### make ######
+            method_option :latex, :default => true, :type => :boolean, :aliases => '-l', :desc => "Makefile to compile LaTeX documents"
+            method_option :gnuplot, :type => :boolean, :aliases => ['--plot', '-g', '-p'], :desc => "Makefile to compile GnuPlot scripts"
+            method_option :markdown, :type => :boolean, :aliases => '-m', :desc => "Makefile to convert Markdown files to HTML"
+            method_option :markdown, :type => :boolean, :aliases => '-m', :desc => "Makefile to convert Markdown files to HTML"
+            method_option :repo, :default => "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles",
+              :aliases => '-r', :desc => "Path to Falkor's Makefile repository (Relative to Git root dir)"
+            method_option :target, :aliases => '-t', :desc => "Symlink target"
+            #......................................
+            desc "make [options]", "Create a symlink to one of Falkor's Makefile, set as Git submodule"
+            def make(dir = Dir.pwd)
+                FalkorLib::Bootstrap.makefile_link(dir, options)
+            end # make
 
 
         end # class Link

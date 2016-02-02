@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2015-09-16 21:37 svarrette>
+# Time-stamp: <Tue 2016-02-02 23:39 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -35,9 +35,20 @@ module FalkorLib  #:nodoc:
                           :image    => 'images/logo_ULHPC.pdf',
                           :logo     => 'images/logo_UL.pdf'
                          },
+               :letter => {
+                           :author_title    => 'PhD',
+                           :institute       => 'University of Luxembourg',
+                           :department      => 'Parallel Computing and Optimization Group',
+                           :department_acro => 'PCOG',
+                           :address         => '7, rue Richard Coudenhove-Kalergie',
+                           :zipcode         => 'L-1359',
+                           :location        => 'Luxembourg',
+                           :phone           => '(+352) 46 66 44 6600',
+                          },
                :metadata => {
                              :name         => '',
                              :type         => [],
+                             :by           => "#{ENV['USER']}",
                              :author       => "#{ENV['GIT_AUTHOR_NAME']}",
                              :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
                              :summary      => "rtfm",
@@ -45,6 +56,7 @@ module FalkorLib  #:nodoc:
                              :forge        => '',
                              :source       => '',
                              :project_page => '',
+                             :origin       => '',
                              :license      => '',
                              :issues_url   => '',
                              :tags         => []
@@ -90,13 +102,11 @@ module FalkorLib  #:nodoc:
                :puppet   => {},
                :forge => {
                           :none   => { :url => '', :name => "None"},
-                          :gforge => { :url => 'https://gforge.uni.lu', :name => 'GForge @ Uni.lu' },
-                          :github => { :url => 'https://github.com',    :name => 'Github', :login => "#{`whoami`.chomp.capitalize}" },
-                          :gitlab => { :url => 'https://gitlab.uni.lu', :name => 'Gitlab @ Uni.lu' },
+                          :gforge => { :url => 'gforge.uni.lu', :name => 'GForge @ Uni.lu' },
+                          :github => { :url => 'github.com',    :name => 'Github', :login => "#{`whoami`.chomp.capitalize}" },
+                          :gitlab => { :url => 'gitlab.uni.lu', :name => 'Gitlab @ Uni.lu', :login => "#{`whoami`.chomp.capitalize}" },
                          },
               }
-
-
         end
     end
 end
@@ -377,11 +387,13 @@ module FalkorLib
             # get the local configuration
             local_config = FalkorLib::Config.get(dir)
             config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
+            name = get_project_name(dir)
             if local_config[:project]
                 config.deep_merge!( local_config[:project])
             else
-                config[:name]     = ask("\tProject name: ", get_project_name(dir)) unless options[:name]
+                config[:name]     = ask("\tProject name: ", name) unless options[:name]
             end
+            
             # Type of project
             config[:type] << :latex if options[:latex]
             if config[:type].empty?
@@ -398,25 +410,35 @@ module FalkorLib
             end
             path = normalized_path(dir)
             config[:filename] = options[:filename] ? options[:filename] : File.join(path, 'README.md')
-            config[:forge] = select_forge(config[:forge]).to_sym if config[:forge].empty?
+            if ( FalkorLib::Git.init?(dir) && FalkorLib::Git.remotes(dir).include?( 'origin' ))
+                config[:origin] = FalkorLib::Git.config('remote.origin.url')
+                if config[:origin] =~ /((gforge|gitlab|github)[\.\w_-]+)[:\d\/]+(\w*)/
+                    config[:forge] = $2.to_sym
+                    config[:by]    = $3
+                end
+            else
+                config[:forge] = select_forge(config[:forge]).to_sym if config[:forge].empty?
+            end
             forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ]
+            #ap config
             default_source = case config[:forge]
                              when :gforge
-                                 forges[:url] + "/projects/" + config[:name].downcase
-                             when :github
-                                 forges[:url] + "/" + forges[:login] + "/" + config[:name].downcase
-                             when :gitlab
-                                 forges[:url] + "/" + forges[:name].downcase
+                                 'https://' + forges[:url] + "/projects/" + name.downcase
+                             when :github, :gitlab
+                                 'https://' + forges[:url] + "/" + config[:by] + "/" + name.downcase
                              else
                                  ""
                              end
-            ap config
             FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].each do |k,v|
                 next if v.kind_of?(Array) or [ :license, :forge ].include?( k )
                 next if k == :name and ! config[:name].empty?
                 next if k == :issues_url and ! [ :github, :gitlab ].include?( config[:forge] )
                 #next unless [ :name, :summary, :description ].include?(k.to_sym)
                 default_answer = case k
+                                 when :author
+                                     (config[:by] == 'ULHPC') ? 'UL HPC Management Team' : config[:author]
+                                 when :mail
+                                     (config[:by] == 'ULHPC') ? 'hpc-sysadmins@uni.lu'   : config[:mail]
                                  when :description
                                      config[:description].empty? ? "#{config[:summary]}" : "#{config[:description]}"
                                  when :source
@@ -491,13 +513,45 @@ module FalkorLib
             end
         end # rootlink
 
+        ###### makefile_link ######
+        # Create a symlink to the one of Falkor's Makefile, typically bring as a Git submodule
+        # Supported options:
+        #  * :force    [boolean] force action
+        #  * :latex    [boolean] Makefile to compile LaTeX documents
+        #  * :gnuplot  [boolean] Makefile to compile GnuPlot scripts
+        #  * :markdown [boolean] Makefile to convert Markdown files to HTML
+        #  * :target   [string]  Path to target
+        #  * :repo     [string]  Path to Falkor's Makefile repository
+        ##
+        def makefile_link(dir = Dir.pwd, options = {})
+            path   = normalized_path(dir)
+            rootdir = FalkorLib::Git.rootdir(path)
+            info "Create a symlink to the one of Falkor's Makefile"
+            # Add Falkor's
+            submodules = FalkorLib.config[:git][:submodules]
+            submodules['Makefiles'] = {
+                                       :url   => 'https://github.com/Falkor/Makefiles.git',
+                                       :branch => 'devel'
+                                      } if submodules['Makefiles'].nil?
+            FalkorLib::Git.submodule_init(rootdir, submodules)
+
+        end # makefile_link
+
+
+
+
         ###### latex ######
-        # Bootstrap a LaTeX sub-project within a given repository
+        # Bootstrap a LaTeX sub-project of type <type> within a given repository <dir>.
+        # Supported types:
+        #  * :beamer    LaTeX Beamer Slides
+        #  * :article   LaTeX article
+        #  * :letter    LaTeX Letter
         # Supported options:
         #  * :force [boolean] force action
         ##
         def latex(dir = Dir.pwd, type = :beamer, options = {})
             ap options if options[:debug]
+            print_error_and_exit "Unsupported type" unless [ :beamer, :article, :letter ].include?( type )
             path   = normalized_path(dir)
             config = FalkorLib::Config::Bootstrap::DEFAULTS[:latex].clone
             # initiate the repository if needed
@@ -511,7 +565,7 @@ module FalkorLib
             info "Initiate a LaTeX #{type} project from the Git root directory: '#{rootdir}'"
             really_continue? unless options[:force]
             relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path))).to_s
-            config[:name] = options[:name] ? options[:name] : ask("\tEnter the name of the #{type} project: ", File.basename(path))
+            config[:name] = options[:name] ? options[:name] : ask("\tEnter the name of the #{type} LaTeX project: ", File.basename(path))
             raise FalkorLib::ExecError "Empty project name" if config[:name].empty?
             default_project_dir =  (Pathname.new( File.realpath(path) ).relative_path_from Pathname.new( FalkorLib::Git.rootdir(dir))).to_s
             if relative_path_to_root == '.'
@@ -519,16 +573,18 @@ module FalkorLib
                                       when :article
                                           "articles/#{Time.now.year}/#{config[:name]}"
                                       when :beamer
-                                          "slides/#{Time.now.year}/#{config[:name]}/"
+                                          "slides/#{Time.now.year}/#{config[:name]}"
                                       when :bookchapter
                                           "chapters/#{config[:name]}"
+                                      when :letter
+                                          "letters/#{Time.now.year}/#{config[:name]}"
                                       else
                                           "#{config[:name]}"
                                       end
             else
                 default_project_dir += "/#{config[:name]}" unless default_project_dir =~ /#{config[:name]}$/
             end
-            project_dir = ask("\tLaTeX Project directory (relative to the Git root directory)", default_project_dir)
+            project_dir = ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}/src")
             raise FalkorLib::ExecError "Empty project directory" if project_dir.empty?
             subdir = File.join(rootdir, project_dir)
             if File.exists?(File.join(subdir, '.root'))
@@ -544,7 +600,7 @@ module FalkorLib
                                       } if [ :article, :beamer, :bookchapter].include?(type)
             submodules['beamerthemeFalkor'] = { :url => 'https://github.com/Falkor/beamerthemeFalkor' } if type == :beamer
             FalkorLib::Git.submodule_init(rootdir, submodules)
-            info "bootstrapping the #{type} project '#{project_dir}'"
+            info "bootstrapping the #{type} project sources in '#{project_dir}'"
             # Create the project directory
             Dir.chdir( rootdir ) do
                 run %{ mkdir -p #{project_dir}/images } unless File.directory?("#{subdir}/images")
@@ -571,6 +627,8 @@ module FalkorLib
                              'Slides '
                          when :bookchapter
                              'Book Chapter '
+                         when :letter
+                             'Letter '
                          else
                              ''
                          end
@@ -587,7 +645,7 @@ module FalkorLib
             end
             # Create the trash directory
             trash(subdir)
-            
+
             # populate the images/ directory
             baseimages  = File.join( FalkorLib.templates, 'latex', 'images')
             images_makefile_src = "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles/generic/Makefile.insubdir"

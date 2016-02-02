@@ -3,31 +3,35 @@
 <% unless (config[:license].empty? or config[:license] == "none") %>
 [![Licence](<%= FalkorLib::Bootstrap::get_badge("license", config[:license], 'blue') %>)](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
 <% end %>
+![By <%= config[:by] %>](https://img.shields.io/badge/by-<%= config[:by] %>-blue.svg) [![<%= config[:forge] %>](https://img.shields.io/badge/git-<%= config[:forge] %>-lightgray.svg)](<%= config[:source] %>) [![Issues](https://img.shields.io/badge/issues-<%= config[:forge] %>-green.svg)](<%= config[:issues_url] %>)
 
-       Time-stamp: <Dim 2015-03-29 14:28 svarrette>
+       Time-stamp: <Tue 2016-02-02 23:42 svarrette>
 
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
 
 <%= config[:summary] %>
 
-<% unless (config[:license].empty? or config[:license] == "none") %>
-* [<%= config[:license] %> Licence](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
-<% end %>
-* [Sources](<%= config[:source] %>)
-
 ## Synopsis
 
 <%= config[:description] %>
 
-
-## Installation 
+## Installation / Repository Setup
 
 This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %>](<%= config[:project_page] %>). 
 
+<% if (config[:forge] == :gitlab) %>
+* Git interactions with this repository (push, pull etc.) are performed over SSH using the port 8022
+<% end %>
+* To clone this repository, proceed as follows (adapt accordingly):
+
+        $> mkdir -p ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
+        $> cd ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
+        $> git clone <%= config[:origin] %>
+
 **`/!\ IMPORTANT`**: Once cloned, initiate your local copy of the repository by running: 
 
-    $> cd <%= config[:name].downcase %>
+    $> cd <%= name.downcase %>
 <% if options[:make] %>
     $> make setup
 <% else %>
@@ -35,3 +39,12 @@ This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
     $> rake setup
 <% end %>
 
+This will initiate the [Git submodules of this repository](.gitmodules) and setup the [git flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) layout for this repository.
+
+Later on, you can upgrade the [Git submodules](.gitmodules) to the latest version by running:
+
+<% if options[:make] %>
+    $> make upgrade
+<% else %>
+    $> rake git:submodules:upgrade
+<% end %>
