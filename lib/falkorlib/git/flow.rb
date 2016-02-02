@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Jeu 2015-01-22 22:51 svarrette>
+# Time-stamp: <Wed 2016-02-03 00:10 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -68,7 +68,11 @@ module FalkorLib
         # :develop [string] Branch name for development commits
         def init(path = Dir.pwd, options = {})
             exit_status = FalkorLib::Git.init(path, options)
-            error "you shall install git-flow: see https://github.com/nvie/gitflow/wiki/Installation" unless command?('git-flow')
+            unless command?('git-flow')
+                # Check (mainly for Linux) if the command is not available under `/usr/lib/git-core`
+                git_lib = '/usr/lib/git-core/'
+                error "you shall install git-flow: see https://github.com/nvie/gitflow/wiki/Installation" unless File.exist?(File.join(git_lib, 'git-flow'))
+            end
             remotes      = FalkorLib::Git.remotes(path)
             git_root_dir = FalkorLib::Git.rootdir( path )
             Dir.chdir( git_root_dir ) do
