@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2015-09-16 21:59 svarrette>
+# Time-stamp: <Mon 2015-10-12 16:48 svarrette>
 ################################################################################
 
 require 'thor'
@@ -68,6 +68,18 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
             #     FalkorLib::Bootstrap.latex(path, :article, options)
             # end # article
 
+
+            ###### letter ######
+            method_option :name, :aliases => '-n', :desc => 'Name of the LaTeX project'
+            method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
+            #......................................
+            desc "letter [options]", "LaTeX-based letter"
+            #___________________
+            def letter(path = Dir.pwd)
+                FalkorLib::Bootstrap.latex(path, :letter, options)
+            end # letter
+
+            
 
             ###### slides ######
             #......................................
