@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-02-04 00:36 svarrette>
+# Time-stamp: <Thu 2016-02-04 00:39 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -209,7 +209,6 @@ module FalkorLib
                 File.open( gemfile, 'a') do |f|
                     f.puts "gem 'falkorlib' #, :path => '~/git/github.com/Falkor/falkorlib'"
                 end
-                exit_status = File.exists?(gemfile)
                 FalkorLib::Git.add(gemfile) if use_git
             end
             exit_status
