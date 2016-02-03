@@ -5,7 +5,7 @@
 <% end %>
 ![By <%= config[:by] %>](https://img.shields.io/badge/by-<%= config[:by] %>-blue.svg) [![<%= config[:forge] %>](https://img.shields.io/badge/git-<%= config[:forge] %>-lightgray.svg)](<%= config[:source] %>) [![Issues](https://img.shields.io/badge/issues-<%= config[:forge] %>-green.svg)](<%= config[:issues_url] %>)
 
-       Time-stamp: <Tue 2016-02-02 23:42 svarrette>
+       Time-stamp: <Thu 2016-02-04 00:34 svarrette>
 
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
@@ -29,13 +29,24 @@ This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
         $> cd ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
         $> git clone <%= config[:origin] %>
 
+<% if config[:type].include?( :rvm ) %>
+Now ensure [RVM](https://rvm.io/) is correctly configured for this repository:
+
+     $> rvm current
+
+Configure the dependencies detailed in the [`Gemfile`](Gemfile) through the [Bundler](http://bundler.io/):
+
+     $> gem install bundler
+     $> bundle install
+     $> rake -T     # should work ;)
+<% end %>
+
 **`/!\ IMPORTANT`**: Once cloned, initiate your local copy of the repository by running: 
 
     $> cd <%= name.downcase %>
 <% if options[:make] %>
     $> make setup
 <% else %>
-    $> gem install rake    # the very first time
     $> rake setup
 <% end %>
 
