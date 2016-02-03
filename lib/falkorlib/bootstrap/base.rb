@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2016-02-02 23:39 svarrette>
+# Time-stamp: <Thu 2016-02-04 00:39 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -201,6 +201,16 @@ module FalkorLib
                 exit_status = (File.exists?(file) and `cat #{file}`.chomp == g) ? 0 : 1
                 FalkorLib::Git.add(File.join(rootdir, files[:gemsetfile])) if use_git
             end
+            # ==== Gemfile ===
+            gemfile = File.join(rootdir, 'Gemfile')
+            unless File.exists?( gemfile )
+                run %{ bundle init }
+                info " ==>  configuring Gemfile with Falkorlib"
+                File.open( gemfile, 'a') do |f|
+                    f.puts "gem 'falkorlib' #, :path => '~/git/github.com/Falkor/falkorlib'"
+                end
+                FalkorLib::Git.add(gemfile) if use_git
+            end
             exit_status
         end # rvm
 
@@ -393,7 +403,6 @@ module FalkorLib
             else
                 config[:name]     = ask("\tProject name: ", name) unless options[:name]
             end
-            
             # Type of project
             config[:type] << :latex if options[:latex]
             if config[:type].empty?
@@ -461,6 +470,7 @@ module FalkorLib
             [ :latex ].each do |type|
                 erbfiles << "readme_#{type}.erb" if options[type.to_sym] and File.exist?( File.join(templatedir, "readme_#{type}.erb"))
             end
+            erbfiles << "readme_issues.erb"  
             erbfiles << "readme_git.erb"     if FalkorLib::Git.init?(dir)
             erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
             erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)

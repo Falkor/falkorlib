@@ -14,7 +14,7 @@
                    |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
 
        
-        Copyright (c) 2012-2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
+        Copyright (c) 2012-2016 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code and `{rake,cap}`
 tasks.

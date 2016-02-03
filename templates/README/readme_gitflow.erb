@@ -35,7 +35,7 @@ For more information on the version, run:
 
 If a new version number such be bumped, you simply have to run:
 
-      $> <%= options[:make] ? 'make start_bump_{major,minor,patch}' : 'rake version:{major,minor,patch}' %>
+      $> <%= options[:make] ? 'make start_bump_{major,minor,patch}' : 'rake version:bump:{major,minor,patch}' %>
 
 This will start the release process for you using `git-flow`.
 Once you have finished to commit your last changes, make the release effective by running:
