@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-02-04 00:39 svarrette>
+# Time-stamp: <Thu 2016-02-04 12:18 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -236,7 +236,10 @@ module FalkorLib
             path    = normalized_path(name)
             project = File.basename(path)
             use_git = FalkorLib::Git.init?(path)
-            options[:make] = false if options[:rake]
+            if options[:rake]
+                options[:make] = false
+                options[:rvm]  = true
+            end
             info "Bootstrap a [Git] repository for the project '#{project}'"
             if use_git
                 warning "Git is already initialized for the repository '#{name}'"
