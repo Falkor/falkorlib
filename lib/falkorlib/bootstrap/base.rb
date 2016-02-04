@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-02-04 12:18 svarrette>
+# Time-stamp: <Thu 2016-02-04 13:54 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -406,6 +406,11 @@ module FalkorLib
             else
                 config[:name]     = ask("\tProject name: ", name) unless options[:name]
             end
+            if options[:rake]
+                options[:make] = false
+                options[:rvm]  = true
+            end
+            config[:type] << :rvm  if options[:rake]
             # Type of project
             config[:type] << :latex if options[:latex]
             if config[:type].empty?
