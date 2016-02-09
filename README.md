@@ -41,7 +41,7 @@ Or install it yourself as:
 **Note** you probably wants to do the above within an isolated environment. See
   below for some explanation on this setup.  
 
-## Usage / Demo
+## Usage
 
 This library features two aspects
 
