@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-02-04 13:54 svarrette>
+# Time-stamp: <Thu 2016-02-04 16:55 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -420,6 +420,8 @@ module FalkorLib
                 config[:type] << [ :ruby, :rvm ] if [ :gem, :rvm, :octopress, :puppet_module ].include?( t )
                 config[:type] << :python if t == :pyenv
             end
+            config[:type].uniq!
+            ap config
             config[:type] = config[:type].uniq.flatten
             # Apply options (if provided)
             [ :name, :forge ].each do |k|
