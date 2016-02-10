@@ -10,6 +10,7 @@
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
 
+
 <%= config[:summary] %>
 
 ## Synopsis
@@ -60,3 +61,4 @@ Later on, you can upgrade the [Git submodules](.gitmodules) to the latest versio
 <% else %>
     $> rake git:submodules:upgrade
 <% end %>
+
