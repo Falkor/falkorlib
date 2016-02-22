@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-02-22 21:58 svarrette>
+# Time-stamp: <Mon 2016-02-22 22:29 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -549,14 +549,19 @@ module FalkorLib
             path   = normalized_path(dir)
             rootdir = FalkorLib::Git.rootdir(path)
             info "Create a symlink to the one of Falkor's Makefile"
-            # Add Falkor's
+            # Add Falkor's Makefiles
             submodules = FalkorLib.config[:git][:submodules]
             submodules['Makefiles'] = {
                                        :url   => 'https://github.com/Falkor/Makefiles.git',
                                        :branch => 'devel'
                                       } if submodules['Makefiles'].nil?
             FalkorLib::Git.submodule_init(rootdir, submodules)
-
+            FalkorLib::Bootstrap.rootlink(dir)
+            dst = File.join('.root', options[:repo])
+            [ :latex, :gnuplot, :images, :repo].each do |e|
+                dst = dst + File.join(e, 'Makefile') if options[e.to_sym]
+            end
+            run %{ echo "ln -s #{dst} Makefile" }
         end # makefile_link
 
 

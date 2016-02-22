@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2015-10-22 20:16 svarrette>
+# Time-stamp: <Mon 2016-02-22 22:11 svarrette>
 ################################################################################
 
 require 'thor'
@@ -29,7 +29,7 @@ module FalkorLib
             method_option :latex, :default => true, :type => :boolean, :aliases => '-l', :desc => "Makefile to compile LaTeX documents"
             method_option :gnuplot, :type => :boolean, :aliases => ['--plot', '-g', '-p'], :desc => "Makefile to compile GnuPlot scripts"
             method_option :markdown, :type => :boolean, :aliases => '-m', :desc => "Makefile to convert Markdown files to HTML"
-            method_option :markdown, :type => :boolean, :aliases => '-m', :desc => "Makefile to convert Markdown files to HTML"
+            method_option :images, :type => :boolean, :aliases => [ '-i', '--img' ], :desc => "Makefile to optimize images"
             method_option :repo, :default => "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles",
               :aliases => '-r', :desc => "Path to Falkor's Makefile repository (Relative to Git root dir)"
             method_option :target, :aliases => '-t', :desc => "Symlink target"
