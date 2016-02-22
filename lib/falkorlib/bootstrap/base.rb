@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-02-22 22:29 svarrette>
+# Time-stamp: <Mon 2016-02-22 23:25 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -522,8 +522,12 @@ module FalkorLib
             raise FalkorLib::ExecError "Not used in a Git repository" unless FalkorLib::Git.init?
             path  = normalized_path(dir)
             relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path)))
-            FalkorLib::Common.error "Already at the root directory of the Git repository" if "#{relative_path_to_root}" == "."
+            if "#{relative_path_to_root}" == "."
+                FalkorLib::Common.warning "Already at the root directory of the Git repository"
+                FalkorLib::Common.really_continue?
+            end
             target = options[:name] ? options[:name] : '.root'
+            puts "Entering '#{relative_path_to_root}'"
             unless File.exists?( File.join(path, target))
                 warning "creating the symboling link '#{target}' which points to '#{relative_path_to_root}'" if options[:verbose]
                 # Format: ln_s(old, new, options = {}) -- Creates a symbolic link new which points to old.
@@ -532,6 +536,8 @@ module FalkorLib
                     run %{ ln -s #{relative_path_to_root} #{target} }
                 end
                 FalkorLib::Git.add(File.join(path, target), "Add symlink to the root directory as .root")
+            else
+                puts "  ... the symbolic link '#{target}' already exists"
             end
         end # rootlink
 
@@ -556,12 +562,32 @@ module FalkorLib
                                        :branch => 'devel'
                                       } if submodules['Makefiles'].nil?
             FalkorLib::Git.submodule_init(rootdir, submodules)
-            FalkorLib::Bootstrap.rootlink(dir)
-            dst = File.join('.root', options[:repo])
-            [ :latex, :gnuplot, :images, :repo].each do |e|
-                dst = dst + File.join(e, 'Makefile') if options[e.to_sym]
+            FalkorLib::Bootstrap.rootlink(dir) 
+            dst = File.join('.root', options[:refdir])
+            ap options
+            makefile = 'Makefile'
+            type     = 'latex'
+            # recall to place the default option (--latex) at the last position
+            [ :gnuplot, :images, :generic, :markdown] .each do |e|
+                if options[e.to_sym]
+                    type = e.to_s
+                    break
+                end
             end
-            run %{ echo "ln -s #{dst} Makefile" }
+            makefile = 'Makefile.insubdir' if options[:generic]
+            makefile = 'Makefile.to_html' if options[:markdown]
+            dst = File.join(dst, type, makefile)
+            unless File.exists?( File.join(path, 'Makefile'))
+                info "Bootstrapping #{type.capitalize} Makefile (as symlink to Falkor's Makefile)"
+                really_continue?
+                Dir.chdir( path ) do
+                    run %{ ln -s #{dst} Makefile }
+                end
+                ap File.join(path, 'Makefile')
+                FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
+            else
+                puts "  ... Makefile already setup"
+            end
         end # makefile_link
 
 
