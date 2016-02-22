@@ -34,7 +34,7 @@ begin
         #t.pattern = "spec/**/versioning_*spec.rb"
         #t.pattern = "spec/**/puppet*spec.rb"
         #t.pattern = "spec/**/bootstrap*spec.rb"
-        #t.pattern = "spec/**/gitf*spec.rb"
+        #t.pattern = "spec/**/git*spec.rb"
         #t.pattern = "spec/**/error*spec.rb"
         #t.pattern = "spec/**/config*spec.rb"
 

@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2015-01-25 00:00 svarrette>
+# Time-stamp: <Mon 2016-02-22 23:34 svarrette>
 #
 # @description Check the Git operations
 #
@@ -153,7 +153,8 @@ describe FalkorLib::Git do
             c.should_not be_empty
             t = c.is_a? Array
             t.should be_true
-            c.length.should == 2
+            ap c
+            c.length.should >= 2
         end
 
         it "#config -- check pattern 2" do
@@ -169,7 +170,8 @@ describe FalkorLib::Git do
             c.should_not be_empty
             t = c.is_a? Hash
             t.should be_true
-            c.keys.length.should == 2
+            ap c
+            c.keys.length.should >= 2
         end
 
         it "#config -- check hash correctness" do

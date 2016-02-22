@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2015-10-22 20:16 svarrette>
+# Time-stamp: <Mon 2016-02-22 23:25 svarrette>
 ################################################################################
 
 require 'thor'
@@ -27,11 +27,12 @@ module FalkorLib
 
             ###### make ######
             method_option :latex, :default => true, :type => :boolean, :aliases => '-l', :desc => "Makefile to compile LaTeX documents"
-            method_option :gnuplot, :type => :boolean, :aliases => ['--plot', '-g', '-p'], :desc => "Makefile to compile GnuPlot scripts"
+            method_option :gnuplot, :type => :boolean, :aliases => ['--plot', '-p'], :desc => "Makefile to compile GnuPlot scripts"
+            method_option :generic, :type => :boolean, :aliases => '-g', :desc => "Generic Makefile for sub directory"
             method_option :markdown, :type => :boolean, :aliases => '-m', :desc => "Makefile to convert Markdown files to HTML"
-            method_option :markdown, :type => :boolean, :aliases => '-m', :desc => "Makefile to convert Markdown files to HTML"
-            method_option :repo, :default => "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles",
-              :aliases => '-r', :desc => "Path to Falkor's Makefile repository (Relative to Git root dir)"
+            method_option :images, :type => :boolean, :aliases => [ '-i', '--img' ], :desc => "Makefile to optimize images"
+            method_option :refdir, :default => "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles",
+              :aliases => '-d', :desc => "Path to Falkor's Makefile repository (Relative to Git root dir)"
             method_option :target, :aliases => '-t', :desc => "Symlink target"
             #......................................
             desc "make [options]", "Create a symlink to one of Falkor's Makefile, set as Git submodule"
