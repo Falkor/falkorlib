@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-02-04 16:55 svarrette>
+# Time-stamp: <Mon 2016-02-22 21:58 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -207,6 +207,8 @@ module FalkorLib
                 run %{ bundle init }
                 info " ==>  configuring Gemfile with Falkorlib"
                 File.open( gemfile, 'a') do |f|
+                    f.puts "source 'https://rubygems.org'"
+                    f.puts ""
                     f.puts "gem 'falkorlib' #, :path => '~/git/github.com/Falkor/falkorlib'"
                 end
                 FalkorLib::Git.add(gemfile) if use_git

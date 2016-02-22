@@ -5,13 +5,11 @@
 <% end %>
 ![By <%= config[:by] %>](https://img.shields.io/badge/by-<%= config[:by] %>-blue.svg) [![<%= config[:forge] %>](https://img.shields.io/badge/git-<%= config[:forge] %>-lightgray.svg)](<%= config[:source] %>) [![Issues](https://img.shields.io/badge/issues-<%= config[:forge] %>-green.svg)](<%= config[:issues_url] %>)
 
-       Time-stamp: <Thu 2016-02-04 12:11 svarrette>
+       Time-stamp: <Mon 2016-02-22 22:04 svarrette>
 
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
 
-
-<%= config[:summary] %>
 
 ## Synopsis
 
@@ -61,4 +59,14 @@ Later on, you can upgrade the [Git submodules](.gitmodules) to the latest versio
 <% else %>
     $> rake git:submodules:upgrade
 <% end %>
+
+If upon pulling the repository, you end in a state where another collaborator have upgraded the Git submodules for this repository, you'll end in a dirty state (as reported by modifications within the `.submodules/` directory). In that case, just after the pull, you **have to run** the following to ensure consistency with regards the Git submodules:
+
+<% if options[:make] %>
+    $> make update
+<% else %>
+    $> rake git:submodules:update
+<% end %>
+
+
 
