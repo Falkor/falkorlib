@@ -6,8 +6,6 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq git-flow git-core
 rvm:
- - 1.9.2
- - 1.9.3
  - 2.0.0
  - 2.1
  - 2.2
