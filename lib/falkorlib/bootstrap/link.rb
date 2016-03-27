@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-03-27 23:19 svarrette>
+# Time-stamp: <Sun 2016-03-27 23:30 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -40,7 +40,7 @@ module FalkorLib
                     :branch => 'devel'
                 } if submodules['Makefiles'].nil?
                 FalkorLib::Git.submodule_init(rootdir, submodules)
-                FalkorLib::Bootstrap.rootlink(dir)
+                FalkorLib::Bootstrap::Link.root(dir)
                 dst        = File.join('.root', options[:refdir])
                 makefile_d = '.makefile.d'
                 unless File.exists?(File.join(path, makefile_d))
