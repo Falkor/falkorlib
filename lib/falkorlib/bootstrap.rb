@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mer 2015-01-21 22:35 svarrette>
+# Time-stamp: <Sun 2016-03-27 23:21 svarrette>
 ################################################################################
 # Management of Bootstrapping operations
 
@@ -11,5 +11,5 @@ module FalkorLib #:nodoc:
 end # module FalkorLib
 
 require "falkorlib/bootstrap/base"
+require "falkorlib/bootstrap/link"
 #require "falkorlib/bootstrap/repo"
- 
