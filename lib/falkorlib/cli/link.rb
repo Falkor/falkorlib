@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-03-27 23:20 svarrette>
+# Time-stamp: <Sun 2016-03-27 23:47 svarrette>
 ################################################################################
 
 require 'thor'
@@ -38,7 +38,8 @@ module FalkorLib
                           :desc => "Makefile to optimize images"
             method_option :refdir, :default => "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles",
               :aliases => '-d', :desc => "Path to Falkor's Makefile repository (Relative to Git root dir)"
-            method_option :target, :aliases => '-t', :desc => "Symlink target"
+            method_option :src,  :type => :boolean, :aliases => [ '--src', '-s' ],
+                          :desc => "Path to Falkor's Makefile for latex_src"
             #......................................
             desc "make [options]", "Create a symlink to one of Falkor's Makefile, set as Git submodule"
             def make(dir = Dir.pwd)

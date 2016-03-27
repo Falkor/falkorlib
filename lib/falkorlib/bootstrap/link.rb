@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-03-27 23:30 svarrette>
+# Time-stamp: <Sun 2016-03-27 23:48 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -26,8 +26,8 @@ module FalkorLib
             #  * :latex    [boolean] Makefile to compile LaTeX documents
             #  * :gnuplot  [boolean] Makefile to compile GnuPlot scripts
             #  * :markdown [boolean] Makefile to convert Markdown files to HTML
-            #  * :target   [string]  Path to target
             #  * :refdir   [string]  Path to Falkor's Makefile repository
+            #  * :src      [boolean] Path to latex_src
             ##
             def makefile(dir = Dir.pwd, options = {})
                 path   = normalized_path(dir)
@@ -59,6 +59,7 @@ module FalkorLib
                         break
                     end
                 end
+                type = 'latex_src' if options[:src]
                 makefile = 'Makefile.insubdir' if options[:generic]
                 makefile = 'Makefile.to_html'  if options[:markdown]
                 dst = File.join(makefile_d, type, makefile)
