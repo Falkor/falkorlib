@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-03-09 11:57 svarrette>
+# Time-stamp: <Wed 2016-06-29 14:41 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -34,7 +34,7 @@ module FalkorLib
 
       class_option :verbose, :aliases => "-v",
         :type => :boolean, :desc => "Enable verbose output mode"
-      class_option :debug, :aliases => "-d",
+      class_option :debug,
         :type => :boolean, :default => FalkorLib.config[:debug], :desc => "Enable debug output mode"
       class_option :dry_run, :aliases => '-n', :type => :boolean
 

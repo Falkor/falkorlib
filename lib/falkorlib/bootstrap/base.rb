@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-06-29 14:25 svarrette>
+# Time-stamp: <Wed 2016-06-29 14:45 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -596,7 +596,7 @@ module FalkorLib
               f = 'beamerthemeFalkor.sty'
               dst = "#{FalkorLib.config[:git][:submodulesdir]}/beamerthemeFalkor/#{f}"
               Dir.chdir( srcdir ) do
-                run %{ ln -s '.root/#{dst} #{f} } unless File.exist?( File.join(srcdir, f) )
+                run %{ ln -s .root/#{dst} #{f} } unless File.exist?( File.join(srcdir, f) )
               end
             end
 

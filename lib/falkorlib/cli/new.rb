@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2015-10-12 16:48 svarrette>
+# Time-stamp: <Wed 2016-06-29 14:47 svarrette>
 ################################################################################
 
 require 'thor'
@@ -16,7 +16,7 @@ module FalkorLib
 
 
             #map %w[--help -h] => :help
-            
+
             ###### commands ######
             # desc "commands", "Lists available commands" #, :hide => true
             # def commands
@@ -79,13 +79,13 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
                 FalkorLib::Bootstrap.latex(path, :letter, options)
             end # letter
 
-            
+
 
             ###### slides ######
             #......................................
             desc "slides [options]", "Bootstrap LaTeX Beamer slides"
             method_option :name, :aliases => '-n', :desc => 'Name of the LaTeX project'
-            method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
+            #method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
             #___________________
             def slides(path = Dir.pwd)
                 FalkorLib::Bootstrap.latex(path, :beamer, options)
@@ -165,7 +165,7 @@ RVM_LONG_DESC
             def readme(path = '.')
                 FalkorLib::Bootstrap.readme(path, options)
             end # readme
-            
+
         end # class New
     end # module CLI
 end # module FalkorLib
