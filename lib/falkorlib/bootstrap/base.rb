@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-06-29 14:14 svarrette>
+# Time-stamp: <Wed 2016-06-29 14:25 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -588,7 +588,8 @@ module FalkorLib
             FalkorLib::Bootstrap::Link.makefile(srcdir)
             [ '_style.sty', '.gitignore' ].each do |f|
               Dir.chdir( srcdir ) do
-                run %{ ln -s '.makefile.d/latex/#{dst} #{f} } unless File.exist?( File.join(srcdir, f) )
+                dst = ".makefile.d/latex/#{f}"
+                run %{ ln -s #{dst} #{f} } unless File.exist?( File.join(srcdir, f) )
               end
             end
             if type == :beamer
