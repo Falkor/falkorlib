@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-03-27 23:48 svarrette>
+# Time-stamp: <Sun 2016-03-27 23:58 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -69,7 +69,7 @@ module FalkorLib
                     Dir.chdir( path ) do
                         run %{ ln -s #{dst} Makefile }
                     end
-                    ap File.join(path, 'Makefile')
+                    #ap File.join(path, 'Makefile')
                     FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
                 else
                     puts "  ... Makefile already setup"

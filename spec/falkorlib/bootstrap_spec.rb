@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2015-03-29 22:28 svarrette>
+# Time-stamp: <Tue 2016-06-28 18:37 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -25,16 +25,19 @@ describe FalkorLib::Bootstrap do
     }
     before :all do
         $stdout.sync = true
+        #FalkorLib.config[:no_interaction] = true
     end
 
     after :all do
         dirs.each do |t,d|
+            #next if t == :with_git
             FileUtils.remove_entry_secure d
         end
         FalkorLib.config[:no_interaction] = false
     end
 
     [ :without_git, :with_git ].each do |ctx|
+    #[ :with_git ].each do |ctx|
         dir = dirs[ctx]
         #############################################################
         context "Test bootstrapping operations within (#{ctx}) temporary directory #{dir} " do
@@ -42,13 +45,13 @@ describe FalkorLib::Bootstrap do
             if ctx == :with_git
                 it "initialize Git in the temporary directory #{dir}" do
                     c = FalkorLib::Git.init(dir)
-			        c.should == 0
+                    c.should == 0
                     t = FalkorLib::Git.init?(dir)
                     t.should be_true
                 end
             end
 
-            ######### Trash creation  #########
+            #### Trash creation  #########
             it "#trash" do
                 c = FalkorLib::Bootstrap.trash(dir)
                 t = File.exists?( File.join(dir, FalkorLib.config[:templates][:trashdir], '.gitignore'))
@@ -71,9 +74,9 @@ describe FalkorLib::Bootstrap do
 
             ######### RVM #########
             it "#rvm" do
-                gemset = 'mygemset'
-                STDIN.should_receive(:gets).and_return('1')
-                STDIN.should_receive(:gets).and_return(gemset)
+                gemset = File.basename(dir)
+                STDIN.should_receive(:gets).and_return('1') if ctx == :without_git
+                STDIN.should_receive(:gets).and_return('')  if ctx == :without_git
                 c = FalkorLib::Bootstrap.rvm(dir)
                 c.should == 0
                 content = {}
@@ -92,7 +95,7 @@ describe FalkorLib::Bootstrap do
                 c.should == 1
             end
 
-            it "#rvm -- change targets" do
+            it "#rvm -- change targets (ctx = #{ctx}; dir = #{dir})" do
                 opts = {
                     :ruby        => '1.2.3',
                     :versionfile => '.myversion',
@@ -103,43 +106,16 @@ describe FalkorLib::Bootstrap do
                 c.should == 0
                 content = {}
                 [:versionfile, :gemsetfile].each do |type|
-                    f = File.join(dir, opts[type.to_sym])
+                    f = File.join("#{dir}", opts[type.to_sym])
                     t = File.exists?(f)
-                    t.should be_true
                     content[type.to_sym] = `cat #{f}`.chomp
                 end
                 content[:versionfile].should == opts[:ruby]
                 content[:gemsetfile].should  == opts[:gemset]
             end
 
-            it "#select_forge - none" do
-			    STDIN.should_receive(:gets).and_return('1')
-                t = FalkorLib::Bootstrap.select_forge()
-                t.should == :none
-            end
 
-            it "#select_forge -- default to github" do
-                STDIN.should_receive(:gets).and_return('')
-                t = FalkorLib::Bootstrap.select_forge(:github)
-                t.should == :github
-            end
-
-            FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.each do |lic|
-                it "#select_licence -- default to #{lic}" do
-                    STDIN.should_receive(:gets).and_return('')
-                    t = FalkorLib::Bootstrap.select_licence(lic)
-                    t.should == lic
-                end
-            end
-
-            it "#get_badge " do
-                subject = 'licence'
-                status  = 'GPL-2.0'
-                t = FalkorLib::Bootstrap.get_badge(subject, status)
-                t.should =~ /#{subject}/
-                t.should =~ /#{status.sub(/-/, '--')}/
-            end
-
+            ### README creation
             it "#readme" do
                 #Array.new(6).each { |e|  STDIN.should_receive(:gets).and_return('') }
                 #STDIN.should_receive(:gets).and_return('')
@@ -151,29 +127,24 @@ describe FalkorLib::Bootstrap do
                 FalkorLib.config[:no_interaction] = false
             end
 
+            ### Bootstrap a VERSION file
+            it "#versionfile" do
+                file    = 'version.txt'
+                version = '1.2.14'
+                FalkorLib.config[:no_interaction] = true
+                FalkorLib::Bootstrap.versionfile(dir,
+                                                 {
+                                                     :file    => "#{file}",
+                                                     :version => "#{version}",
+                                                     :no_interaction => true
+                                                 })
+                t = File.exists?(File.join(dir, file))
+                t.should be_true
+                v = FalkorLib::Versioning.get_version(dir, { :source => { :filename => file }})
+                v.should == "#{version}"
+            end
+
         end # context
-
     end # each
-    
-    ############################################
-    context 'boostrap repo' do
-        dir = dirs[:default]
-        it '#repo' do
-            FalkorLib.config[:no_interaction] = true
-            FalkorLib::Bootstrap.repo(dir, { :no_interaction => true, :git_flow => false })
-            FalkorLib.config[:no_interaction] = false
-        end
-    end
 
-    ############################################
-    context 'boostrap motd' do
-        dir = dirs[:default]
-        it "#motd" do
-            motdfile = File.join(dir, 'motd1')
-            FalkorLib::Bootstrap.motd(dir, { :file => "#{motdfile}", :no_interaction => true })
-            t = File.exists?(motdfile)
-            t.should be_true
-        end
-    end 
-    
 end

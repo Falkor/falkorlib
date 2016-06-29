@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-03-27 23:20 svarrette>
+# Time-stamp: <Tue 2016-06-28 18:51 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -204,7 +204,9 @@ module FalkorLib
             # ==== Gemfile ===
             gemfile = File.join(rootdir, 'Gemfile')
             unless File.exists?( gemfile )
-                run %{ bundle init }
+                # Dir.chdir(rootdir) do
+                #     run %{ bundle init }
+                # end
                 info " ==>  configuring Gemfile with Falkorlib"
                 File.open( gemfile, 'a') do |f|
                     f.puts "source 'https://rubygems.org'"
@@ -259,9 +261,9 @@ module FalkorLib
             end
             # === prepare Git submodules ===
             info " ==> prepare the relevant Git submodules"
-            submodules = {
-                          'gitstats' => { :url => 'https://github.com/hoxu/gitstats.git' }
-                         }
+            submodules = {}
+            #'gitstats' => { :url => 'https://github.com/hoxu/gitstats.git' }
+            #             }
             if options[:make]
                 submodules['Makefiles'] = {
                                            :url    => 'https://github.com/Falkor/Makefiles.git',
@@ -623,15 +625,15 @@ module FalkorLib
 
             # populate the images/ directory
             baseimages  = File.join( FalkorLib.templates, 'latex', 'images')
-            images_makefile_src = "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles/generic/Makefile.insubdir"
+            #images_makefile_src = "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles/generic/Makefile.insubdir"
             images = File.join(subdir, 'images')
             info "populating the image directory"
             Dir.chdir( images ) do
                 run %{ rsync -avzu #{baseimages}/ . }
                 run %{ ln -s ../.root .root } unless File.exists?(File.join(images, '.root'))
-                run %{ ln -s .root/#{images_makefile_src} Makefile } unless File.exists?(File.join(images, 'Makefile'))
+                #run %{ ln -s .root/#{images_makefile_src} Makefile } unless File.exists?(File.join(images, 'Makefile'))
             end
-
+            FalkorLib::Bootstrap::Link.makefile(images, { :src => true } )
 
             # default_project_dir = case type
             #               when :beamer

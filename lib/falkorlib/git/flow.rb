@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-02-03 00:10 svarrette>
+# Time-stamp: <Tue 2016-06-28 18:50 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -43,9 +43,9 @@ module FalkorLib
         ## Check if git-flow is initialized
         # def init?(path = Dir.pwd)
 	    #     res = FalkorLib::Git.init?(path)
-	    #     Dir.chdir(path) do 
+	    #     Dir.chdir(path) do
 		#         gf_check = `git config --get-regexp 'gitflow*'`
-		#         res &= ! gf_check.empty? 
+		#         res &= ! gf_check.empty?
 	    #     end
 	    #     res
         # end # init?(path = Dir.pwd)
@@ -132,20 +132,22 @@ module FalkorLib
                 end
 		        devel_branch = gitflow_branches[:develop]
 		        #info "checkout to the main development branch '#{devel_branch}'"
-		        exit_status = run %{ 
+		        exit_status = run %{
                    git checkout #{devel_branch}
                 }
+                # git config branch.$(git rev-parse --abbrev-ref HEAD).mergeoptions --no-edit for the develop branch
+                exit_status = execute "git config branch.#{devel_branch}.mergeoptions --no-edit"
 		        if branches.include?('master') && ! gitflow_branches.values.include?( 'master' )
 			        warn "Your git-flow confuguration does not hold the 'master' branch any more"
 			        warn "You probably want to get rid of it asap by running 'git branch -d master'"
-		        end 
-		        if devel_branch != 'master' && 
-				        remotes.include?( 'origin' ) && 
+		        end
+		        if devel_branch != 'master' &&
+				        remotes.include?( 'origin' ) &&
 				        branches.include?( 'remotes/origin/master')
 			        warn "You might want to change the remote default branch to point to '#{devel_branch}"
 			        puts "=> On github: Settings > Default Branch > #{devel_branch}"
 			        puts "=> On the remote bare Git repository: 'git symbolic-ref HEAD refs/head/#{devel_branch}'"
-		        end 
+		        end
             end
 	        exit_status
         end
@@ -158,8 +160,8 @@ module FalkorLib
             error "The name '#{name}' cannot contain spaces" if name =~ /\s+/
             exit_status = 1
             Dir.chdir( FalkorLib::Git.rootdir(path) ) do
-		        exit_status = run %{ 
-                   git flow #{type} #{action} #{optional_args} #{name} 
+		        exit_status = run %{
+                   git flow #{type} #{action} #{optional_args} #{name}
                 }
             end
             exit_status
@@ -176,9 +178,9 @@ module FalkorLib
         end
 
         ###
-        # Return the Gitflow branch 
+        # Return the Gitflow branch
         # :master:   Master Branch name for production releases
-        # :develop: 
+        # :develop:
         ##
         def branches(type = :master, dir = Dir.pwd, options = {})
           FalkorLib::Git.config("gitflow.branch.#{type}", dir)

@@ -2,7 +2,7 @@
 #########################################
 # versioning_puppet_module_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2015-05-15 23:28 svarrette>
+# Time-stamp: <Tue 2016-06-28 18:51 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -35,7 +35,7 @@ describe FalkorLib::Versioning::Puppet do
 		FalkorLib.config.versioning do |c|
 			c[:type] = 'puppet_module'
 		end
-	end 
+	end
 
     after :all do
 		configatron.temp_end
