@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2016-06-28 18:51 svarrette>
+# Time-stamp: <Wed 2016-06-29 14:09 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -561,10 +561,11 @@ module FalkorLib
             else
                 default_project_dir += "/#{config[:name]}" unless default_project_dir =~ /#{config[:name]}$/
             end
-            project_dir = ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}/src")
+            project_dir = ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}")
             raise FalkorLib::ExecError "Empty project directory" if project_dir.empty?
-            subdir = File.join(rootdir, project_dir)
-            if File.exists?(File.join(subdir, '.root'))
+            src_project_dir = File.join(project_dir, 'src')
+            srcdir = File.join(rootdir, sub_project_dir)
+            if File.exists?(File.join(srcdir, '.root'))
                 warn "The directory '#{project_dir}' seems to have been already initialized"
                 really_continue? unless options[:force]
             end
@@ -577,25 +578,30 @@ module FalkorLib
                                       } if [ :article, :beamer, :bookchapter].include?(type)
             submodules['beamerthemeFalkor'] = { :url => 'https://github.com/Falkor/beamerthemeFalkor' } if type == :beamer
             FalkorLib::Git.submodule_init(rootdir, submodules)
-            info "bootstrapping the #{type} project sources in '#{project_dir}'"
+            info "bootstrapping the #{type} project sources in '#{src_project_dir}'"
             # Create the project directory
             Dir.chdir( rootdir ) do
-                run %{ mkdir -p #{project_dir}/images } unless File.directory?("#{subdir}/images")
+                run %{ mkdir -p #{src_project_dir}/images } unless File.directory?("#{srcdir}/images")
             end
-            info "populating '#{project_dir}'"
-            FalkorLib::Bootstrap::Link.root(subdir, { :verbose => true} )
-            # Prepare the links from the sub-module files
-            [ 'Makefile', '_style.sty', '.gitignore', 'beamerthemeFalkor.sty' ].each do |f|
-                next if (f =~ /beamer/) and (type != :beamer)
-                submoduledir = (f =~ /beamer/) ? 'beamerthemeFalkor' : 'Makefiles/latex'
-                dst = "#{FalkorLib.config[:git][:submodulesdir]}/#{submoduledir}/#{f}"
-                Dir.chdir( subdir ) do
-                    run %{ ln -s .root/#{dst} #{f} } unless File.exist?( File.join(subdir, f) )
-                end
+            info "populating '#{src_project_dir}'"
+            #FalkorLib::Bootstrap::Link.root(srcdir, { :verbose => true} )
+            FalkorLib::Bootstrap::Link.makefile(srcdir)
+            [ '_style.sty', '.gitignore' ].each do |f|
+              Dir.chdir( srcdir ) do
+                run %{ ln -s '.makefile.d/latex/#{dst} #{f} } unless File.exist?( File.join(srcdir, f) )
+              end
             end
+            if type == :beamer
+              f = 'beamerthemeFalkor.sty'
+              dst = "#{FalkorLib.config[:git][:submodulesdir]}/beamerthemeFalkor/#{f}"
+              Dir.chdir( srcdir ) do
+                run %{ ln -s '.root/#{dst} #{f} } unless File.exist?( File.join(srcdir, f) )
+              end
+            end
+
             # Bootstrap the directory
             templatedir = File.join( FalkorLib.templates, 'latex', "#{type}")
-            unless File.exists?( File.join(subdir, "#{config[:name]}.tex"))
+            unless File.exists?( File.join(srcdir, "#{config[:name]}.tex"))
                 info "gathering information for the LaTeX templates"
                 prefix = case type
                          when :article
@@ -613,27 +619,31 @@ module FalkorLib
                     next if k == :name
                     config[k.to_sym] = ask( "\t" + sprintf("%-20s", "#{prefix}#{k.capitalize}"), v)
                 end
-                init_from_template(templatedir, subdir, config, {:no_interaction => true,
+                init_from_template(templatedir, srcdir, config, {:no_interaction => true,
                                                                  :no_commit      => true })
                 # Rename the main file
-                Dir.chdir( subdir ) do
+                Dir.chdir( srcdir ) do
                     run %{ mv main.tex #{config[:name]}.tex }
                 end
             end
             # Create the trash directory
-            trash(subdir)
+            trash(srcdir)
 
             # populate the images/ directory
             baseimages  = File.join( FalkorLib.templates, 'latex', 'images')
-            #images_makefile_src = "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles/generic/Makefile.insubdir"
-            images = File.join(subdir, 'images')
+            #images_makefile_src = "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles/generic/Makefile.insrcdir"
+            images = File.join(srcdir, 'images')
             info "populating the image directory"
             Dir.chdir( images ) do
                 run %{ rsync -avzu #{baseimages}/ . }
                 run %{ ln -s ../.root .root } unless File.exists?(File.join(images, '.root'))
                 #run %{ ln -s .root/#{images_makefile_src} Makefile } unless File.exists?(File.join(images, 'Makefile'))
             end
-            FalkorLib::Bootstrap::Link.makefile(images, { :src => true } )
+            FalkorLib::Bootstrap::Link.makefile(images, { :images => true } )
+
+            # Prepare the src/ directory
+            FalkorLib::Bootstrap::Link.makefile(File.join(rootdir, project_dir), { :src => true } )
+
 
             # default_project_dir = case type
             #               when :beamer
