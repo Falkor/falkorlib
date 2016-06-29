@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # git.rake - Special tasks for the management of Git operations
-# Time-stamp: <Tue 2016-06-28 19:00 svarrette>
+# Time-stamp: <Tue 2016-06-28 19:14 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -60,7 +60,7 @@ namespace :git do
         end
     end
 
-    unless FalkorLib.config.git[:submodules].empty? or ! File.exists?("#{git_root_dir}/.gitmodules")
+    if (! FalkorLib.config.git[:submodules].empty?) or File.exists?("#{git_root_dir}/.gitmodules")
         #.....................
         namespace :submodules do
             ###########   init   ###########
@@ -69,7 +69,6 @@ namespace :git do
                 info t.full_comment
                 FalkorLib::Git.submodule_init(git_root_dir)
             end # task submodules:init
-
 
         end # namespace submodules
     end
