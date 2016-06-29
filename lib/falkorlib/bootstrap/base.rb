@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-06-29 14:09 svarrette>
+# Time-stamp: <Wed 2016-06-29 14:14 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -564,7 +564,7 @@ module FalkorLib
             project_dir = ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}")
             raise FalkorLib::ExecError "Empty project directory" if project_dir.empty?
             src_project_dir = File.join(project_dir, 'src')
-            srcdir = File.join(rootdir, sub_project_dir)
+            srcdir = File.join(rootdir, src_project_dir)
             if File.exists?(File.join(srcdir, '.root'))
                 warn "The directory '#{project_dir}' seems to have been already initialized"
                 really_continue? unless options[:force]
