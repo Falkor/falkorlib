@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-03-27 23:58 svarrette>
+# Time-stamp: <Wed 2016-06-29 13:33 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -32,7 +32,7 @@ module FalkorLib
             def makefile(dir = Dir.pwd, options = {})
                 path   = normalized_path(dir)
                 rootdir = FalkorLib::Git.rootdir(path)
-                info "Create a symlink to the one of Falkor's Makefile"
+                info "Create a symlink to one of Falkor's Makefile"
                 # Add Falkor's Makefiles
                 submodules = FalkorLib.config[:git][:submodules]
                 submodules['Makefiles'] = {
@@ -41,7 +41,9 @@ module FalkorLib
                 } if submodules['Makefiles'].nil?
                 FalkorLib::Git.submodule_init(rootdir, submodules)
                 FalkorLib::Bootstrap::Link.root(dir)
-                dst        = File.join('.root', options[:refdir])
+                refdir = File.join(FalkorLib.config[:git][:submodulesdir], 'Makefiles')
+                refdir = options[:refdir] unless options[:refdir].nil?
+                dst        = File.join('.root', refdir)
                 makefile_d = '.makefile.d'
                 unless File.exists?(File.join(path, makefile_d))
                     Dir.chdir( path ) do
