@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-06-29 13:33 svarrette>
+# Time-stamp: <Sat 2016-10-15 22:55 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -28,8 +28,12 @@ module FalkorLib
             #  * :markdown [boolean] Makefile to convert Markdown files to HTML
             #  * :refdir   [string]  Path to Falkor's Makefile repository
             #  * :src      [boolean] Path to latex_src
+            #  * :no_interaction [boolean] do not interact
             ##
-            def makefile(dir = Dir.pwd, options = {})
+            def makefile(dir = Dir.pwd,
+                         options = {
+                           :no_interaction => false
+                         })
                 path   = normalized_path(dir)
                 rootdir = FalkorLib::Git.rootdir(path)
                 info "Create a symlink to one of Falkor's Makefile"
@@ -67,7 +71,7 @@ module FalkorLib
                 dst = File.join(makefile_d, type, makefile)
                 unless File.exists?( File.join(path, 'Makefile'))
                     info "Bootstrapping #{type.capitalize} Makefile (as symlink to Falkor's Makefile)"
-                    really_continue?
+                    really_continue? unless options[:no_interaction]
                     Dir.chdir( path ) do
                         run %{ ln -s #{dst} Makefile }
                     end
@@ -89,7 +93,7 @@ module FalkorLib
                 relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path)))
                 if "#{relative_path_to_root}" == "."
                     FalkorLib::Common.warning "Already at the root directory of the Git repository"
-                    FalkorLib::Common.really_continue?
+                    FalkorLib::Common.really_continue? unless options[:no_interaction]
                 end
                 target = options[:name] ? options[:name] : '.root'
                 puts "Entering '#{relative_path_to_root}'"

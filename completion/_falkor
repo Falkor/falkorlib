@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Sat 2016-10-15 19:10 svarrette>
+# Time-stamp: <Sat 2016-10-15 22:20 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -109,9 +109,14 @@ __falkor_new()
                     _arguments \
                         ":Falkor new commands:($(falkor new commands))" && ret=0
                     ;;
+                (letter)
+                    _arguments -C \
+                               '(-n --name)'{-n,--name}'[Name of the LaTeX project]' \
+                               '(-d --dir)'{-d,--dir=}':Project directory (relative to the git root directory):_directories' && ret=0
+                               ;;
                 (repo)
                     _arguments -C \
-                               '--gitflow[Bootstrap the repository with Git-flow]' \
+                               '(--no-git-flow)--git-flow[Bootstrap the repository with Git-flow]' \
                                '--make[Use a Makefile to pilot the repository actions]' \
                                '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
                                '(-i --interactive)'{-i,--interactive}'[Interactive mode, in particular to confirm Gitflow branch names]' \
