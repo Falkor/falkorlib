@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Sat 2016-10-15 18:40 svarrette>
+# Time-stamp: <Sat 2016-10-15 19:10 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -76,6 +76,66 @@ _falkor()
     return ret
 }
 
+###############
+__falkor_new()
+{
+    local -a _falkor_new_cmds
+    _falkor_new_cmds=(
+        'repo:Bootstrap a Git Repository with my favorite git-flow layout'
+        'letter:LaTeX-based letter'
+        'slides:Bootstrap LaTeX Beamer slides'
+        'trash:Add a Trash directory for your LaTeX project'
+        'rvm:Initialize RVM'
+        'versionfile:initiate a VERSION file'
+        'motd:Initiate a ''motd'' file - message of the day'
+        'readme:Initiate a README file in the PATH directory (''./'' by default)'
+        'help:Describe subcommands or one specific subcommand'
+    )
+
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+    _arguments -C \
+               ':command:->command' \
+               '*::options:->options'
+
+    case $state in
+        (command)
+            _describe -t commands "falkor new subcommand" _falkor_new_cmds
+            return
+            ;;
+        (options)
+            case $line[1] in
+                (help)
+                    _arguments \
+                        ":Falkor new commands:($(falkor new commands))" && ret=0
+                    ;;
+                (repo)
+                    _arguments -C \
+                               '--gitflow[Bootstrap the repository with Git-flow]' \
+                               '--make[Use a Makefile to pilot the repository actions]' \
+                               '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
+                               '(-i --interactive)'{-i,--interactive}'[Interactive mode, in particular to confirm Gitflow branch names]' \
+                               '(-r --remote-sync)'{-r,--remote-sync}'[Operate a git remote synchronization with remote. By default, all commits stay local]' \
+                               '--master[Master Branch name for production releases]' \
+                               '(-b --branch --devel --develop)'{-b,--branch,--devel,--develop}'[Branch name for development commits]' \
+                               '(-l --latex)'{-l,--latex}'[Initiate a LaTeX project]' \
+                               '--rvm[Initiate a RVM-based Ruby project]' \
+                               '--ruby[Ruby version to configure for RVM]' \
+                               '*: :->path' && ret=0
+                    case "$state" in
+                        (path)
+                            _directories ;;
+                        esac
+                    ;;
+            esac
+            ;;
+    esac
+    return ret
+}
+
+
+
+###############
 __falkor_link()
 {
     local -a _falkor_link_cmds
@@ -121,6 +181,7 @@ __falkor_link()
     return ret
 }
 
+##################
 __falkor_config() {
     local curcontext=$curcontext state line ret=1
     declare -A opt_args
@@ -130,8 +191,7 @@ __falkor_config() {
                '(- *)'{-h,-help,--h,--help}'[display help information]' \
                '(- *)'{-n,--dry_run}'[Perform a trial run with (normally) no changes made]' \
                '(- *)'{-g,--global}'Operate on the global configuration' \
-               '(- *)'{-l,--local}'Operate on the local configuration of the repository' \
-
+               '(- *)'{-l,--local}'Operate on the local configuration of the repository'
 }
 
 
