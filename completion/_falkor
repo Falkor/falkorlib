@@ -1,155 +1,138 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Sat 2016-10-15 12:16 svarrette>
+# Time-stamp: <Sat 2016-10-15 18:40 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
 # Copyright (c) 2016 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
-# This was made with the help of the [kameleon gem](https://github.com/oar-team/kameleon),
-# the _yum completion file and this howto:
-#    https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org
+# This was made with the help of several zsh completion examples:
+#  - the [kameleon gem](https://github.com/oar-team/kameleon),
+#  - the _bundle, _vagrant, _packer and _yum completion file
+# and these howto:
+#  - https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org
+#  - http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Completion-Functions
+#  - https://zv.github.io/note/a-review-of-zsh-completion-utilities
 ########################################################################################
+# You can inspired from the (unfortunately buggy) automatic generation of the ZSH
+# completion file (see https://github.com/labocho/thor-zsh_completion) using:
+#      bundle exec falkor zsh-completion > completion/_falkor.autogen
+
+typeset -A opt_args
+
+# local _falkor_common_opts
+# _falkor_common_opts=(
+#     '(- *)'{--version,-V}'[display version info]'
+#     '(- *)'{-h,-help,--h,--help}'[display help information]'
+#     '(- *)'{-n,--dry_run}'[Perform a trial run with (normally) no changes made]'
+# )
 
 # Main dispatcher
 _falkor()
 {
-    local curcontext="$curcontext" state line
+    local -a _falkor_cmds
+    _falkor_cmds=(
+        'config:Print the current configuration of FalkorLib'
+        'help:Describe available commands or one specific command'
+        'link:link:Initialize a special symlink (.root, .makefile.d etc.)'
+        'new:Initialize the directory PATH with one of Falkors template(s)'
+        'version:Prints the FalkorLib version information'
+    )
+
+    local curcontext="$curcontext" state line ret=1
     typeset -A opt_args
 
-    _arguments -C -s \
+    _arguments -C \
                '(- *)'{--version,-V}'[display version info]' \
-               '(- *)'{--help,-h}'[display help]' \
-               '(--verbose -v)'{--verbose,-v}'[turn on verbose output]' \
-               '(--debug -d)'{--debug,-d}'[turn on debug output]' \
-               '(--dry-run -n)'{--dry-run,-n}'[perform a trial run with no changes made (normally)]' \
+               '(- *)'{-h,-help,--h,--help}'[display help information]' \
+               '(- *)'{-n,--dry_run}'[Perform a trial run with (normally) no changes made]' \
+               ': :->command' \
+               '*:: :->options' && ret=0
+
+    case $state in
+        (command)
+            _describe -t commands 'falkor' _falkor_cmds && ret=0
+            ;;
+        (options)
+            curcontext=${curcontext%:*}-$line[1]:
+            case $line[1] in
+                (help)
+                    _arguments \
+                        ":Falkor commands:($(falkor commands))" && ret=0
+                    ;;
+                (config)
+                    __falkor_config && ret=0 ;;
+                (new)
+                    __falkor_new    && ret=0 ;;
+                (link)
+                    __falkor_link   && ret=0 ;;
+                (version|*)
+                    _nothing
+                    ;;
+            esac
+            ;;
+    esac
+    return ret
+}
+
+__falkor_link()
+{
+    local -a _falkor_link_cmds
+    _falkor_link_cmds=(
+        'rootdir:Create a symlink ''.root'' which targets the root of the repository'
+        'make:Create a symlink to one of Falkor''s Makefile, set as Git submodule'
+        'help:Describe subcommands or one specific subcommand'
+    )
+
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+    _arguments -C \
                ':command:->command' \
                '*::options:->options'
 
     case $state in
         (command)
-            local -a subcommands
-            subcommands=(
-                'config:Print the current configuration of FalkorLib'
-                'help:Describe available commands or one specific command'
-                'link:Initialize a special symlink (.root, .makefile.d etc.)'
-                "new:Initialize the directory PATH with one of FalkorLib's template(s)"
-            )
-            _describe -t commands 'falkor' subcommands
+            _describe -t commands "falkor link subcommand" _falkor_link_cmds
+            return
             ;;
         (options)
             case $line[1] in
-                (config)
-                ;;
-                (version)
-                ;;
-                (link)
-                ;;
-                (new)
-                ;;
+                (help)
+                    _arguments \
+                        ":Falkor link commands:($(falkor link commands))" && ret=0
+                    ;;
+                (make)
+                    _arguments -C \
+                               {--latex,-l}'[Makefile to compile LaTeX documents]' \
+                               {--gnuplot,--plot,-p}'[Makefile to compile GnuPlot scripts]' \
+                               {--generic,-g}'[Generic Makefile for sub directory]' \
+                               {--markdown,-m}'[Makefile to convert Markdown files to HTML]' \
+                               {--images,-i,--img}'[Makefile to optimize images]' \
+                               {--refdir,-d}'[Path to Falkor''s Makefile repository (Relative to Git root dir)]' \
+                               {--src,-s}'[Path to Falkor''s Makefile for latex_src]' && ret=0
+                    ;;
+                (rootdir|root)
+                    _arguments -C \
+                               {--name,--target,-t,-n}'[Name of the symlink]' && ret=0
             esac
             ;;
     esac
+    return ret
+}
+
+__falkor_config() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               '(- *)'{--version,-V}'[display version info]' \
+               '(- *)'{-h,-help,--h,--help}'[display help information]' \
+               '(- *)'{-n,--dry_run}'[Perform a trial run with (normally) no changes made]' \
+               '(- *)'{-g,--global}'Operate on the global configuration' \
+               '(- *)'{-l,--local}'Operate on the local configuration of the repository' \
+
 }
 
 
-
-
-
-# __config()
-# {
-#     _arguments -C -s \
-    #                '(--global -g)'{--global,-g}'[Operate on the global configuration in ~/.falkor/config]' \
-    #                '(--local -l)'{--local,-g}'[Operate on the local configuration of the repository (in <git_rootdir>/.falkor/config'
-# }
-
-# __link()
-# {
-#     _arguments -C \
-    #                '--help[display git-bisect manual page]' \
-    #                ': :->command' \
-    #                '*:: :->option-or-argument' && ret=0
-#     case $state in
-#         (command)
-#             declare -a commands
-#             commands=(
-#                 help:'display a short usage description'
-#                 make:'create a symlink to one of Falkor Makefile, set as Git submodule'
-#                 rootdir:"Create a symlink '.root' which targets the root of the repository"
-#             )
-#             _describe -t commands command commands && ret=0
-#             ;;
-#         (option-or-argument)
-#             curcontext=${curcontext%:*}-$line[1]:
-#             case $line[1] in
-#                 (make)
-#                     _arguments \
-    #                         ': :__link_make' && ret=0
-#                     ;;
-#                 (rootdir)
-#                     _arguments \
-    #                         ': :__link_rootdir' && ret=0
-#                     ;;
-#                 (*)
-#                     _nothing
-#                     ;;
-#             esac
-#     esac
-# }
-
-# __link_make()
-# {
-#     _arguments -C -s \
-    #                '(--latex -l)'{--latex,-l}'[Makefile to compile LaTeX documents (default)]' \
-    #                '(--repo -r'{--repo,-r}'[Makefile to be placed at the root of a Git repository]'
-
-# }
-
-
-# _arguments '*:: :->command'
-
-# if (( CURRENT == 1 )); then
-#     _describe -t commands "falkor command" _packer_cmds
-#     return
-# fi
-
-# local -a _command_args
-# case "$words[1]" in
-#     config)
-#         __config;;
-#     link)
-#         __link ;;
-# esac
-
-
-# (( $+functions[_falkor_command] )) ||
-#     _falkor_command()
-# {
-#     local -a _falkor_cmds
-#     _falkor_cmds=(
-#         "config:print the current configuration of FalkorLib"
-#         "help:describe available commands or one specific command"
-#         "link:initialize a special symlink (.root, .makefile.d etc.)"
-#         "new:initialize the directory PATH with one of FalkorLib's template(s)"
-#     )
-#     if (( CURRENT == 1 )); then
-#         _describe -t commands 'falkor command' _falkor_cmds || compadd "$@"
-#     else
-#         local curcontext="$curcontext"
-#         cmd="${${_falkor_cmds[(r)$words[1]:*]%%:*}}"
-#         # Eventually deal with any aliases
-#         case $cmd in
-#             bootstrap) cmd="new";;
-#             ln) cmd="link";;
-#         esac
-#         return ret
-#     fi
-# }
-
-# (( $+functions[_falkor_link] )) ||
-#     _falkor_link()
-# {
-#     local curcontext=$curcontext state line ret=1
-#     declare -A opt_args
-# }
+_falkor "$@"

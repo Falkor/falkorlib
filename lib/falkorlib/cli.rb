@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-06-29 14:41 svarrette>
+# Time-stamp: <Sat 2016-10-15 18:27 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -8,6 +8,8 @@
 require 'thor'
 require 'thor/actions'
 require 'thor/group'
+require 'thor/zsh_completion'
+
 require "falkorlib"
 
 require "falkorlib/cli/new"
@@ -29,6 +31,7 @@ module FalkorLib
 
       include Thor::Actions
       include FalkorLib::Common
+      include ZshCompletion::Command
 
       #default_command :info
 
@@ -36,23 +39,23 @@ module FalkorLib
         :type => :boolean, :desc => "Enable verbose output mode"
       class_option :debug,
         :type => :boolean, :default => FalkorLib.config[:debug], :desc => "Enable debug output mode"
-      class_option :dry_run, :aliases => '-n', :type => :boolean
+      class_option :dry_run, :aliases => '-n', :desc => "Perform a trial run with (normally) no changes made",  :type => :boolean
 
       ###### commands ######
-      # desc "commands", "Lists all available commands", :hide => true
-      # def commands
-      #   puts App.all_commands.keys - ["commands", "completions"]
-      # end
+      desc "commands", "Lists all available commands"
+      def commands
+        puts App.all_commands.keys.sort - [ "zsh-completions"]
+      end
 
       ###### config ######
       desc "config [option] [KEY]", "Print the current configuration of FalkorLib" #, :hide => true
       long_desc <<-CONFIG_LONG_DESC
 This command allows you to interact with FalkorLib's configuration system.
 FalkorLib retrieves its configuration from the local repository (in '<git_rootdir>/.falkor/config'),
-environment variables (NOT YET IMPLEMENTED), and the user's home directory (~/.falkor/config), in that order of priority.
+environment variables (NOT YET IMPLEMENTED), and the user's home directory (<home>/.falkor/config), in that order of priority.
 CONFIG_LONG_DESC
-      method_option :global, :aliases => '-g', :type => :boolean, :desc => 'Operate on the global configuration (in ~/.falkor/config)'
-      method_option :local,  :aliases => '-l', :type => :boolean, :desc => 'Operate on the local configuration of the repository (in <git_rootdir>/.falkor/config)'
+      method_option :global, :aliases => '-g', :type => :boolean, :desc => 'Operate on the global configuration'
+      method_option :local,  :aliases => '-l', :type => :boolean, :desc => 'Operate on the local configuration of the repository'
       def config(key = '')
         info "Thor options:"
         puts options.to_yaml
@@ -79,10 +82,10 @@ CONFIG_LONG_DESC
         say "Falkor[Lib] version " + FalkorLib::VERSION, :yellow # + "on ruby " + `ruby --version`
       end
 
-
-
-
     end # class App
+
+    #puts Thor::ZshCompletion::Generator.new(App, "falkor").generate
+
   end # module CLI
 
 end

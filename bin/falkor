@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby -U
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Lun 2015-01-19 14:48 svarrette>
+# Time-stamp: <Fri 2016-10-14 21:37 svarrette>
 #
-# Copyright (c) 2015 Sebastien Varrette <Sebastien.Varrette@uni.lu>
+# Copyright (c) 2015-2016 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
 ################################################################################
 # Resources:
@@ -15,15 +15,16 @@
 # Exit cleanly from an early interrupt
 Signal.trap("INT") { exit 1 }
 
-
-
 require "thor/error"
 require 'falkorlib'
+
+# Stdout/stderr should not buffer output
+$stdout.sync = true
+$stderr.sync = true
+
 
 begin
   FalkorLib::CLI::App.start(ARGV, :debug => true)
 rescue Thor::InvocationError => e
   error e.message.gsub(/^ERROR:/, '')
 end
-
-
