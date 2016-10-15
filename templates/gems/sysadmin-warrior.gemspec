@@ -1,23 +1,76 @@
 # -*- coding: utf-8 -*-
+# We require your library, mainly to have access to the VERSION number.
+# Feel free to set $version manually.
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
-require "falkorlib/version"
-$version = FalkorLib::Version.to_s
+require "sysadmin-warrior/version"
+$version = SysAdminWarrior::Version.to_s
 
+#
+# This is your Gem specification. Default values are provided so that your library
+# should be correctly packaged given what you have described in the .noespec file.
+#
 Gem::Specification.new do |s|
-  s.name         = "falkorlib"
-  s.version      = $version
-  s.date         = Time.now.strftime('%Y-%m-%d')
-  s.summary      = "Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap} tasks"
-  s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several element of my daily workflow (new git repository, new beamer slides etc.).\nThis is also my first gem so any comments on the code/organization are welcome, I'm a newbie in this domain. \nNote that I used [Noe](https://github.com/blambeau/noe) to bootstrap this project and get a fully documented environment."
 
-  s.homepage     = "https://github.com/Falkor/falkorlib"
-  s.licenses     = 'MIT'
+  ################################################################### ABOUT YOUR GEM
 
-  s.authors = ['Sebastien Varrette']
+  # Gem name (required)
+  s.name = "sysadmin-warrior"
+
+  # Gem version (required)
+  s.version = $version
+
+  # A short summary of this gem
+  #
+  # This is displayed in `gem list -d`.
+  s.summary = "SysAdmin Warrior (SAW) is a tool designed to make the life of system administrator easier from the command-line. It offers a flexible interface to register and manage IT systems and operations."
+
+  # A long description of this gem (required)
+  #
+  # The description should be more detailed than the summary.  For example,
+  # you might wish to copy the entire README into the description.
+  s.description = "SysAdmin Warrior (SAW) is a Free and Open Source Software designed to make the life of system administrator easier from the command-line. It offers a flexible interface to register and manage IT systems and operations."
+
+  # The URL of this gem home page (optional)
+  s.homepage = "https://github.com/Falkor/sysadmin-warrior"
+
+  # Gem publication date (required but auto)
+  #
+  # Today is automatically used by default, uncomment only if
+  # you know what you do!
+  #
+  # s.date = Time.now.strftime('%Y-%m-%d')
+
+  # The license(s) for the library.  Each license must be a short name, no
+  # more than 64 characters.
+  #
+  s.licenses    = ['MIT']
+
+  # The rubyforge project this gem lives under (optional)
+  #
+  # s.rubyforge_project = nil
+
+  ################################################################### ABOUT THE AUTHORS
+
   # The list of author names who wrote this gem.
-  s.email   = ['Sebastien.Varrette@uni.lu']
+  #
+  # If you are providing multiple authors and multiple emails they should be
+  # in the same order.
+  #
+  s.authors = ["Sebastien Varrette"]
 
-  # Paths in the gem to add to $LOAD_PATH when this gem is activated (required).
+  # Contact emails for this gem
+  #
+  # If you are providing multiple authors and multiple emails they should be
+  # in the same order.
+  #
+  # NOTE: Somewhat strangly this attribute is always singular!
+  #       Don't replace by s.emails = ...
+  s.email  = ["Sebastien.Varrette@uni.lu"]
+
+  ################################################################### PATHS, FILES, BINARIES
+
+  # Paths in the gem to add to $LOAD_PATH when this gem is
+  # activated (required).
   #
   # The default 'lib' is typically sufficient.
   s.require_paths = ["lib"]
@@ -46,6 +99,8 @@ Gem::Specification.new do |s|
   #
   #s.bindir = "bin"
 
+  # Executables included in the gem.
+  #
   s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
 
   ################################################################### REQUIREMENTS & INSTALL
@@ -68,22 +123,10 @@ Gem::Specification.new do |s|
   #   "~> 2.2.0"              (shortcut for ">= 2.2.0", "< 2.3.0")
   #
   #s.add_dependency("rake", ">= 10.1.0")
-  s.add_runtime_dependency 'rake', '~> 10.1', '>= 10.1.0'
-  s.add_runtime_dependency 'git_remote_branch', '~> 0'
-  #s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
-  s.add_runtime_dependency('minigit', '~> 0')
-  s.add_runtime_dependency("term-ansicolor", "~> 1.3")
-  s.add_runtime_dependency("configatron",    "~> 3.2")
-  s.add_runtime_dependency("awesome_print", "~> 1.2")
-  s.add_runtime_dependency("json", "~> 1.8")
-  s.add_runtime_dependency("license-generator", '~> 0')
-  s.add_runtime_dependency("deep_merge", '~> 1.0.1')
-  s.add_runtime_dependency("diffy", '>= 3.0')
-  s.add_runtime_dependency("logger", '>= 1.2.8')
-  s.add_runtime_dependency("thor",   '>= 0.19')
-  s.add_runtime_dependency("artii",  '>= 2.1')
-  s.add_runtime_dependency("facter", '~> 2.4.1')
 
+  s.add_runtime_dependency('rake', '~> 10.2')
+  s.add_runtime_dependency("thor", '~> 0.19')
+  s.add_runtime_dependency("falkorlib", '~> 0.6.11')
   #s.add_runtime_dependency("mercenary", '>= 0.3.5')
 
   #
@@ -93,20 +136,10 @@ Gem::Specification.new do |s|
   # One call to add_development_dependency('gem_name', 'gem version requirement')
   # for each development dependency. These gems are required for developers
   #
-  #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
-  s.add_development_dependency("bundler",        "~> 1.0")
-  #s.add_development_dependency 'rspec', '~> 2.7', '>= 2.7.0'
-  s.add_development_dependency("pry",    "~> 0.9")
-  s.add_development_dependency("yard",   "~> 0.8")
-  #s.add_development_dependency("minitest",   "~> 5.3")
-  s.add_development_dependency("rubygems-tasks",   "~> 0.2")
-  s.add_development_dependency("travis",        "~> 1.6")
-  s.add_development_dependency("travis-lint",   "~> 1.8")
-
-  s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
-  #s.add_development_dependency("bluecloth",      "~> 2.2.0")
-  #s.add_development_dependency("wlang",          "~> 0.10.2")
-
+  s.add_development_dependency("bundler", '~> 1.12', '>= 1.12.5')
+  s.add_development_dependency('rspec', '~> 3.4')
+  s.add_development_dependency("pry",   '~> 0.10.3')
+  s.add_development_dependency("yard",  '~> 0.8.7.6', "~> 0.8")
 
   # The version of ruby required by this gem
   #
@@ -139,7 +172,7 @@ Gem::Specification.new do |s|
   # Uncomment and set this if you want to say something to the user
   # after gem installation
   #
-  s.post_install_message = "Thanks for installing FalkorLib.\n"
+  s.post_install_message = "Thanks for installing SysAdmin Warrior.\n"
 
   ################################################################### SECURITY
 
@@ -162,6 +195,6 @@ Gem::Specification.new do |s|
 
   # Extra files to add to RDoc such as README
   #
-  s.extra_rdoc_files = Dir["README.md"] + Dir["CHANGELOG.md"] + Dir["LICENCE.md"]
+  s.extra_rdoc_files = Dir["README.md"] + Dir["LICENCE.md"]
 
 end

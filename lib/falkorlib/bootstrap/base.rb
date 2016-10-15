@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-06-29 14:45 svarrette>
+# Time-stamp: <Sat 2016-10-15 23:44 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -28,12 +28,13 @@ module FalkorLib  #:nodoc:
                            },
                :latex => {
                           :name     => '',
-                          :author   => "#{ENV['GIT_AUTHOR_NAME']}",
-                          :mail     => "#{ENV['GIT_AUTHOR_EMAIL']}",
+                          :author   => %x( git config user.name ).chomp,
+                          :mail     => %x( git config user.email ).chomp,
                           :title    => 'Title',
-                          :subtitle => '',
+                          :subtitle => 'Overview and Open Challenges',
                           :image    => 'images/logo_ULHPC.pdf',
-                          :logo     => 'images/logo_UL.pdf'
+                          :logo     => 'images/logo_UL.pdf',
+                          :url      => 'http://csc.uni.lu/sebastien.varrette'
                          },
                :letter => {
                            :author_title    => 'PhD',
@@ -44,6 +45,10 @@ module FalkorLib  #:nodoc:
                            :zipcode         => 'L-1359',
                            :location        => 'Luxembourg',
                            :phone           => '(+352) 46 66 44 6600',
+                           :twitter         => 'svarrette',
+                           :linkedin        => 'svarrette',
+                           :skype           => 'sebastien.varrette',
+                           :scholar         => '6PTStIcAAAAJ'
                           },
                :metadata => {
                              :name         => '',
@@ -531,6 +536,11 @@ module FalkorLib
             print_error_and_exit "Unsupported type" unless [ :beamer, :article, :letter ].include?( type )
             path   = normalized_path(dir)
             config = FalkorLib::Config::Bootstrap::DEFAULTS[:latex].clone
+            if type == :letter
+              config.merge!(FalkorLib::Config::Bootstrap::DEFAULTS[:letter].clone)
+              [ :title, :subtitle, :image ].each { |k| config.delete k }
+            end
+            config.deep_merge!(FalkorLib::Config::Bootstrap::DEFAULTS[:letter].clone) if type == :letter
             # initiate the repository if needed
             unless File.directory?( path )
                 warn "The directory '#{path}' does not exists and will be created"
@@ -561,7 +571,7 @@ module FalkorLib
             else
                 default_project_dir += "/#{config[:name]}" unless default_project_dir =~ /#{config[:name]}$/
             end
-            project_dir = ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}")
+            project_dir = options[:dir] ? options[:dir] : ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}")
             raise FalkorLib::ExecError "Empty project directory" if project_dir.empty?
             src_project_dir = File.join(project_dir, 'src')
             srcdir = File.join(rootdir, src_project_dir)
@@ -585,7 +595,7 @@ module FalkorLib
             end
             info "populating '#{src_project_dir}'"
             #FalkorLib::Bootstrap::Link.root(srcdir, { :verbose => true} )
-            FalkorLib::Bootstrap::Link.makefile(srcdir)
+            FalkorLib::Bootstrap::Link.makefile(srcdir, { :no_interaction => true })
             [ '_style.sty', '.gitignore' ].each do |f|
               Dir.chdir( srcdir ) do
                 dst = ".makefile.d/latex/#{f}"
@@ -640,10 +650,10 @@ module FalkorLib
                 run %{ ln -s ../.root .root } unless File.exists?(File.join(images, '.root'))
                 #run %{ ln -s .root/#{images_makefile_src} Makefile } unless File.exists?(File.join(images, 'Makefile'))
             end
-            FalkorLib::Bootstrap::Link.makefile(images, { :images => true } )
+            FalkorLib::Bootstrap::Link.makefile(images, { :images => true, :no_interaction => true } )
 
             # Prepare the src/ directory
-            FalkorLib::Bootstrap::Link.makefile(File.join(rootdir, project_dir), { :src => true } )
+            FalkorLib::Bootstrap::Link.makefile(File.join(rootdir, project_dir), { :src => true, :no_interaction => true } )
 
 
             # default_project_dir = case type

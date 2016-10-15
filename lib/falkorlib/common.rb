@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2015-06-16 09:33 svarrette>
+# Time-stamp: <Sat 2016-10-15 22:49 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -307,7 +307,7 @@ module FalkorLib #:nodoc:
             warning "about to initialize/update the directory #{rootdir}"
             really_continue?
             run %{ mkdir -p #{rootdir} } unless File.directory?( rootdir )
-            run %{ rsync --exclude '*.erb' -avzu #{templatedir}/ #{rootdir}/ }
+            run %{ rsync --exclude '*.erb' --exclude '.texinfo*' -avzu #{templatedir}/ #{rootdir}/ }
             Dir["#{templatedir}/**/*.erb"].each do |erbfile|
                 relative_outdir = Pathname.new( File.realpath( File.dirname(erbfile) )).relative_path_from Pathname.new(templatedir)
                 filename = File.basename(erbfile, '.erb')
@@ -349,7 +349,7 @@ module FalkorLib #:nodoc:
                     warning "Unable to find the template ERBfile '#{erb}'"
                     really_continue? unless options[:no_interaction]
                     next
-                end 
+                end
                 content += ERB.new(File.read("#{erb}"), nil, '<>').result(binding)
             end
             # error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )

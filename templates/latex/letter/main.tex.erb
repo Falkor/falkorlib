@@ -1,10 +1,10 @@
 % =============================================================================
-% File:  <%= config[:name] %>.tex -- 
+% File:  <%= config[:name] %>.tex --
 % Author(s): <%= config[:author] %> (<%= config[:mail] %>)
-% Time-stamp: <Fri 2015-10-09 20:05 svarrette>
-% 
+% Time-stamp: <Sat 2016-10-15 23:57 svarrette>
+%
 % Copyright (c) <%= Time.now.year %> <%= config[:author] %><Sebastien.Varrette@uni.lu>
-% 
+%
 % For more information:
 % - LaTeX: http://www.latex-project.org/
 % - LaTeX symbol list:
@@ -15,6 +15,9 @@
 
 \usepackage{_style}
 \usepackage{microtype} % Improves typography
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{fontawesome}
 
 \graphicspath{{images/}} % Add this directory to the searched paths for graphics
 
@@ -46,9 +49,14 @@
 \def\Where{<%= config[:department] %> (<%= config[:department_acro] %>)} % Your department/institution
 \def\Address{<%= config[:address] %>} % Your address
 \def\CityZip{<%= config[:zipcode] %>, <%= config[:location] %>} % Your city, zip code, country, etc
-\def\Email{E-mail: \href{mailto:<%= config[:mail] %>}{<%= config[:mail] %>}} % Your email address
-\def\TEL{Phone: <%= config[:phone] %>} % Your phone number
-\def\URL{} %URL: http://csc.uni.lu/sebastien.varrette} % Your URL
+\def\Email{\faEnvelopeO\ \texttt{\href{mailto:<%= config[:mail] %>}{<%= config[:mail] %>}}} % Your email address
+\def\TEL{\faPhone\ <%= config[:phone] %>} % Your phone number
+\def\URL{\faGlobe\ <%= config[:url] %>} % Your url
+
+\def\LinkedIN{\href{https://www.linkedin.com/in/<%= config[:linkedin] %>}{\faLinkedin}}
+\def\Twitter{\href{https://twitter.com/<%= config[:twitter] %>}{\faTwitter}}
+\def\GoogleScholar{\href{https://scholar.google.com/citations?user=<%= config[:scholar] %>&hl=en}{\faGraduationCap}}
+\def\Skype{\href{skype:<%= config[:skype] %>?chat}{\faSkype}}
 
 % ----------------------------------------------------------------------------------------
 %   HEADER AND FROM ADDRESS STRUCTURE
@@ -60,22 +68,22 @@
   \vskip -1.07in~\\ % Position of the text in relation to the institution logo, increase to move down, decrease to move up
   \Large\hspace{1.5in}\hfill ~\\[0.05in] % First line of institution name, adjust hspace if your logo is wide
   \hspace{1.5in}\hfill \normalsize % Second line of institution name, adjust hspace if your logo is wide
-  \makebox[0ex][r]{\bf \Who \What }\hspace{0.08in} % Print your name and title with a little whitespace to the right
+  \makebox[0ex][r]{\bf \Who, \What }\hspace{0.08in} % Print your name and title with a little whitespace to the right
   ~\\[-0.11in] % Reduce the whitespace above the horizontal rule
   \hspace{1.5in}\vhrulefill{1pt} \\ % Horizontal rule, adjust hspace if your logo is wide and \vhrulefill for the thickness of the rule
-  \hspace{\fill}\parbox[t]{3.85in}{ % Create a box for your details underneath the horizontal rule on the right
+  \hspace{\fill}\parbox[t]{4.35in}{ % Create a box for your details underneath the horizontal rule on the right
     \footnotesize % Use a smaller font size for the details
     %\Who \\ \em % Your name, all text after this will be italicized
     \Where\\ % Your department
     \Address\\ % Your address
     \CityZip\\ % Your city and zip code
-    \TEL\\ % Your phone number
-    \Email\\[2em] % Your email address
-    %\URL % Your URL
+    \TEL\hspace{8em}\LinkedIN\ \ \Twitter\ \ \Skype\ \ \GoogleScholar \\ % Your phone number
+    \Email\\% Your email address
+    \URL\\[2em] % Your URL
     \Location, \today
   }
   \hspace{-1.4in} % Horizontal position of this block, increase to move left, decrease to move right
-  \vspace{-1in} % Move the letter content up for a more compact look
+  \vspace{-0.5in} % Move the letter content up for a more compact look
 }
 
 % ----------------------------------------------------------------------------------------
@@ -101,7 +109,7 @@
 %   SIGNATURE STRUCTURE
 % ----------------------------------------------------------------------------------------
 
-\signature{\Who \What} % The signature is a combination of your name and title
+\signature{\Who, \What} % The signature is a combination of your name and title
 
 \long\def\closing#1{
   \vspace{0.1in} % Some whitespace after the letter content and before the signature
@@ -145,7 +153,7 @@
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % eof
-% 
+%
 % Local Variables:
 % mode: latex
 % mode: flyspell
