@@ -25,6 +25,7 @@
 # rspec and options of the rake task defined below can be found on
 # http://relishapp.com/rspec
 #
+require 'rspec/core'
 begin
     require "rspec/core/rake_task"
     desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
@@ -50,19 +51,19 @@ begin
         t.verbose = true
 
         # Use rcov for code coverage?
-        t.rcov = false
+        #t.rcov = false
 
         # Path to rcov.
-        t.rcov_path = "rcov"
+        #t.rcov_path = "rcov"
 
         # Command line options to pass to rcov. See 'rcov --help' about this
-        t.rcov_opts = []
+        #t.rcov_opts = []
 
         # Command line options to pass to ruby. See 'ruby --help' about this
         t.ruby_opts = []
 
         # Path to rspec
-        t.rspec_path = "rspec"
+        #t.rspec_path = "rspec"
 
         # Command line options to pass to rspec. See 'rspec --help' about this
         #t.rspec_opts = ["--color", "--backtrace"]
