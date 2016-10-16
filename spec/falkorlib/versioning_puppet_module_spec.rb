@@ -53,50 +53,50 @@ describe FalkorLib::Versioning::Puppet do
 
             ap default_version
             it "#get_version -- get default version #{default_version} after initialization" do
-                Array.new(17).each { |e|  STDIN.should_receive(:gets).and_return('') }
+                Array.new(17).each { |e|  expect(STDIN).to receive(:gets).and_return('') }
                 FalkorLib::Puppet::Modules.init(moduledir)
                 v = FalkorLib::Versioning.get_version(moduledir)
-                v.should == default_version
+                expect(v).to eq(default_version)
                 if command?('git-flow')
                     a = FalkorLib::GitFlow.finish('feature', 'bootstrapping', moduledir)
-                    a.should == 0
+                    expect(a).to eq(0)
                 end
             end
 
             it "#set_version -- should set the '#{workingversion[:default]}' version" do
-                STDIN.should_receive(:gets).and_return('Yes')
+                expect(STDIN).to receive(:gets).and_return('Yes')
                 v = FalkorLib::Versioning.set_version(workingversion[:default], moduledir)
-                v.should == 0
+                expect(v).to eq(0)
             end
 
             it "#get_version -- should get the '#{workingversion[:default]}'" do
                 v = FalkorLib::Versioning.get_version(moduledir)
-                v.should == workingversion[:default]
+                expect(v).to eq(workingversion[:default])
             end
 
             it "#major -- should collect the major version" do
                 v = FalkorLib::Versioning.get_version(moduledir)
                 m = FalkorLib::Versioning.major(v)
-                m.should == '4'
+                expect(m).to eq('4')
             end
             it "#minor -- should collect the minor version" do
                 v = FalkorLib::Versioning.get_version(moduledir)
                 m = FalkorLib::Versioning.minor(v)
-                m.should == '5'
+                expect(m).to eq('5')
             end
             it "#patch -- should collect the patch version" do
                 v = FalkorLib::Versioning.get_version(moduledir)
                 m = FalkorLib::Versioning.patch(v)
-                m.should == '6'
+                expect(m).to eq('6')
             end
 
             #FalkorLib.config[:versioning][:levels].reverse.each do |level|
             ['patch', 'minor'].each do |level|
                 it "#set_version #bump -- #{level} bump version number from #{workingversion[:default]} to #{workingversion[level.to_sym]}" do
                     v = FalkorLib::Versioning.get_version(moduledir)
-                    v.should == workingversion[:default]
+                    expect(v).to eq(workingversion[:default])
                     v2 = FalkorLib::Versioning.bump(v, level.to_sym)
-                    v2.should == workingversion[level.to_sym]
+                    expect(v2).to eq(workingversion[level.to_sym])
                     #STDIN.should_receive(:gets).and_return('Yes')
                     #d = FalkorLib::Versioning.set_version(v2, moduledir)
                     #d.should == 0

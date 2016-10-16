@@ -2,7 +2,7 @@
 #########################################
 # versioning_gem_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2014-08-31 22:34 svarrette>
+# Time-stamp: <Sun 2016-10-16 22:13 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -37,12 +37,12 @@ describe FalkorLib::Versioning::Gem do
             c[:source]['gem'][:filename]  = "#{versionfile}"
             c[:source]['gem'][:getmethod] = "::TestGemVersion.version"
         end
-	end 
+	end
 
     after :all do
         configatron.temp_end
 		FileUtils.remove_entry_secure dir
-		FalkorLib.config[:versioning][:type] = 'file' 
+		FalkorLib.config[:versioning][:type] = 'file'
         # configatron.temp do
         #     FalkorLib.config.versioning[:type] = 'file'
         # end
@@ -62,12 +62,12 @@ describe FalkorLib::Versioning::Gem do
 
             it "#get_version -- NameError on non-existing method" do
                 if command?('git_flow')
-                    STDIN.should_receive(:gets).and_return('Yes')
+                    expect(STDIN).to receive(:gets).and_return('Yes')
                     t = FalkorLib::GitFlow.init(dir)
-                    t.should == 0
+                    expect(t).to eq(0)
                 else
                     t = FalkorLib::Git.init(dir)
-                    t.should be_true
+                    expect(t).to be_truthy
                 end
                 expect { FalkorLib::Versioning.get_version(dir) }.to raise_error (NameError)
             end
@@ -84,61 +84,61 @@ describe FalkorLib::Versioning::Gem do
 
             it "initializes the Gem version file #{versionfile} " do
                 t = File.exists?(versionfile_path)
-                t.should be_true
+                expect(t).to be true
                 u = run %{ cat #{versionfile_path} }
-                u.to_i.should == 0
+                expect(u.to_i).to eq(0)
             end
 
             it "#get_version -- should get the '#{workingversion[:default]}' version set in the file #{versionfile}" do
                 load "#{versionfile_path}"
                 v = FalkorLib::Versioning.get_version(dir)
-                v.should == workingversion[:default]
+                expect(v).to eq(workingversion[:default])
             end
 
             it "#major -- should collect the Gem major version" do
                 v = FalkorLib::Versioning.get_version(dir)
                 m = FalkorLib::Versioning.major(v)
-                m.should == '4'
+                expect(m).to eq('4')
             end
             it "#minor -- should collect the Gem minor version" do
                 v = FalkorLib::Versioning.get_version(dir)
                 m = FalkorLib::Versioning.minor(v)
-                m.should == '5'
+                expect(m).to eq('5')
             end
             it "#patch -- should collect the Gem patch version" do
                 v = FalkorLib::Versioning.get_version(dir)
                 m = FalkorLib::Versioning.patch(v)
-                m.should == '6'
+                expect(m).to eq('6')
             end
 
             it "#set_version -- set Gem version #{default_version} in version file #{versionfile}" do
-                STDIN.should_receive(:gets).and_return('Yes')
+                expect(STDIN).to receive(:gets).and_return('Yes')
                 v = FalkorLib::Versioning.set_version(default_version, dir)
-                v.should == 0
+                expect(v).to eq(0)
                 load "#{versionfile_path}"
                 v = FalkorLib::Versioning.get_version(dir)
-                v.should == default_version
+                expect(v).to eq(default_version)
             end
 
             #FalkorLib.config[:versioning][:levels].reverse.each do |level|
             [ :patch, :minor ].each do |level|
                 it "#set_version #bump -- #{level} bump Gem version number from #{workingversion[:default]} to #{workingversion[level.to_sym]}" do
                     # restore version file
-                    STDIN.should_receive(:gets).and_return('Yes')
+                    expect(STDIN).to receive(:gets).and_return('Yes')
                     v = FalkorLib::Versioning.set_version(workingversion[:default], dir)
-                    v.should == 0
+                    expect(v).to eq(0)
                     load "#{versionfile_path}"
                     v = FalkorLib::Versioning.get_version(dir)
-                    v.should == workingversion[:default]
+                    expect(v).to eq(workingversion[:default])
                     # Let's bump
                     v2 = FalkorLib::Versioning.bump(v, level.to_sym)
-                    v2.should == workingversion[level.to_sym]
-                    STDIN.should_receive(:gets).and_return('Yes')
+                    expect(v2).to eq(workingversion[level.to_sym])
+                    expect(STDIN).to receive(:gets).and_return('Yes')
                     d = FalkorLib::Versioning.set_version(v2, dir)
-                    d.should == 0
+                    expect(d).to eq(0)
                     load "#{versionfile_path}"
                     v3 = FalkorLib::Versioning.get_version(dir)
-                    v3.should == v2
+                    expect(v3).to eq(v2)
                 end
             end
         end

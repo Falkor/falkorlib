@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Tue 2016-06-28 18:37 svarrette>
+# Time-stamp: <Sun 2016-10-16 22:02 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -32,22 +32,22 @@ describe FalkorLib::Bootstrap do
 
     context 'helper functions' do
         it "#select_forge - none" do
-            STDIN.should_receive(:gets).and_return('1')
+            expect(STDIN).to receive(:gets).and_return('1')
             t = FalkorLib::Bootstrap.select_forge()
-            t.should == :none
+            expect(t).to eq(:none)
         end
 
         it "#select_forge -- default to github" do
-            STDIN.should_receive(:gets).and_return('')
+            expect(STDIN).to receive(:gets).and_return('')
             t = FalkorLib::Bootstrap.select_forge(:github)
-            t.should == :github
+            expect(t).to eq(:github)
         end
 
         FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.each do |lic|
             it "#select_licence -- default to #{lic}" do
-                STDIN.should_receive(:gets).and_return('')
+                expect(STDIN).to receive(:gets).and_return('')
                 t = FalkorLib::Bootstrap.select_licence(lic)
-                t.should == lic
+                expect(t).to eq(lic)
             end
         end
 
@@ -56,8 +56,8 @@ describe FalkorLib::Bootstrap do
             subject = 'licence'
             status  = 'GPL-2.0'
             t = FalkorLib::Bootstrap.get_badge(subject, status)
-            t.should =~ /#{subject}/
-            t.should =~ /#{status.sub(/-/, '--')}/
+            expect(t).to match(/#{subject}/)
+            expect(t).to match(/#{status.sub(/-/, '--')}/)
         end
     end # context
 
@@ -77,7 +77,7 @@ describe FalkorLib::Bootstrap do
             motdfile = File.join(dir, 'motd1')
             FalkorLib::Bootstrap.motd(dir, { :file => "#{motdfile}", :no_interaction => true })
             t = File.exists?(motdfile)
-            t.should be_true
+            expect(t).to be true
         end
     end
 
