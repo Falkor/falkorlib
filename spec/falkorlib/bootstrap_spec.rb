@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Tue 2016-06-28 18:37 svarrette>
+# Time-stamp: <Sun 2016-10-16 22:05 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -47,7 +47,7 @@ describe FalkorLib::Bootstrap do
                     c = FalkorLib::Git.init(dir)
                     c.should == 0
                     t = FalkorLib::Git.init?(dir)
-                    t.should be_true
+                    t.should be true
                 end
             end
 
@@ -55,7 +55,7 @@ describe FalkorLib::Bootstrap do
             it "#trash" do
                 c = FalkorLib::Bootstrap.trash(dir)
                 t = File.exists?( File.join(dir, FalkorLib.config[:templates][:trashdir], '.gitignore'))
-                t.should be_true
+                t.should be true
                 c.should == 0
             end
 
@@ -68,7 +68,7 @@ describe FalkorLib::Bootstrap do
                 newtrashname = 'tmp/mytrash'
                 c = FalkorLib::Bootstrap.trash(dir,newtrashname)
                 t = File.exists?( File.join(dir, newtrashname, '.gitignore'))
-                t.should be_true
+                t.should be true
                 c.should == 0
             end
 
@@ -83,7 +83,7 @@ describe FalkorLib::Bootstrap do
                 [:versionfile, :gemsetfile].each do |type|
                     f = File.join(dir, FalkorLib.config[:rvm][type.to_sym])
                     t = File.exists?(f)
-                    t.should be_true
+                    t.should be true
                     content[type.to_sym] = `cat #{f}`.chomp
                 end
                 content[:versionfile].should == FalkorLib.config[:rvm][:rubies][0]
@@ -123,7 +123,7 @@ describe FalkorLib::Bootstrap do
                 FalkorLib.config[:no_interaction] = true
                 FalkorLib::Bootstrap.readme(dir, { :no_interaction => true })
                 t = File.exists?(File.join(dir, 'README.md'))
-                t.should be_true
+                t.should be true
                 FalkorLib.config[:no_interaction] = false
             end
 
@@ -139,7 +139,7 @@ describe FalkorLib::Bootstrap do
                                                      :no_interaction => true
                                                  })
                 t = File.exists?(File.join(dir, file))
-                t.should be_true
+                t.should be true
                 v = FalkorLib::Versioning.get_version(dir, { :source => { :filename => file }})
                 v.should == "#{version}"
             end

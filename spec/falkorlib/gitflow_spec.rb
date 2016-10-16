@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Jeu 2015-01-22 15:52 svarrette>
+# Time-stamp: <Sun 2016-10-16 22:06 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -31,21 +31,21 @@ describe FalkorLib::GitFlow do
 
             it "#init? - fails on non-git directory" do
                 t = FalkorLib::GitFlow.init?(dir)
-                t.should be_false
-            end	
+                t.should be false
+            end
 
             it "#init - initialize a git-flow repository" do
                 STDIN.should_receive(:gets).and_return('Yes')
                 i = FalkorLib::GitFlow.init(dir)
                 i.should == 0
                 t = FalkorLib::Git.init?(dir)
-                t.should be_true
+                t.should be true
             end
 
             it "#init? - succeed on git-flow enabled directory" do
                 t = FalkorLib::GitFlow.init?(dir)
-                t.should be_true
-            end	
+                t.should be true
+            end
 
             #['feature', 'hotfix', 'support'].each do |op|
             ['feature'].each do |op|

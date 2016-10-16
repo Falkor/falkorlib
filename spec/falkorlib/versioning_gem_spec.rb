@@ -2,7 +2,7 @@
 #########################################
 # versioning_gem_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Dim 2014-08-31 22:34 svarrette>
+# Time-stamp: <Sun 2016-10-16 22:13 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -37,12 +37,12 @@ describe FalkorLib::Versioning::Gem do
             c[:source]['gem'][:filename]  = "#{versionfile}"
             c[:source]['gem'][:getmethod] = "::TestGemVersion.version"
         end
-	end 
+	end
 
     after :all do
         configatron.temp_end
 		FileUtils.remove_entry_secure dir
-		FalkorLib.config[:versioning][:type] = 'file' 
+		FalkorLib.config[:versioning][:type] = 'file'
         # configatron.temp do
         #     FalkorLib.config.versioning[:type] = 'file'
         # end
@@ -67,7 +67,7 @@ describe FalkorLib::Versioning::Gem do
                     t.should == 0
                 else
                     t = FalkorLib::Git.init(dir)
-                    t.should be_true
+                    t.should be_truthy
                 end
                 expect { FalkorLib::Versioning.get_version(dir) }.to raise_error (NameError)
             end
@@ -84,7 +84,7 @@ describe FalkorLib::Versioning::Gem do
 
             it "initializes the Gem version file #{versionfile} " do
                 t = File.exists?(versionfile_path)
-                t.should be_true
+                t.should be true
                 u = run %{ cat #{versionfile_path} }
                 u.to_i.should == 0
             end

@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Tue 2016-06-28 18:37 svarrette>
+# Time-stamp: <Sun 2016-10-16 22:02 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -77,7 +77,7 @@ describe FalkorLib::Bootstrap do
             motdfile = File.join(dir, 'motd1')
             FalkorLib::Bootstrap.motd(dir, { :file => "#{motdfile}", :no_interaction => true })
             t = File.exists?(motdfile)
-            t.should be_true
+            t.should be true
         end
     end
 

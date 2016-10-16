@@ -122,7 +122,7 @@ describe FalkorLib::Common do
         # Check the command? function
         [ 'sqgfyueztruyjf', 'ruby' ].each do |command|
             it "#command? - check the command '#{command}'" do
-                command?(command).should ((command == 'ruby') ? be_true : be_false)
+                command?(command).should be ((command == 'ruby') ? true : false)
             end
         end
    end
@@ -157,7 +157,7 @@ describe FalkorLib::Common do
 		expect { exec_or_exit "false" }.to raise_error (SystemExit)
 	end
 	it "#exec_or_exit - should NOT exit" do
-		expect { exec_or_exit "true" }.not_to raise_error (SystemExit)
+		expect { exec_or_exit "true" }.not_to raise_error # (SystemExit)
 	end
 
 	it "#execute_in_dir -- should execute the command in /tmp" do
