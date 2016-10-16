@@ -31,20 +31,20 @@ describe FalkorLib::GitFlow do
 
             it "#init? - fails on non-git directory" do
                 t = FalkorLib::GitFlow.init?(dir)
-                t.should be false
+                expect(t).to be false
             end
 
             it "#init - initialize a git-flow repository" do
-                STDIN.should_receive(:gets).and_return('Yes')
+                expect(STDIN).to receive(:gets).and_return('Yes')
                 i = FalkorLib::GitFlow.init(dir)
-                i.should == 0
+                expect(i).to eq(0)
                 t = FalkorLib::Git.init?(dir)
-                t.should be true
+                expect(t).to be true
             end
 
             it "#init? - succeed on git-flow enabled directory" do
                 t = FalkorLib::GitFlow.init?(dir)
-                t.should be true
+                expect(t).to be true
             end
 
             #['feature', 'hotfix', 'support'].each do |op|
@@ -52,17 +52,17 @@ describe FalkorLib::GitFlow do
                 name = 'toto'
                 it "#start -- should start a '#{op}' GitFlow operation" do
                     a = FalkorLib::GitFlow.start(op, name, dir)
-                    a.should == 0
+                    expect(a).to eq(0)
                     br = FalkorLib::Git.branch?( dir )
-                    br.should == "#{op}/#{name}"
+                    expect(br).to eq("#{op}/#{name}")
                 end
 
                 it "#finish -- should finish a '#{op}' GitFlow operation" do
-                    STDIN.should_receive(:gets).and_return("Test #{op} operation") if [ 'hotfix', 'support' ].include?(op)
+                    expect(STDIN).to receive(:gets).and_return("Test #{op} operation") if [ 'hotfix', 'support' ].include?(op)
                     a = FalkorLib::GitFlow.finish(op, name, dir)
-                    a.should == 0
+                    expect(a).to eq(0)
                     br = FalkorLib::Git.branch?( dir )
-                    br.should == FalkorLib.config[:gitflow][:branches][:develop]
+                    expect(br).to eq(FalkorLib.config[:gitflow][:branches][:develop])
                 end
             end
         end

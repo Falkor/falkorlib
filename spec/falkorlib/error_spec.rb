@@ -23,7 +23,7 @@ describe FalkorLib::Error do
                     raise e
                 rescue StandardError => s
                     i = s.status_code
-                    i.should == exceptions.index(e)
+                    expect(i).to eq(exceptions.index(e))
                 end
             end
         end

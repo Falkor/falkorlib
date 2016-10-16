@@ -40,7 +40,7 @@ describe FalkorLib::Puppet::Modules do
 
     it "#init -- create a puppet module" do
       # Prepare answer to the questions
-      Array.new(17).each { |e|  STDIN.should_receive(:gets).and_return('') }
+      Array.new(17).each { |e|  expect(STDIN).to receive(:gets).and_return('') }
       FalkorLib::Puppet::Modules.init(moduledir)
       templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
       s = true
@@ -55,7 +55,7 @@ describe FalkorLib::Puppet::Modules do
         puts "checking #{f} - #{File.exists?( f )}"
         s &= File.exists?( f )
       end
-      s.should be true
+      expect(s).to be true
     end
 
     it "#_getclassdefs -- should failed on unrecogized type" do
@@ -66,7 +66,7 @@ describe FalkorLib::Puppet::Modules do
     it "#classes -- list classes" do
       l = FalkorLib::Puppet::Modules._get_classdefs(moduledir, 'classes')
       c = FalkorLib::Puppet::Modules.classes(moduledir)
-      c.should == l
+      expect(c).to eq(l)
       ref =  [
         "toto::params",
         "toto",
@@ -74,18 +74,18 @@ describe FalkorLib::Puppet::Modules do
         "toto::common::debian",
         "toto::common::redhat"
       ]
-      c.size.should == ref.size
-      c.each { |e| ref.should include(e) }
+      expect(c.size).to eq(ref.size)
+      c.each { |e| expect(ref).to include(e) }
     end
 
     it "#definitions -- list definitions" do
       d = FalkorLib::Puppet::Modules.definitions(moduledir)
-      d.should == [ "toto::mydef" ]
+      expect(d).to eq([ "toto::mydef" ])
     end
 
     it "#deps -- list dependencies" do
       d = FalkorLib::Puppet::Modules.deps(moduledir)
-      d.should == []
+      expect(d).to eq([])
     end
 
     it "#metadata" do
@@ -95,7 +95,7 @@ describe FalkorLib::Puppet::Modules do
                                                        :extras      => false
                                                      })
       ref.keys.each do |k|
-        metadata[k].should == ref[k]
+        expect(metadata[k]).to eq(ref[k])
       end
     end
 
@@ -105,7 +105,7 @@ describe FalkorLib::Puppet::Modules do
       ref = JSON.parse( IO.read( jsonfile ) )
       metadata = FalkorLib::Puppet::Modules.parse(moduledir, { :no_interaction => true })
       diff = (metadata.to_a - ref.to_a).flatten.sort
-      diff.should == [
+      expect(diff).to eq([
         'classes',
         'definitions',
         'toto',
@@ -114,14 +114,14 @@ describe FalkorLib::Puppet::Modules do
         'toto::common::redhat',
         'toto::mydef',
         'toto::params',
-      ]
+      ])
     end
 
     it "#parse again -- should not exhibit any difference" do
       ref = JSON.parse( IO.read( jsonfile ) )
       metadata = FalkorLib::Puppet::Modules.parse(moduledir, { :no_interaction => true })
       diff = (metadata.to_a - ref.to_a).flatten.sort
-      diff.should == []
+      expect(diff).to eq([])
     end
 
     it "#deps -- should find a new dependency" do
@@ -129,22 +129,22 @@ describe FalkorLib::Puppet::Modules do
       newdep = "tata"
       run %{ echo 'include "#{newdep}"' >> #{classfile} }
       a = FalkorLib::Puppet::Modules.deps(moduledir)
-      a.should include newdep
+      expect(a).to include newdep
     end
 
     it "#parse again -- should ask new dependency elements" do
       ref      = JSON.parse( IO.read( jsonfile ) )
-      STDIN.should_receive(:gets).and_return('svarrette')
-      STDIN.should_receive(:gets).and_return('1.2')
-      STDIN.should_receive(:gets).and_return('Yes')
-      STDIN.should_receive(:gets).and_return('')
+      expect(STDIN).to receive(:gets).and_return('svarrette')
+      expect(STDIN).to receive(:gets).and_return('1.2')
+      expect(STDIN).to receive(:gets).and_return('Yes')
+      expect(STDIN).to receive(:gets).and_return('')
       metadata = FalkorLib::Puppet::Modules.parse(moduledir)
       diff = (metadata.to_a - ref.to_a).flatten
-      diff.should == [
+      expect(diff).to eq([
         'dependencies',
         {"name"=>"puppetlabs-stdlib", "version_requirement"=>">=4.2.2 <5.0.0"},
         {"name"=>"svarrette/tata", "version_requirement"=>"1.2"}
-      ]
+      ])
     end
 
     upgraded_files_default = 1
@@ -152,7 +152,7 @@ describe FalkorLib::Puppet::Modules do
       d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
                                                :no_interaction => true
                                              })
-      d.should == upgraded_files_default
+      expect(d).to eq(upgraded_files_default)
     end
 
     it "#upgrade -- with only a subset of files" do
@@ -160,7 +160,7 @@ describe FalkorLib::Puppet::Modules do
                                                :no_interaction => true,
                                                :only => [ 'README.md', 'Gemfile']
                                              })
-      d.should == 0
+      expect(d).to eq(0)
     end
 
     it "#upgrade -- exclude some files" do
@@ -168,7 +168,7 @@ describe FalkorLib::Puppet::Modules do
                                                :no_interaction => true,
                                                :exclude => [ 'README.md']
                                              })
-      d.should == 0
+      expect(d).to eq(0)
       #d.should == (upgraded_files_default - 1)
     end
 
@@ -178,7 +178,7 @@ describe FalkorLib::Puppet::Modules do
                                                :only    => [ 'README.md'],
                                                :exclude => [ 'README.md']
                                              })
-      d.should == 0
+      expect(d).to eq(0)
     end
 
 

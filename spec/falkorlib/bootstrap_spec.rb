@@ -45,9 +45,9 @@ describe FalkorLib::Bootstrap do
             if ctx == :with_git
                 it "initialize Git in the temporary directory #{dir}" do
                     c = FalkorLib::Git.init(dir)
-                    c.should == 0
+                    expect(c).to eq(0)
                     t = FalkorLib::Git.init?(dir)
-                    t.should be true
+                    expect(t).to be true
                 end
             end
 
@@ -55,44 +55,44 @@ describe FalkorLib::Bootstrap do
             it "#trash" do
                 c = FalkorLib::Bootstrap.trash(dir)
                 t = File.exists?( File.join(dir, FalkorLib.config[:templates][:trashdir], '.gitignore'))
-                t.should be true
-                c.should == 0
+                expect(t).to be true
+                expect(c).to eq(0)
             end
 
             it "#trash - repeat on an existing trash dir" do
                 c = FalkorLib::Bootstrap.trash(dir)
-                c.should == 1
+                expect(c).to eq(1)
             end
 
             it "#trash - change target trash dir" do
                 newtrashname = 'tmp/mytrash'
                 c = FalkorLib::Bootstrap.trash(dir,newtrashname)
                 t = File.exists?( File.join(dir, newtrashname, '.gitignore'))
-                t.should be true
-                c.should == 0
+                expect(t).to be true
+                expect(c).to eq(0)
             end
 
             ######### RVM #########
             it "#rvm" do
                 gemset = File.basename(dir)
-                STDIN.should_receive(:gets).and_return('1') if ctx == :without_git
-                STDIN.should_receive(:gets).and_return('')  if ctx == :without_git
+                expect(STDIN).to receive(:gets).and_return('1') if ctx == :without_git
+                expect(STDIN).to receive(:gets).and_return('')  if ctx == :without_git
                 c = FalkorLib::Bootstrap.rvm(dir)
-                c.should == 0
+                expect(c).to eq(0)
                 content = {}
                 [:versionfile, :gemsetfile].each do |type|
                     f = File.join(dir, FalkorLib.config[:rvm][type.to_sym])
                     t = File.exists?(f)
-                    t.should be true
+                    expect(t).to be true
                     content[type.to_sym] = `cat #{f}`.chomp
                 end
-                content[:versionfile].should == FalkorLib.config[:rvm][:rubies][0]
-                content[:gemsetfile].should  == gemset
+                expect(content[:versionfile]).to eq(FalkorLib.config[:rvm][:rubies][0])
+                expect(content[:gemsetfile]).to  eq(gemset)
             end
 
             it "#rvm -- repeat" do
                 c = FalkorLib::Bootstrap.rvm(dir)
-                c.should == 1
+                expect(c).to eq(1)
             end
 
             it "#rvm -- change targets (ctx = #{ctx}; dir = #{dir})" do
@@ -103,15 +103,15 @@ describe FalkorLib::Bootstrap do
                     :gemsetfile  => '.mygemset'
                 }
                 c = FalkorLib::Bootstrap.rvm(dir, opts)
-                c.should == 0
+                expect(c).to eq(0)
                 content = {}
                 [:versionfile, :gemsetfile].each do |type|
                     f = File.join("#{dir}", opts[type.to_sym])
                     t = File.exists?(f)
                     content[type.to_sym] = `cat #{f}`.chomp
                 end
-                content[:versionfile].should == opts[:ruby]
-                content[:gemsetfile].should  == opts[:gemset]
+                expect(content[:versionfile]).to eq(opts[:ruby])
+                expect(content[:gemsetfile]).to  eq(opts[:gemset])
             end
 
 
@@ -123,7 +123,7 @@ describe FalkorLib::Bootstrap do
                 FalkorLib.config[:no_interaction] = true
                 FalkorLib::Bootstrap.readme(dir, { :no_interaction => true })
                 t = File.exists?(File.join(dir, 'README.md'))
-                t.should be true
+                expect(t).to be true
                 FalkorLib.config[:no_interaction] = false
             end
 
@@ -139,9 +139,9 @@ describe FalkorLib::Bootstrap do
                                                      :no_interaction => true
                                                  })
                 t = File.exists?(File.join(dir, file))
-                t.should be true
+                expect(t).to be true
                 v = FalkorLib::Versioning.get_version(dir, { :source => { :filename => file }})
-                v.should == "#{version}"
+                expect(v).to eq("#{version}")
             end
 
         end # context
