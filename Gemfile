@@ -4,7 +4,6 @@ group :development do
   gem "bundler"
   gem "pry"
   gem "rake"
-  gem "thor-zsh_completion"
 end
 
 # group :test do
