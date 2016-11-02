@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-03 00:37 svarrette>
+# Time-stamp: <Thu 2016-11-03 00:39 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -136,6 +136,16 @@ describe FalkorLib::Bootstrap do
         v = FalkorLib::Versioning.get_version(dir, { :source => { :filename => opts[:file] }})
         expect(v).to eq(opts[:version])
       end
+
+      ### Message Of The Day generation
+      it "#motd" do
+        motdfile = File.join(dir, 'motd1')
+        FalkorLib::Bootstrap.motd(dir, { :file => "#{motdfile}", :no_interaction => true })
+        t = File.exists?(motdfile)
+        expect(t).to be true
+      end
+
+
 
       ### README creation
       it "#readme" do

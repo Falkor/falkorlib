@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-02 22:15 svarrette>
+# Time-stamp: <Thu 2016-11-03 00:44 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -16,378 +16,379 @@ require 'facter'
 include FalkorLib::Common
 
 module FalkorLib  #:nodoc:
-    module Config
+  module Config
 
-        # Default configuration for Bootstrapping processes
-        module Bootstrap
-            DEFAULTS =
-              {
-               :motd    => {
-                            :title    => "Title",
-                            :support  => "#{ENV['GIT_AUTHOR_EMAIL']}",
-                            :width    => 80,
-                            :hostname => "`hostname -f`",
-                           },
-               :latex => {
-                          :name     => '',
-                          :author   => %x( git config user.name ).chomp,
-                          :mail     => %x( git config user.email ).chomp,
-                          :title    => 'Title',
-                          :subtitle => 'Overview and Open Challenges',
-                          :image    => 'images/logo_ULHPC.pdf',
-                          :logo     => 'images/logo_UL.pdf',
-                          :url      => 'http://csc.uni.lu/sebastien.varrette'
-                         },
-               :letter => {
-                           :author_title    => 'PhD',
-                           :institute       => 'University of Luxembourg',
-                           :department      => 'Parallel Computing and Optimization Group',
-                           :department_acro => 'PCOG',
-                           :address         => '7, rue Richard Coudenhove-Kalergie',
-                           :zipcode         => 'L-1359',
-                           :location        => 'Luxembourg',
-                           :phone           => '(+352) 46 66 44 6600',
-                           :twitter         => 'svarrette',
-                           :linkedin        => 'svarrette',
-                           :skype           => 'sebastien.varrette',
-                           :scholar         => '6PTStIcAAAAJ'
-                          },
-               :metadata => {
-                             :name         => '',
-                             :type         => [],
-                             :by           => "#{ENV['USER']}",
-                             :author       => "#{ENV['GIT_AUTHOR_NAME']}",
-                             :mail         => "#{ENV['GIT_AUTHOR_EMAIL']}",
-                             :summary      => "rtfm",
-                             :description  => '',
-                             :forge        => '',
-                             :source       => '',
-                             :project_page => '',
-                             :origin       => '',
-                             :license      => '',
-                             :issues_url   => '',
-                             :tags         => []
-                            },
-               :trashdir => '.Trash',
-               :types    => [ :none, :latex, :gem, :octopress, :puppet_module, :rvm, :pyenv ],
-               :licenses => {
-                             "none"       => {},
-                             "Apache-2.0" => {
-                                              :url  => "http://www.apache.org/licenses/LICENSE-2.0",
-                                              :logo => "https://www.apache.org/images/feather-small.gif"
-                                             },
-                             "BSD"        => {
-                                              :url  => "http://www.linfo.org/bsdlicense.html",
-                                              :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/License_icon-bsd.svg/200px-License_icon-bsd.svg.png"
-                                             },
-                             "CC by-nc-sa" => {
-                                               :name => "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
-                                               :url  => "http://creativecommons.org/licenses/by-nc-sa/4.0",
-                                               :logo => "https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"
-                                              },
-                             "GPL-2.0"    => {
-                                              :url  => "http://www.gnu.org/licenses/gpl-2.0.html",
-                                              :logo => "https://licensebuttons.net/l/GPL/2.0/88x62.png"
-                                             },
-                             "GPL-3.0"    => {
-                                              :url  => "http://www.gnu.org/licenses/gpl-3.0.html",
-                                              :logo => "https://www.gnu.org/graphics/gplv3-88x31.png",
-                                             },
-                             "LGPL-2.1"   => {
-                                              :url  => "https://www.gnu.org/licenses/lgpl-2.1.html",
-                                              :logo => "https://licensebuttons.net/l/LGPL/2.1/88x62.png",
-                                             },
-                             "LGPL-3.0"   => {
-                                              :url  => "https://www.gnu.org/licenses/lgpl.html",
-                                              :logo => "https://www.gnu.org/graphics/lgplv3-88x31.png",
-                                             },
-                             "MIT"        => {
-                                              :url  => "http://opensource.org/licenses/MIT",
-                                              :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/License_icon-mit-2.svg/200px-License_icon-mit-2.svg.png"
-                                             },
-                            },
-               :puppet   => {},
-               :forge => {
-                          :none   => { :url => '', :name => "None"},
-                          :gforge => { :url => 'gforge.uni.lu', :name => 'GForge @ Uni.lu' },
-                          :github => { :url => 'github.com',    :name => 'Github', :login => "#{`whoami`.chomp.capitalize}" },
-                          :gitlab => { :url => 'gitlab.uni.lu', :name => 'Gitlab @ Uni.lu', :login => "#{`whoami`.chomp.capitalize}" },
-                         },
-              }
-        end
+    # Default configuration for Bootstrapping processes
+    module Bootstrap
+      DEFAULTS =
+        {
+          :motd    => {
+            :file     => 'motd',
+            :title    => "Title",
+            :support  => %x( git config user.email ).chomp,
+            :width    => 80,
+            :hostname => "`hostname -f`",
+          },
+          :latex => {
+            :name     => '',
+            :author   => %x( git config user.name ).chomp,
+            :mail     => %x( git config user.email ).chomp,
+            :title    => 'Title',
+            :subtitle => 'Overview and Open Challenges',
+            :image    => 'images/logo_ULHPC.pdf',
+            :logo     => 'images/logo_UL.pdf',
+            :url      => 'http://csc.uni.lu/sebastien.varrette'
+          },
+          :letter => {
+            :author_title    => 'PhD',
+            :institute       => 'University of Luxembourg',
+            :department      => 'Parallel Computing and Optimization Group',
+            :department_acro => 'PCOG',
+            :address         => '7, rue Richard Coudenhove-Kalergie',
+            :zipcode         => 'L-1359',
+            :location        => 'Luxembourg',
+            :phone           => '(+352) 46 66 44 6600',
+            :twitter         => 'svarrette',
+            :linkedin        => 'svarrette',
+            :skype           => 'sebastien.varrette',
+            :scholar         => '6PTStIcAAAAJ'
+          },
+          :metadata => {
+            :name         => '',
+            :type         => [],
+            :by           => "#{ENV['USER']}",
+            :author       => %x( git config user.name ).chomp,
+            :mail         => %x( git config user.email ).chomp,
+            :summary      => "rtfm",
+            :description  => '',
+            :forge        => '',
+            :source       => '',
+            :project_page => '',
+            :origin       => '',
+            :license      => '',
+            :issues_url   => '',
+            :tags         => []
+          },
+          :trashdir => '.Trash',
+          :types    => [ :none, :latex, :gem, :octopress, :puppet_module, :rvm, :pyenv ],
+          :licenses => {
+            "none"       => {},
+            "Apache-2.0" => {
+              :url  => "http://www.apache.org/licenses/LICENSE-2.0",
+              :logo => "https://www.apache.org/images/feather-small.gif"
+            },
+            "BSD"        => {
+              :url  => "http://www.linfo.org/bsdlicense.html",
+              :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/License_icon-bsd.svg/200px-License_icon-bsd.svg.png"
+            },
+            "CC by-nc-sa" => {
+              :name => "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+              :url  => "http://creativecommons.org/licenses/by-nc-sa/4.0",
+              :logo => "https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"
+            },
+            "GPL-2.0"    => {
+              :url  => "http://www.gnu.org/licenses/gpl-2.0.html",
+              :logo => "https://licensebuttons.net/l/GPL/2.0/88x62.png"
+            },
+            "GPL-3.0"    => {
+              :url  => "http://www.gnu.org/licenses/gpl-3.0.html",
+              :logo => "https://www.gnu.org/graphics/gplv3-88x31.png",
+            },
+            "LGPL-2.1"   => {
+              :url  => "https://www.gnu.org/licenses/lgpl-2.1.html",
+              :logo => "https://licensebuttons.net/l/LGPL/2.1/88x62.png",
+            },
+            "LGPL-3.0"   => {
+              :url  => "https://www.gnu.org/licenses/lgpl.html",
+              :logo => "https://www.gnu.org/graphics/lgplv3-88x31.png",
+            },
+            "MIT"        => {
+              :url  => "http://opensource.org/licenses/MIT",
+              :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/License_icon-mit-2.svg/200px-License_icon-mit-2.svg.png"
+            },
+          },
+          :puppet   => {},
+          :forge => {
+            :none   => { :url => '', :name => "None"},
+            :gforge => { :url => 'gforge.uni.lu', :name => 'GForge @ Uni.lu' },
+            :github => { :url => 'github.com',    :name => 'Github', :login => "#{`whoami`.chomp.capitalize}" },
+            :gitlab => { :url => 'gitlab.uni.lu', :name => 'Gitlab @ Uni.lu', :login => "#{`whoami`.chomp.capitalize}" },
+          },
+        }
     end
+  end
 end
 
 
 
 module FalkorLib
-    module Bootstrap
-        module_function
+  module Bootstrap
+    module_function
 
-        ###
-        # Initialize a trash directory in path
-        ##
-        def trash(path = Dir.pwd, dirname = FalkorLib.config[:templates][:trashdir], options = {})
-            #args = method(__method__).parameters.map { |arg| arg[1].to_s }.map { |arg| { arg.to_sym => eval(arg) } }.reduce Hash.new, :merge
-            #ap args
-            exit_status = 0
-            trashdir = File.join(File.realpath(path), dirname)
-            if Dir.exists?(trashdir)
-                warning "The trash directory '#{dirname}' already exists"
-                return 1
-            end
-            Dir.chdir(path) do
-                info "creating the trash directory '#{dirname}'"
-                exit_status = run %{
+    ###
+    # Initialize a trash directory in path
+    ##
+    def trash(path = Dir.pwd, dirname = FalkorLib.config[:templates][:trashdir], options = {})
+      #args = method(__method__).parameters.map { |arg| arg[1].to_s }.map { |arg| { arg.to_sym => eval(arg) } }.reduce Hash.new, :merge
+      #ap args
+      exit_status = 0
+      trashdir = File.join(File.realpath(path), dirname)
+      if Dir.exists?(trashdir)
+        warning "The trash directory '#{dirname}' already exists"
+        return 1
+      end
+      Dir.chdir(path) do
+        info "creating the trash directory '#{dirname}'"
+        exit_status = run %{
           mkdir -p #{dirname}
           echo '*' > #{dirname}/.gitignore
                 }
-                if FalkorLib::Git.init?(path)
-                    exit_status = FalkorLib::Git.add(File.join("#{trashdir}", '.gitignore' ),
-                                                     'Add Trash directory',
-                                                     { :force => true } )
-                end
-            end
-            exit_status.to_i
-        end # trash
+        if FalkorLib::Git.init?(path)
+          exit_status = FalkorLib::Git.add(File.join("#{trashdir}", '.gitignore' ),
+                                           'Add Trash directory',
+                                           { :force => true } )
+        end
+      end
+      exit_status.to_i
+    end # trash
 
-        ###### versionfile ######
-        # Bootstrap a VERSION file at the root of a project
-        # Supported options:
-        # * :file    [string] filename
-        # * :version [string] version to mention in the file
-        ##
-        def versionfile(dir = Dir.pwd, options = {})
-            file    = options[:file]    ? options[:file]    : 'VERSION'
-            version = options[:version] ? options[:version] : '0.0.0'
-            info " ==> bootstrapping a VERSION file"
-            path = normalized_path(dir)
-            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
-            unless Dir.exists?( path )
-                warning "The directory #{path} does not exists and will be created"
-                really_continue?
-                FileUtils.mkdir_p path
-            end
-            versionfile = File.join(path, file)
-            unless File.exists?( versionfile )
-                FalkorLib::Versioning.set_version(version, path, {
-                                                                  :type => 'file',
-                                                                  :source => { :filename => file }
-                                                                 })
-                Dir.chdir( path ) do
-                    run %{ git tag #{options[:tag]} } if options[:tag]
-                end
-            else
-                puts "  ... not overwriting the #{file} file which already exists"
-            end
+    ###### versionfile ######
+    # Bootstrap a VERSION file at the root of a project
+    # Supported options:
+    # * :file    [string] filename
+    # * :version [string] version to mention in the file
+    ##
+    def versionfile(dir = Dir.pwd, options = {})
+      file    = options[:file]    ? options[:file]    : 'VERSION'
+      version = options[:version] ? options[:version] : '0.0.0'
+      info " ==> bootstrapping a VERSION file"
+      path = normalized_path(dir)
+      path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+      unless Dir.exists?( path )
+        warning "The directory #{path} does not exists and will be created"
+        really_continue?
+        FileUtils.mkdir_p path
+      end
+      versionfile = File.join(path, file)
+      unless File.exists?( versionfile )
+        FalkorLib::Versioning.set_version(version, path, {
+                                            :type => 'file',
+                                            :source => { :filename => file }
+                                          })
+        Dir.chdir( path ) do
+          run %{ git tag #{options[:tag]} } if options[:tag]
+        end
+      else
+        puts "  ... not overwriting the #{file} file which already exists"
+      end
 
-            # unless File.exists?( versionfile )
-            #     run %{  echo "#{version}" > #{versionfile} }
-            #     if FalkorLib::Git.init?(path)
-            #         FalkorLib::Git.add(versionfile, "Initialize #{file} file")
-            #         Dir.chdir( path ) do
-            #             run %{ git tag #{options[:tag]} } if options[:tag]
-            #         end
-            #     end
-            # else
-            #     puts "  ... not overwriting the #{file} file which already exists"
-            # end
-        end # versionfile
-
-
-        ###### motd ######
-        # Generate a new motd (Message of the Day) file
-        # Supported options:
-        #  * :force [boolean] force action
-        ##
-        def motd(dir = Dir.pwd, options = {})
-            config = FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
-            path = normalized_path(dir)
-            erbfile = File.join( FalkorLib.templates, 'motd', 'motd.erb')
-            outfile = (options[:file] =~ /^\//) ? options[:file] : File.join(path, options[:file])
-            info "Generate a motd (Message of the Day) file '#{outfile}'"
-            config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
-            config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
-            write_from_erb_template(erbfile, outfile, config, options)
-        end # motd
+      # unless File.exists?( versionfile )
+      #     run %{  echo "#{version}" > #{versionfile} }
+      #     if FalkorLib::Git.init?(path)
+      #         FalkorLib::Git.add(versionfile, "Initialize #{file} file")
+      #         Dir.chdir( path ) do
+      #             run %{ git tag #{options[:tag]} } if options[:tag]
+      #         end
+      #     end
+      # else
+      #     puts "  ... not overwriting the #{file} file which already exists"
+      # end
+    end # versionfile
 
 
-
-        ###### readme ######
-        # Bootstrap a README file for various context
-        # Supported options:
-        #  * :no_interaction [boolean]: do not interact
-        #  * :force     [boolean] force overwritting
-        #  * :latex     [boolean] describe a LaTeX project
-        #  * :octopress [boolean] octopress site
-        ##
-        def readme(dir = Dir.pwd, options = {})
-            info "Bootstrap a README file for this project"
-            # get the local configuration
-            local_config = FalkorLib::Config.get(dir)
-            config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
-            name = get_project_name(dir)
-            if local_config[:project]
-                config.deep_merge!( local_config[:project])
-            else
-                config[:name]     = ask("\tProject name: ", name) unless options[:name]
-            end
-            if options[:rake]
-                options[:make] = false
-                options[:rvm]  = true
-            end
-            config[:type] << :rvm  if options[:rake]
-            # Type of project
-            config[:type] << :latex if options[:latex]
-            if config[:type].empty?
-                t = select_from( FalkorLib::Config::Bootstrap::DEFAULTS[:types],
-                                'Select the type of project to describe:', 1)
-                config[:type] << t
-                config[:type] << [ :ruby, :rvm ] if [ :gem, :rvm, :octopress, :puppet_module ].include?( t )
-                config[:type] << :python if t == :pyenv
-            end
-            config[:type].uniq!
-            ap config
-            config[:type] = config[:type].uniq.flatten
-            # Apply options (if provided)
-            [ :name, :forge ].each do |k|
-                config[k.to_sym] = options[k.to_sym] if options[k.to_sym]
-            end
-            path = normalized_path(dir)
-            config[:filename] = options[:filename] ? options[:filename] : File.join(path, 'README.md')
-            if ( FalkorLib::Git.init?(dir) && FalkorLib::Git.remotes(dir).include?( 'origin' ))
-                config[:origin] = FalkorLib::Git.config('remote.origin.url')
-                if config[:origin] =~ /((gforge|gitlab|github)[\.\w_-]+)[:\d\/]+(\w*)/
-                    config[:forge] = $2.to_sym
-                    config[:by]    = $3
-                end
-            else
-                config[:forge] = select_forge(config[:forge]).to_sym if config[:forge].empty?
-            end
-            forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ]
-            #ap config
-            default_source = case config[:forge]
-                             when :gforge
-                                 'https://' + forges[:url] + "/projects/" + name.downcase
-                             when :github, :gitlab
-                                 'https://' + forges[:url] + "/" + config[:by] + "/" + name.downcase
-                             else
-                                 ""
-                             end
-            FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].each do |k,v|
-                next if v.kind_of?(Array) or [ :license, :forge ].include?( k )
-                next if k == :name and ! config[:name].empty?
-                next if k == :issues_url and ! [ :github, :gitlab ].include?( config[:forge] )
-                #next unless [ :name, :summary, :description ].include?(k.to_sym)
-                default_answer = case k
-                                 when :author
-                                     (config[:by] == 'ULHPC') ? 'UL HPC Management Team' : config[:author]
-                                 when :mail
-                                     (config[:by] == 'ULHPC') ? 'hpc-sysadmins@uni.lu'   : config[:mail]
-                                 when :description
-                                     config[:description].empty? ? "#{config[:summary]}" : "#{config[:description]}"
-                                 when :source
-                                     config[:source].empty? ? default_source : "#{config[:source]}"
-                                 when :project_page
-                                     config[:source].empty? ? v : config[:source]
-                                 when :issues_url
-                                     config[:project_page].empty? ? v : "#{config[:project_page]}/issues"
-                                 else
-                                     config[k.to_sym].empty? ? v : config[k.to_sym]
-                                 end
-                config[k.to_sym] = ask( "\t" + sprintf("Project %-20s", "#{k}"), default_answer)
-            end
-            tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
-            config[:tags]    = tags.split(',')
-            config[:license] = select_licence() if config[:license].empty?
-            # stack the ERB files required to generate the README
-            templatedir = File.join( FalkorLib.templates, 'README')
-            erbfiles = [ 'header_readme.erb',  ]
-            [ :latex ].each do |type|
-                erbfiles << "readme_#{type}.erb" if options[type.to_sym] and File.exist?( File.join(templatedir, "readme_#{type}.erb"))
-            end
-            erbfiles << "readme_issues.erb"
-            erbfiles << "readme_git.erb"     if FalkorLib::Git.init?(dir)
-            erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
-            erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)
-            erbfiles << "footer_readme.erb"
-
-            content = ""
-            erbfiles.each do |f|
-                erbfile = File.join(templatedir, f)
-                content += ERB.new(File.read("#{erbfile}"), nil, '<>').result(binding)
-            end
-            show_diff_and_write(content, config[:filename], options)
-
-            # Eventually save/upgrade local config
-            info "=> saving customization of the FalkorLib configuration in #{FalkorLib.config[:config_files][:local]}"
-            really_continue?
-            FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].keys.each do |k|
-                local_config[:project] = {} unless local_config[:project]
-                local_config[:project][k.to_sym] = config[k.to_sym]
-            end
-            if FalkorLib::GitFlow.init?(dir)
-                local_config[:gitflow]  = {} unless local_config[:gitflow]
-                local_config[:gitflow][:branches] = FalkorLib.config[:gitflow][:branches].clone unless local_config[:gitflow][:branches]
-                [ :master, :develop ].each do |b|
-                    local_config[:gitflow][:branches][b.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
-                end
-            end
-            FalkorLib::Config.save(dir, local_config, :local)
-            #
-        end # readme
+    ###### motd ######
+    # Generate a new motd (Message of the Day) file
+    # Supported options:
+    #  * :force [boolean] force action
+    ##
+    def motd(dir = Dir.pwd, options = {})
+      config = FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
+      path = normalized_path(dir)
+      erbfile = File.join( FalkorLib.templates, 'motd', 'motd.erb')
+      outfile = (options[:file] =~ /^\//) ? options[:file] : File.join(path, options[:file])
+      info "Generate a motd (Message of the Day) file '#{outfile}'"
+      config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
+      config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
+      write_from_erb_template(erbfile, outfile, config, options)
+    end # motd
 
 
-        ###
-        # Select the forge (gforge, github, etc.) hosting the project sources
-        ##
-        def select_forge(default = :gforge, options = {})
-            forge = FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
-            #ap forge
-            default_idx = forge.keys.index(default)
-            default_idx = 0 if default_idx.nil?
-            v = select_from(forge.map{ |k,v| v[:name] },
-                            "Select the Forge hosting the project sources",
-                            default_idx+1,
-                            forge.keys)
-            v
-        end # select_forge
 
-        ###### select_licence ######
-        # Select a given licence for the project
-        ##
-        def select_licence(default_licence = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:license],
-                           options = {})
-            list_license    = FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys
-            idx = list_license.index(default_licence) unless default_licence.nil?
-            select_from(list_license,
-                        'Select the license index for this project:',
-                        idx.nil? ? 1 : idx + 1)
-            #licence
-        end # select_licence
+    ###### readme ######
+    # Bootstrap a README file for various context
+    # Supported options:
+    #  * :no_interaction [boolean]: do not interact
+    #  * :force     [boolean] force overwritting
+    #  * :latex     [boolean] describe a LaTeX project
+    #  * :octopress [boolean] octopress site
+    ##
+    def readme(dir = Dir.pwd, options = {})
+      info "Bootstrap a README file for this project"
+      # get the local configuration
+      local_config = FalkorLib::Config.get(dir)
+      config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
+      name = get_project_name(dir)
+      if local_config[:project]
+        config.deep_merge!( local_config[:project])
+      else
+        config[:name]     = ask("\tProject name: ", name) unless options[:name]
+      end
+      if options[:rake]
+        options[:make] = false
+        options[:rvm]  = true
+      end
+      config[:type] << :rvm  if options[:rake]
+      # Type of project
+      config[:type] << :latex if options[:latex]
+      if config[:type].empty?
+        t = select_from( FalkorLib::Config::Bootstrap::DEFAULTS[:types],
+                         'Select the type of project to describe:', 1)
+        config[:type] << t
+        config[:type] << [ :ruby, :rvm ] if [ :gem, :rvm, :octopress, :puppet_module ].include?( t )
+        config[:type] << :python if t == :pyenv
+      end
+      config[:type].uniq!
+      ap config
+      config[:type] = config[:type].uniq.flatten
+      # Apply options (if provided)
+      [ :name, :forge ].each do |k|
+        config[k.to_sym] = options[k.to_sym] if options[k.to_sym]
+      end
+      path = normalized_path(dir)
+      config[:filename] = options[:filename] ? options[:filename] : File.join(path, 'README.md')
+      if ( FalkorLib::Git.init?(dir) && FalkorLib::Git.remotes(dir).include?( 'origin' ))
+        config[:origin] = FalkorLib::Git.config('remote.origin.url')
+        if config[:origin] =~ /((gforge|gitlab|github)[\.\w_-]+)[:\d\/]+(\w*)/
+          config[:forge] = $2.to_sym
+          config[:by]    = $3
+        end
+      else
+        config[:forge] = select_forge(config[:forge]).to_sym if config[:forge].empty?
+      end
+      forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ]
+      #ap config
+      default_source = case config[:forge]
+                       when :gforge
+                         'https://' + forges[:url] + "/projects/" + name.downcase
+                       when :github, :gitlab
+                         'https://' + forges[:url] + "/" + config[:by] + "/" + name.downcase
+                       else
+                         ""
+                       end
+      FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].each do |k,v|
+        next if v.kind_of?(Array) or [ :license, :forge ].include?( k )
+        next if k == :name and ! config[:name].empty?
+        next if k == :issues_url and ! [ :github, :gitlab ].include?( config[:forge] )
+        #next unless [ :name, :summary, :description ].include?(k.to_sym)
+        default_answer = case k
+                         when :author
+                           (config[:by] == 'ULHPC') ? 'UL HPC Management Team' : config[:author]
+                         when :mail
+                           (config[:by] == 'ULHPC') ? 'hpc-sysadmins@uni.lu'   : config[:mail]
+                         when :description
+                           config[:description].empty? ? "#{config[:summary]}" : "#{config[:description]}"
+                         when :source
+                           config[:source].empty? ? default_source : "#{config[:source]}"
+                         when :project_page
+                           config[:source].empty? ? v : config[:source]
+                         when :issues_url
+                           config[:project_page].empty? ? v : "#{config[:project_page]}/issues"
+                         else
+                           config[k.to_sym].empty? ? v : config[k.to_sym]
+                         end
+        config[k.to_sym] = ask( "\t" + sprintf("Project %-20s", "#{k}"), default_answer)
+      end
+      tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
+      config[:tags]    = tags.split(',')
+      config[:license] = select_licence() if config[:license].empty?
+      # stack the ERB files required to generate the README
+      templatedir = File.join( FalkorLib.templates, 'README')
+      erbfiles = [ 'header_readme.erb',  ]
+      [ :latex ].each do |type|
+        erbfiles << "readme_#{type}.erb" if options[type.to_sym] and File.exist?( File.join(templatedir, "readme_#{type}.erb"))
+      end
+      erbfiles << "readme_issues.erb"
+      erbfiles << "readme_git.erb"     if FalkorLib::Git.init?(dir)
+      erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
+      erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)
+      erbfiles << "footer_readme.erb"
 
-        ###### get_badge ######
-        # Return a Markdown-formatted string for a badge to display, typically in a README.
-        # Based on http://shields.io/
-        # Supported options:
-        #  * :style [string] style of the badge, Elligible: ['plastic', 'flat', 'flat-square']
-        ##
-        def get_badge(subject, status, color = 'blue', options = {})
-            st = status.gsub(/-/, '--').gsub(/_/, '__')
-            res = "https://img.shields.io/badge/#{subject}-#{st}-#{color}.svg"
-            res += "?style=#{options[:style]}" if options[:style]
-            res
-        end # get_licence_badge
+      content = ""
+      erbfiles.each do |f|
+        erbfile = File.join(templatedir, f)
+        content += ERB.new(File.read("#{erbfile}"), nil, '<>').result(binding)
+      end
+      show_diff_and_write(content, config[:filename], options)
 
-        ###### get_project_name ######
-        # Return a "reasonable" project name from a given [sub] directory i.e. its basename
-        ##
-        def get_project_name(dir = Dir.pwd, options = {})
-            path = normalized_path(dir)
-            path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
-            File.basename(path)
-        end # get_project_name
+      # Eventually save/upgrade local config
+      info "=> saving customization of the FalkorLib configuration in #{FalkorLib.config[:config_files][:local]}"
+      really_continue?
+      FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].keys.each do |k|
+        local_config[:project] = {} unless local_config[:project]
+        local_config[:project][k.to_sym] = config[k.to_sym]
+      end
+      if FalkorLib::GitFlow.init?(dir)
+        local_config[:gitflow]  = {} unless local_config[:gitflow]
+        local_config[:gitflow][:branches] = FalkorLib.config[:gitflow][:branches].clone unless local_config[:gitflow][:branches]
+        [ :master, :develop ].each do |b|
+          local_config[:gitflow][:branches][b.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
+        end
+      end
+      FalkorLib::Config.save(dir, local_config, :local)
+      #
+    end # readme
 
 
-    end # module Bootstrap
+    ###
+    # Select the forge (gforge, github, etc.) hosting the project sources
+    ##
+    def select_forge(default = :gforge, options = {})
+      forge = FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
+      #ap forge
+      default_idx = forge.keys.index(default)
+      default_idx = 0 if default_idx.nil?
+      v = select_from(forge.map{ |k,v| v[:name] },
+                      "Select the Forge hosting the project sources",
+                      default_idx+1,
+                      forge.keys)
+      v
+    end # select_forge
+
+    ###### select_licence ######
+    # Select a given licence for the project
+    ##
+    def select_licence(default_licence = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:license],
+                       options = {})
+      list_license    = FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys
+      idx = list_license.index(default_licence) unless default_licence.nil?
+      select_from(list_license,
+                  'Select the license index for this project:',
+                  idx.nil? ? 1 : idx + 1)
+      #licence
+    end # select_licence
+
+    ###### get_badge ######
+    # Return a Markdown-formatted string for a badge to display, typically in a README.
+    # Based on http://shields.io/
+    # Supported options:
+    #  * :style [string] style of the badge, Elligible: ['plastic', 'flat', 'flat-square']
+    ##
+    def get_badge(subject, status, color = 'blue', options = {})
+      st = status.gsub(/-/, '--').gsub(/_/, '__')
+      res = "https://img.shields.io/badge/#{subject}-#{st}-#{color}.svg"
+      res += "?style=#{options[:style]}" if options[:style]
+      res
+    end # get_licence_badge
+
+    ###### get_project_name ######
+    # Return a "reasonable" project name from a given [sub] directory i.e. its basename
+    ##
+    def get_project_name(dir = Dir.pwd, options = {})
+      path = normalized_path(dir)
+      path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+      File.basename(path)
+    end # get_project_name
+
+
+  end # module Bootstrap
 end # module FalkorLib
