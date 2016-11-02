@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2016-02-02 20:58 svarrette>
+# Time-stamp: <Wed 2016-11-02 22:20 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -47,11 +47,11 @@ module FalkorLib  #:nodoc:
         def has_commits?(path)
 	        res = false
 	        Dir.chdir(path) do
-		        stdout, stderr, exit_status = Open3.capture3( "git rev-parse HEAD" ) 
+		        stdout, stderr, exit_status = Open3.capture3( "git rev-parse HEAD" )
 		        res = (exit_status == 0)
 	        end
 	        res
-        end 
+        end
 
         ## Check the availability of a given git command
         def command?(cmd)
@@ -84,7 +84,7 @@ module FalkorLib  #:nodoc:
 
         ###
         # Initialize a git repository
-        ## 
+        ##
         def init(path = Dir.pwd, options = {})
             # FIXME for travis test: ensure the global git configurations
             # 'user.email' and 'user.name' are set
@@ -130,11 +130,11 @@ module FalkorLib  #:nodoc:
         def create_branch(branch, path = Dir.pwd)
 	        #ap method(__method__).parameters.map { |arg| arg[1] }
 	        g = MiniGit.new(path)
-	        error "not yet any commit performed -- You shall do one" unless has_commits?(path) 
+	        error "not yet any commit performed -- You shall do one" unless has_commits?(path)
             g.branch "#{branch}"
         end
 
-        # Delete a branch. 
+        # Delete a branch.
         def delete_branch(branch, path = Dir.pwd, opts = { :force => false })
             g = MiniGit.new(path)
 	        error "'#{branch}' is not a valid existing branch" unless list_branch(path).include?( branch )
@@ -166,7 +166,7 @@ module FalkorLib  #:nodoc:
           res
         end
 
-        
+
         ## Fetch the latest changes
         def fetch(path = Dir.pwd)
             Dir.chdir( path ) do
@@ -236,24 +236,24 @@ module FalkorLib  #:nodoc:
         def list_files(path = Dir.pwd)
 	        g = MiniGit.new(path)
 	        g.capturing.ls_files.split
-        end 
+        end
 
         ## Add a file/whatever to Git and commit it
         # Supported options:
         # * :force [boolean]: force the add
         def add(path, msg = "", options = {})
 	        exit_status = 0
-            dir  = File.realpath File.dirname(path)
-            root = rootdir(path)
-            relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
-            real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
-            opts = '-f' if options[:force]
-            Dir.chdir( dir ) do
+          dir  = File.realpath (File.dirname(path))
+          root = rootdir(path)
+          relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
+          real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
+          opts = '-f' if options[:force]
+          Dir.chdir( dir ) do
 		        exit_status = run %{
                   git add #{opts} #{path}
                   git commit -s -m "#{real_msg}" #{path}
                 }
-            end
+          end
 	        exit_status.to_i
         end
 
@@ -284,7 +284,7 @@ module FalkorLib  #:nodoc:
         ## remotes?(path = Dir.pw)
         def remotes?(path = Dir.pwd)
 	        return ! remotes(path).empty?
-        end 
+        end
 
         ###
         # Initialize git submodule from the configuration
@@ -321,7 +321,7 @@ module FalkorLib  #:nodoc:
 
         ## Update the Git submodules to the **local** registered version
         def submodule_update(path = Dir.pwd)
-	        execute_in_dir(rootdir(path), 
+	        execute_in_dir(rootdir(path),
 	                       %{
                    git submodule init
                    git submodule foreach git fetch
@@ -331,10 +331,10 @@ module FalkorLib  #:nodoc:
 
         ## Upgrade the Git submodules to the latest HEAD version from the remote
         def submodule_upgrade(path = Dir.pwd)
-	         execute_in_dir(rootdir(path), 
+	         execute_in_dir(rootdir(path),
 	                       %{
                    git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); git submodule update --recursive; git clean -dfx'
-             })	        
+             })
         end
 
 
@@ -372,8 +372,8 @@ module FalkorLib  #:nodoc:
         ## Actually based on a naive check of sub-directory existence
         def subtree_init?(path = Dir.pwd)
 	        res = true
-	        FalkorLib.config.git[:subtrees].keys.each do |dir| 
-		        res = res && File.directory?(File.join(path, dir)) 
+	        FalkorLib.config.git[:subtrees].keys.each do |dir|
+		        res = res && File.directory?(File.join(path, dir))
 	        end
 	        res
         end # subtree_init?
@@ -446,8 +446,8 @@ module FalkorLib  #:nodoc:
             end
         end
 
-        
-        
+
+
 
 
 

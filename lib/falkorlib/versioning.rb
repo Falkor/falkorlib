@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Dim 2015-01-25 16:04 svarrette>
+# Time-stamp: <Thu 2016-11-03 00:32 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -72,13 +72,16 @@ module FalkorLib #:nodoc:
         # * :default [string] default version
         # * :type    in ['file','gem','puppet_module'] type of versionning mechanism
         # * :source  [Hash] information on the way to retrieve the information
-        def get_version(rootdir = Dir.pwd, options = {})
+        def get_version(path = Dir.pwd, options = {})
+          rootdir = normalized_path(path)
             version = options[:default] ? options[:default] : FalkorLib.config[:versioning][:default]
             type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
             source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
+            puts "type = '#{type}'"
             case type
             when 'file'
-                versionfile = File.join( rootdir, source[:filename] )
+              versionfile = File.join( rootdir, source[:filename] )
+              puts "versionfile = '#{versionfile}'"
                 version = File.read( versionfile ).chomp if File.exist? ( versionfile )
             when 'gem'
                 getmethod = source[:getmethod ]

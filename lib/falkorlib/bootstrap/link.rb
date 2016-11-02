@@ -1,11 +1,13 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-10-15 22:55 svarrette>
+# Time-stamp: <Tue 2016-11-01 10:08 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
 require "falkorlib"
 require "falkorlib/common"
+require "falkorlib/bootstrap"
+
 require 'erb'      # required for module generation
 require 'artii'
 require 'facter'
