@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-03 00:23 svarrette>
+# Time-stamp: <Thu 2016-11-03 21:38 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -21,14 +21,13 @@ describe FalkorLib::Bootstrap do
   dir = Dir.mktmpdir
 
   before :all do
-    #$stdout.sync = true
-    t = FalkorLib::Git.init(dir)
+    $stdout.sync = true
     #FalkorLib.config[:no_interaction] = true
   end
 
   after :all do
     FileUtils.remove_entry_secure dir
-    FalkorLib.config[:no_interaction] = false
+    #FalkorLib.config[:no_interaction] = false
   end
 
   context 'helper functions' do

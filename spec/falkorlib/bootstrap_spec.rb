@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-03 00:39 svarrette>
+# Time-stamp: <Thu 2016-11-03 22:50 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -30,7 +30,7 @@ describe FalkorLib::Bootstrap do
 
   after :all do
     dirs.each do |t,d|
-      #next if t == :with_git
+      next if t == :with_git
       FileUtils.remove_entry_secure d
     end
     FalkorLib.config[:no_interaction] = false
@@ -139,23 +139,23 @@ describe FalkorLib::Bootstrap do
 
       ### Message Of The Day generation
       it "#motd" do
-        motdfile = File.join(dir, 'motd1')
-        FalkorLib::Bootstrap.motd(dir, { :file => "#{motdfile}", :no_interaction => true })
+        motdfile = File.join(dir, 'motd')
+        FalkorLib::Bootstrap.motd(dir, { :no_interaction => true })
         t = File.exists?(motdfile)
         expect(t).to be true
       end
 
 
 
-      ### README creation
-      it "#readme" do
-        #Array.new(6).each { |e|  STDIN.should_receive(:gets).and_return('') }
-        #STDIN.should_receive(:gets).and_return('')
-        #STDIN.should_receive(:gets).and_return('1')
-        FalkorLib::Bootstrap.readme(dir, { :no_interaction => true })
-        t = File.exists?(File.join(dir, 'README.md'))
-        expect(t).to be true
-      end
+      # ### README creation
+      # it "#readme" do
+      #   #Array.new(6).each { |e|  STDIN.should_receive(:gets).and_return('') }
+      #   #STDIN.should_receive(:gets).and_return('')
+      #   #STDIN.should_receive(:gets).and_return('1')
+      #   FalkorLib::Bootstrap.readme(dir, { :no_interaction => true })
+      #   t = File.exists?(File.join(dir, 'README.md'))
+      #   expect(t).to be true
+      # end
 
     end # context "bootstrap/base"
   end # each

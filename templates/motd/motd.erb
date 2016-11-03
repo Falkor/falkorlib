@@ -8,10 +8,11 @@ Welcome to <%= config[:hostname].chomp %>
 <%= ("=" * config[:width]) + "\n" %>
   Hostname: <%= config[:hostname].chomp %>
   OS:       <%= config[:os] %>
+  IP:       <%= Facter.value(:ipaddress) %> (@mac: <%= Facter.value(:macaddress) %>)
   Support:  <%= config[:support] %>
 
  === <%= config[:desc] %> ===
- <%= config[:nodemodel] %> (<%= Facter.value(:physicalprocessorcount) %> <%= Facter.value(:processor0) %>)
+ <%= Facter.value(:sp_machine_name) %> (<%= Facter.value(:sp_cpu_type) %> <%= Facter.value(:sp_current_processor_speed)%> <%= Facter.value(:sp_number_processors) %> cores)
  RAM: <%= Facter.value(:memorysize) %> -- Swap size: <%= Facter.value(:swapsize) %>
 
 <%= ("=" * config[:width]) + "\n" %>

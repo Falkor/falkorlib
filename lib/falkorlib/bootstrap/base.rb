@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-11-03 00:44 svarrette>
+# Time-stamp: <Thu 2016-11-03 22:44 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -24,10 +24,11 @@ module FalkorLib  #:nodoc:
         {
           :motd    => {
             :file     => 'motd',
+            :hostname => %x( hostname -f ).chomp,
             :title    => "Title",
+            :desc     => "Brief server description",
             :support  => %x( git config user.email ).chomp,
             :width    => 80,
-            :hostname => "`hostname -f`",
           },
           :latex => {
             :name     => '',
@@ -199,14 +200,22 @@ module FalkorLib
     ###### motd ######
     # Generate a new motd (Message of the Day) file
     # Supported options:
-    #  * :force [boolean] force action
+    #  * :force    [boolean] force action
+    #  * :title    [string]  title of the motd (in figlet)
+    #  * :support  [string]  email address to use for  getting support
+    #  * :hostname [string]  hostname of the server to mention in the motd
+    #  * :width    [number]  width of the line used
     ##
     def motd(dir = Dir.pwd, options = {})
-      config = FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
+      config =  FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
       path = normalized_path(dir)
       erbfile = File.join( FalkorLib.templates, 'motd', 'motd.erb')
-      outfile = (options[:file] =~ /^\//) ? options[:file] : File.join(path, options[:file])
+      outfile = (config[:file] =~ /^\//) ? config[:file] : File.join(path, config[:file])
       info "Generate a motd (Message of the Day) file '#{outfile}'"
+      FalkorLib::Config::Bootstrap::DEFAULTS[:motd].keys.each do |k|
+        next if [:file, :width].include?(k)
+        config[k.to_sym] = ask( "\t" + sprintf("Message of the Day (MotD) %-10s", "#{k}"), config[k.to_sym]) unless options[:no_interaction]
+      end
       config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
       config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
       write_from_erb_template(erbfile, outfile, config, options)
