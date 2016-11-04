@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mar 2015-01-13 21:24 svarrette>
+# Time-stamp: <Fri 2016-11-04 11:06 svarrette>
 ################################################################################
 #                   _____     _ _              _     _ _
 #                   |  ___|_ _| | | _____  _ __| |   (_) |__
@@ -16,6 +16,8 @@
 ################################################################################
 
 require "awesome_print"
+#require 'active_support'  # provides so many nice extensions
+require 'active_support/core_ext/hash'
 
 begin
     require 'term/ansicolor'

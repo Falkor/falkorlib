@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-10-15 18:27 svarrette>
+# Time-stamp: <Fri 2016-11-04 13:12 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -63,16 +63,35 @@ CONFIG_LONG_DESC
         puts FalkorLib.config.to_yaml
       end # config
 
-
       # map %w[--help -h] => :help
 
       ###### new ######
-      desc "new <type> [<path>]", "Initialize the directory PATH with FalkorLib's template(s)"
-      subcommand "new", FalkorLib::CLI::New
+      #desc "new <type> [<path>]", "Initialize the directory PATH with FalkorLib's template(s)"
+      #subcommand "new", FalkorLib::CLI::New
+      register FalkorLib::CLI::New, 'new', "new <type> [<path>]", "Initialize the directory PATH with FalkorLib's template(s)"
+
+
 
       ###### link  ######
       desc "link <type> [<path>]", "Initialize a special symlink in <path> (the current directory by default)"
       subcommand "link", FalkorLib::CLI::Link
+
+
+      ###### motd ######
+      method_option :file,     :aliases => '-f', :default => '/etc/motd', :desc => "File storing the message of the day"
+      method_option :width,    :aliases => '-w', :default => 80, :type => :numeric, :desc => "Width for the text"
+      method_option :title,    :aliases => '-t', :desc => "Title to be placed in the motd (using asciify/figlet)"
+      method_option :subtitle, :desc => "Eventual subtitle to place below the title"
+      method_option :hostname, :desc => "Hostname"
+      method_option :support,  :aliases => '-s', :desc => "Support/Contact mail"
+      method_option :desc,     :aliases => '-d', :desc => "Short Description of the host"
+      method_option :nodemodel,:aliases => '-n', :desc => "Node Model"
+      #......................................
+      desc "motd PATH [options]", "Initiate a 'motd' file - message of the day"
+      def motd(path = '.')
+        FalkorLib::Bootstrap.motd(path, options)
+      end # motd
+
 
 
       map %w[--version -V] => :version

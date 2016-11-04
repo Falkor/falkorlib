@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-11-03 22:44 svarrette>
+# Time-stamp: <Fri 2016-11-04 13:13 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -207,7 +207,7 @@ module FalkorLib
     #  * :width    [number]  width of the line used
     ##
     def motd(dir = Dir.pwd, options = {})
-      config =  FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(options)
+      config =  FalkorLib::Config::Bootstrap::DEFAULTS[:motd].merge!(::ActiveSupport::HashWithIndifferentAccess.new(options).symbolize_keys)
       path = normalized_path(dir)
       erbfile = File.join( FalkorLib.templates, 'motd', 'motd.erb')
       outfile = (config[:file] =~ /^\//) ? config[:file] : File.join(path, config[:file])
@@ -218,6 +218,13 @@ module FalkorLib
       end
       config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
       config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
+      unless options[:nodemodel]
+        config[:nodemodel] = Facter.value(:sp_machine_name) if Facter.value(:sp_machine_name)
+        config[:nodemodel] += " (" + Facter.value(:sp_cpu_type) if Facter.value(:sp_cpu_type)
+        config[:nodemodel] += " " + Facter.value(:sp_current_processor_speed) if Facter.value(:sp_current_processor_speed)
+        config[:nodemodel] += " " + Facter.value(:sp_number_processors) + "cores )" if  Facter.value(:sp_number_processors)
+      end
+      config[:nodemodel] = Facter.value(:sp_machine_name) unless options[:nodemodel]
       write_from_erb_template(erbfile, outfile, config, options)
     end # motd
 

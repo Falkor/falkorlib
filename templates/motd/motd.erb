@@ -12,7 +12,7 @@ Welcome to <%= config[:hostname].chomp %>
   Support:  <%= config[:support] %>
 
  === <%= config[:desc] %> ===
- <%= Facter.value(:sp_machine_name) %> (<%= Facter.value(:sp_cpu_type) %> <%= Facter.value(:sp_current_processor_speed)%> <%= Facter.value(:sp_number_processors) %> cores)
+ <%= config[:nodemodel] %>
  RAM: <%= Facter.value(:memorysize) %> -- Swap size: <%= Facter.value(:swapsize) %>
 
 <%= ("=" * config[:width]) + "\n" %>
