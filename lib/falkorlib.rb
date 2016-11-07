@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-04 11:06 svarrette>
+# Time-stamp: <Mon 2016-11-07 22:04 svarrette>
 ################################################################################
 #                   _____     _ _              _     _ _
 #                   |  ___|_ _| | | _____  _ __| |   (_) |__
@@ -20,12 +20,12 @@ require "awesome_print"
 require 'active_support/core_ext/hash'
 
 begin
-    require 'term/ansicolor'
-    COLOR = true
-rescue Exception => e
-    puts "/!\\ cannot find the 'term/ansicolor' library"
-    puts "    Consider installing it by 'gem install term-ansicolor'"
-    COLOR = false
+  require 'term/ansicolor'
+  COLOR = true
+rescue LoadError
+  puts "/!\\ cannot find the 'term/ansicolor' library"
+  puts "    Consider installing it by 'gem install term-ansicolor'"
+  COLOR = false
 end
 
 require 'yaml'
@@ -34,18 +34,18 @@ require 'yaml'
 # and `{rake,cap}` tasks
 module FalkorLib
 
-    # Return the root directory of the gem
-	def self.root
-        File.expand_path '../..', __FILE__
-    end
+  # Return the root directory of the gem
+  def self.root
+    File.expand_path '../..', __FILE__
+  end
 
-	def self.lib
-		File.join root, 'lib'
-	end
+  def self.lib
+    File.join root, 'lib'
+  end
 
-	def self.templates
-		File.join root, 'templates'
-	end
+  def self.templates
+    File.join root, 'templates'
+  end
 
 end # module FalkorLib
 
