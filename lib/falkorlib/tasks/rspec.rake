@@ -26,8 +26,44 @@
 # http://relishapp.com/rspec
 #
 require 'rspec/core'
+require 'rubocop/rake_task'
+
+RuboCop::RakeTask.new
+
+# RSpec.configure do |c|
+#   c.fail_fast     = true
+#   c.color         = true
+# end
+
 begin
   require "rspec/core/rake_task"
+  #specfiles = Dir.glob['spec/**/*_spec.rb']
+  specsuite = {}
+  Dir.glob('spec/**/*_spec.rb').each do |f|
+    File.basename(f) =~ /^([^_]+)_*/
+    specsuite[$1] = [] unless specsuite[$1]
+    specsuite[$1] << f
+  end
+  unless specsuite.empty?
+    #.....................
+    namespace :rspec do
+
+      #.....................
+      namespace :suite do
+        specsuite.each do |name, files|
+          ###########   #{name}   ###########
+          desc "Run all specs in #{name} spec suite"
+          RSpec::Core::RakeTask.new(name.to_sym) do |t|
+            t.pattern = "spec/**/#{name}*_spec.rb"
+            t.verbose = false
+            t.rspec_opts = [ "--format p" ]
+          end # task #{name}
+        end
+      end # namespace suite
+    end # namespace rspec
+  end
+
+
   desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
   RSpec::Core::RakeTask.new(:rspec) do |t|
     # Glob pattern to match files.

@@ -50,7 +50,6 @@ RSpec.configure do |config|
 end
 
 
-
 # def capture(stream)
 #   begin
 #     stream = stream.to_s
