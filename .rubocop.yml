@@ -3,3 +3,6 @@ AllCops:
   Exclude:
     - 'templates/**/*'
     - 'spec/**/*'
+
+Style/LeadingCommentSpace:
+  Enabled: false
