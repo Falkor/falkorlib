@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-03 23:30 svarrette>
+# Time-stamp: <Mon 2016-11-07 11:02 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
@@ -30,7 +30,7 @@ describe FalkorLib::Bootstrap do
 
   after :all do
     dirs.each do |t,d|
-      next if t == :with_git
+      #next if t == :with_git
       FileUtils.remove_entry_secure d
     end
     FalkorLib.config[:no_interaction] = false
@@ -145,17 +145,27 @@ describe FalkorLib::Bootstrap do
                                     :desc => description,
                                     :no_interaction => true })
         expect(File).to exist(motdfile)
-        File.read(File.realpath(motdfile)).should include "=== #{description} ==="
+        expect(File.read(File.realpath(motdfile))).to include "=== #{description} ==="
       end
 
       ### README creation
       it "#readme" do
+        readme = File.join(dir, 'README.md')
         #Array.new(6).each { |e|  STDIN.should_receive(:gets).and_return('') }
         #STDIN.should_receive(:gets).and_return('')
         #STDIN.should_receive(:gets).and_return('1')
         FalkorLib::Bootstrap.readme(dir, { :no_interaction => true })
-        t = File.exists?(File.join(dir, 'README.md'))
-        expect(t).to be true
+        expect(File).to exist( readme )
+        File.read(File.realpath( readme )) do |f|
+          [
+            "## Synopsis",                 # from header_readme.erb
+            "## Issues / Feature request", # from readme_issues.erb
+            "### Git",                     # from readme_git.erb
+            "## Contributing"              # from footer_readme.erb
+          ].each do |pattern|
+            f.should include "#{pattern}"
+          end
+        end
       end
 
     end # context "bootstrap/base"

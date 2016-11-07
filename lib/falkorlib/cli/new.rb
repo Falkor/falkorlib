@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-04 00:13 svarrette>
+# Time-stamp: <Mon 2016-11-07 10:23 svarrette>
 ################################################################################
 
 require 'thor'
@@ -13,6 +13,12 @@ module FalkorLib
 
     # Thor class for all bootstrapping / initialization
     class New < ::Thor
+      package_name "Falkor[Lib] 'new'"
+      namespace :new
+
+      def self.banner(task, namespace = true, subcommand = false)
+        "#{basename} #{task.formatted_usage(self, true, subcommand)}"
+      end
 
       ###### commands ######
       desc "commands", "Lists all available commands", :hide => true
@@ -21,12 +27,6 @@ module FalkorLib
       end
 
       #map %w[--help -h] => :help
-
-      ###### commands ######
-      # desc "commands", "Lists available commands" #, :hide => true
-      # def commands
-      #     puts App.all_commands.to_yaml #.keys - ["commands", "completions"]
-      # end
 
       ###### repo ######
       desc "repo NAME [options]", "Bootstrap a Git Repository"
@@ -49,10 +49,10 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       method_option :master, :default => 'production', :banner => 'BRANCH', :desc => "Master Branch name for production releases"
       method_option :develop, :aliases => [ '-b', '--branch', '--devel'],
                     :default => 'devel', :banner => 'BRANCH', :desc => "Branch name for development commits"
-      method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
+      #method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
       #method_option :gem,   :type => :boolean, :desc => "Initiate a Ruby gem project"
-      method_option :rvm,   :type => :boolean, :desc => "Initiate a RVM-based Ruby project"
-      method_option :ruby, :default => '1.9.3', :desc => "Ruby version to configure for RVM"
+      method_option :rvm,   :type => :boolean,   :desc => "Initiate a RVM-based Ruby project"
+      method_option :ruby, :default => '2.1.10', :desc => "Ruby version to configure for RVM"
       #method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
       #method_option :octopress, :aliases => ['-o', '--www'], :type => :boolean, :desc => "Initiate an Octopress web site"
       #___________________

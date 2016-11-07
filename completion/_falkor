@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Fri 2016-11-04 09:44 svarrette>
+# Time-stamp: <Sat 2016-11-05 01:45 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -36,6 +36,7 @@ _falkor()
     _falkor_cmds=(
         'config:Print the current configuration of FalkorLib'
         'help:Describe available commands or one specific command'
+        'init:Bootstrap a Git Repository the falkor way'
         'link:Initialize a special symlink (.root, .makefile.d etc.)'
         'motd:bootstrap a Message of the Day (motd) file'
         'new:Initialize the directory PATH with one of Falkors template(s)'
@@ -65,12 +66,14 @@ _falkor()
                     ;;
                 (config)
                     __falkor_config && ret=0 ;;
+                (init)
+                    __falkor_init && ret=0   ;;
+                (link)
+                    __falkor_link   && ret=0 ;;
                 (motd)
                     __falkor_motd && ret=0   ;;
                 (new)
                     __falkor_new    && ret=0 ;;
-                (link)
-                    __falkor_link   && ret=0 ;;
                 (version|*)
                     _nothing
                     ;;
@@ -205,6 +208,23 @@ __falkor_config() {
 
 
 ##################
+__falkor_init() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               {--git-flow,--no-git-flow}'[Bootstrap the repository with (or without) Git-flow]' \
+               {-i,--interactive}'[Interactive mode, in particular to confirm Gitflow branch names]' \
+               {-r,--remote-sync}'[Operate a git remote synchronization with remote. By default, all commits stay local]' \
+               '--master[Master Branch name for production releases]' \
+               {-b,--branch,--devel,--develop}'[Branch name for development commits]' \
+               '--make[Use a Makefile to pilot the repository actions (default)]' \
+               '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
+               '*:directory:_directories'
+}
+
+
+##################
 __falkor_motd() {
     local curcontext=$curcontext state line ret=1
     declare -A opt_args
@@ -220,5 +240,8 @@ __falkor_motd() {
                {--nodemodel,-n}'[Node Model]:model'  \
                '*:directory:_files -/'
 }
+
+
+
 
 _falkor "$@"

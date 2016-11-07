@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-04 13:13 svarrette>
+# Time-stamp: <Mon 2016-11-07 10:57 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -220,9 +220,9 @@ module FalkorLib
       config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
       unless options[:nodemodel]
         config[:nodemodel] = Facter.value(:sp_machine_name) if Facter.value(:sp_machine_name)
-        config[:nodemodel] += " (" + Facter.value(:sp_cpu_type) if Facter.value(:sp_cpu_type)
+        config[:nodemodel] += " (#{Facter.value(:sp_cpu_type)}" if Facter.value(:sp_cpu_type)
         config[:nodemodel] += " " + Facter.value(:sp_current_processor_speed) if Facter.value(:sp_current_processor_speed)
-        config[:nodemodel] += " " + Facter.value(:sp_number_processors) + "cores )" if  Facter.value(:sp_number_processors)
+        config[:nodemodel] += " #{Facter.value(:sp_number_processors)} cores )" if  Facter.value(:sp_number_processors)
       end
       config[:nodemodel] = Facter.value(:sp_machine_name) unless options[:nodemodel]
       write_from_erb_template(erbfile, outfile, config, options)
@@ -234,9 +234,9 @@ module FalkorLib
     # Bootstrap a README file for various context
     # Supported options:
     #  * :no_interaction [boolean]: do not interact
-    #  * :force     [boolean] force overwritting
-    #  * :latex     [boolean] describe a LaTeX project
-    #  * :octopress [boolean] octopress site
+    #  * :force          [boolean] force overwritting
+    #  * :latex          [boolean] describe a LaTeX project
+    #  * :octopress      [boolean] octopress site
     ##
     def readme(dir = Dir.pwd, options = {})
       info "Bootstrap a README file for this project"
