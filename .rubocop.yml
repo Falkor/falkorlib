@@ -1,0 +1,5 @@
+# -*- mode: yaml; -*-
+AllCops:
+  Exclude:
+    - 'templates/**/*'
+    - 'spec/**/*'

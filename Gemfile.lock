@@ -31,6 +31,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.6)
     artii (2.1.2)
+    ast (2.3.0)
     awesome_print (1.7.0)
     backports (3.6.0)
     codeclimate-test-reporter (0.3.0)
@@ -74,6 +75,9 @@ GEM
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     net-http-pipeline (1.0.1)
+    parser (2.3.1.4)
+      ast (~> 2.2)
+    powerpack (0.1.1)
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -81,6 +85,7 @@ GEM
     pusher-client (0.6.0)
       json
       websocket (~> 1.0)
+    rainbow (2.1.0)
     rake (10.5.0)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
@@ -95,6 +100,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
+    rubocop (0.45.0)
+      parser (>= 2.3.1.1, < 3.0)
+      powerpack (~> 0.1)
+      rainbow (>= 1.99.1, < 3.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (~> 1.0, >= 1.0.1)
+    ruby-progressbar (1.8.1)
     rubygems-tasks (0.2.4)
     safe_yaml (0.9.7)
     simplecov (0.8.2)
@@ -127,6 +139,7 @@ GEM
       ethon (>= 0.7.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    unicode-display_width (1.1.1)
     websocket (1.1.4)
     yard (0.8.7.4)
 
@@ -140,6 +153,7 @@ DEPENDENCIES
   pry
   rake
   rspec (~> 3.0)
+  rubocop
   rubygems-tasks (~> 0.2)
   simplecov
   travis (~> 1.6)
