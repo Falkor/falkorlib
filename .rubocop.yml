@@ -4,5 +4,5 @@ AllCops:
     - 'templates/**/*'
     - 'spec/**/*'
 
-Style/LeadingCommentSpace:
-  Enabled: false
+# Style/LeadingCommentSpace:
+#   Enabled: false
