@@ -85,7 +85,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("facter", '~> 2.4.1')
   s.add_runtime_dependency("thor-zsh_completion", '>= 0')
   s.add_runtime_dependency("activesupport", '~> 4.0')
+  #s.add_runtime_dependency("benchmark", '~> 4.0')
   #s.add_runtime_dependency("mercenary", '>= 0.3.5')
+
 
   #
   #
@@ -103,7 +105,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("rubygems-tasks",   "~> 0.2")
   s.add_development_dependency("travis",        "~> 1.6")
   s.add_development_dependency("travis-lint",   "~> 1.8")
-
+  s.add_development_dependency('simplecov', '~> 0.12.0')
   s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
   #s.add_development_dependency("bluecloth",      "~> 2.2.0")
   #s.add_development_dependency("wlang",          "~> 0.10.2")
