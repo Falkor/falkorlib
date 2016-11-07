@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-11-07 22:04 svarrette>
+# Time-stamp: <Mon 2016-11-07 22:06 svarrette>
 ################################################################################
 #                   _____     _ _              _     _ _
 #                   |  ___|_ _| | | _____  _ __| |   (_) |__
@@ -15,8 +15,8 @@
 # * [Official Gem](https://rubygems.org/gems/falkorlib)
 ################################################################################
 
-require "awesome_print"
-#require 'active_support'  # provides so many nice extensions
+require 'awesome_print'
+# require 'active_support'  # provides so many nice extensions
 require 'active_support/core_ext/hash'
 
 begin
@@ -33,7 +33,6 @@ require 'yaml'
 # Sebastien Varrette aka Falkor's Common library to share Ruby code
 # and `{rake,cap}` tasks
 module FalkorLib
-
   # Return the root directory of the gem
   def self.root
     File.expand_path '../..', __FILE__
@@ -46,9 +45,7 @@ module FalkorLib
   def self.templates
     File.join root, 'templates'
   end
-
 end # module FalkorLib
 
-
-require "falkorlib/version"
-require "falkorlib/loader"
+require 'falkorlib/version'
+require 'falkorlib/loader'
