@@ -18,12 +18,11 @@ require 'falkorlib/cli/link'
 
 
 module FalkorLib
-
   # Falkor CLI Application, based on [Thor](http://whatisthor.com)
   module CLI
-
     # Main Application
     class App < ::Thor
+
       package_name 'Falkor[Lib]'
       map %w(--version -V) => :version
 
@@ -36,11 +35,11 @@ module FalkorLib
       #default_command :info
 
       class_option :verbose, :aliases => '-v', :type => :boolean,
-                   :desc => "Enable verbose output mode"
+                             :desc => "Enable verbose output mode"
       class_option :debug,   :type => :boolean, :default => FalkorLib.config[:debug],
-                   :desc => "Enable debug output mode"
+                             :desc => "Enable debug output mode"
       class_option :dry_run, :aliases => '-n', :type => :boolean,
-                   :desc => "Perform a trial run with (normally) no changes made"
+                             :desc => "Perform a trial run with (normally) no changes made"
 
       ###### commands ######
       desc "commands", "Lists all available commands"
@@ -56,9 +55,9 @@ FalkorLib retrieves its configuration from the local repository (in '<git_rootdi
 environment variables (NOT YET IMPLEMENTED), and the user's home directory (<home>/.falkor/config), in that order of priority.
 CONFIG_LONG_DESC
       method_option :global, :aliases => '-g', :type => :boolean,
-                    :desc => 'Operate on the global configuration'
+                             :desc => 'Operate on the global configuration'
       method_option :local,  :aliases => '-l', :type => :boolean,
-                    :desc => 'Operate on the local configuration of the repository'
+                             :desc => 'Operate on the local configuration of the repository'
       def config(_key = '')
         info "Thor options:"
         puts options.to_yaml
@@ -80,20 +79,20 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
       INIT_LONG_DESC
       #......................................................
       method_option :git_flow, :default => true, :type => :boolean,
-                    :desc => 'Bootstrap the repository with Git-glow'
+                               :desc => 'Bootstrap the repository with Git-glow'
       method_option :make, :default => true,     :type => :boolean,
-                    :desc => 'Use a Makefile to pilot the repository actions'
-      method_option :rake,       :type => :boolean,
-                    :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
+                           :desc => 'Use a Makefile to pilot the repository actions'
+      method_option :rake, :type => :boolean,
+                           :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
       method_option :interactive, :aliases => '-i', :default => true, :type => :boolean,
-                    :desc => "Interactive mode, in particular to confirm Gitflow branch names"
+                                  :desc => "Interactive mode, in particular to confirm Gitflow branch names"
       method_option :remote_sync, :aliases => '-r', :type => :boolean,
-                    :desc => "Operate a git remote synchronization with remote. By default, all commits stay local"
+                                  :desc => "Operate a git remote synchronization with remote. By default, all commits stay local"
       method_option :master, :default => 'production', :banner => 'BRANCH',
-                    :desc => "Master Branch name for production releases"
+                             :desc => "Master Branch name for production releases"
       method_option :develop, :aliases => [ '-b', '--branch', '--devel'],
-                    :default => 'devel', :banner => 'BRANCH',
-                    :desc => "Branch name for development commits"
+                              :default => 'devel', :banner => 'BRANCH',
+                              :desc => "Branch name for development commits"
       # method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
       # #method_option :gem,   :type => :boolean, :desc => "Initiate a Ruby gem project"
       # method_option :rvm,   :type => :boolean, :desc => "Initiate a RVM-based Ruby project"
@@ -114,16 +113,16 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
 
       ###### motd ######
       method_option :file,     :aliases => '-f', :default => '/etc/motd',
-                    :desc => "File storing the message of the day"
+                               :desc => "File storing the message of the day"
       method_option :width,    :aliases => '-w', :default => 80, :type => :numeric,
-                    :desc => "Width for the text"
+                               :desc => "Width for the text"
       method_option :title,    :aliases => '-t',
-                    :desc => "Title to be placed in the motd (using asciify/figlet)"
+                               :desc => "Title to be placed in the motd (using asciify/figlet)"
       method_option :subtitle, :desc => "Eventual subtitle to place below the title"
       method_option :hostname, :desc => "Hostname"
       method_option :support,  :aliases => '-s', :desc => "Support/Contact mail"
       method_option :desc,     :aliases => '-d', :desc => "Short Description of the host"
-      method_option :nodemodel,:aliases => '-n', :desc => "Node Model"
+      method_option :nodemodel, :aliases => '-n', :desc => "Node Model"
       #......................................
       desc "motd <PATH> [options]", "Initiate a 'motd' file - message of the day"
       def motd(path = '.')
@@ -144,9 +143,7 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
     end # class App
 
     #puts Thor::ZshCompletion::Generator.new(App, "falkor").generate
-
   end # module CLI
-
 end
 
 
