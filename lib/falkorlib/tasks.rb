@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-11-07 22:47 svarrette>
+# Time-stamp: <Tue 2016-11-08 23:50 svarrette>
 ################################################################################
 #
 # Default FalkorLib rake tasks
@@ -25,15 +25,14 @@ namespace :falkorlib do
   ###########  falkorlib:upgrade   ###########
   desc "Upgrade FalkorLib to the latest version using Bundle"
   task :upgrade do |t|
-    info "#{t.comment}"
+    info(t.comment).to_s
     error "Unable to find the 'bundle' command" unless command?('bundle')
-    run %{ bundle update falkorlib }
+    run %( bundle update falkorlib )
     if FalkorLib::Git.init?
       gemfile_lock = File.join(FalkorLib::Git.rootdir, 'Gemfile.lock')
-      run %{git commit -s -m "Upgrade FalkorLib to the latest version" #{gemfile_lock} } if File.exist?(gemfile_lock)
+      run %(git commit -s -m "Upgrade FalkorLib to the latest version" #{gemfile_lock} ) if File.exist?(gemfile_lock)
     end
   end
-
 end # namespace falkorlib
 
 
@@ -43,7 +42,7 @@ namespace :bootstrap do
   task :bundler do
     info "Bootstrap Bundler -- see http://bundler.io/"
     error "Unable to find the 'bundle' command" unless command?('bundle')
-    run %{ bundle }
+    run %( bundle )
   end
 
   ###########   rvm   ###########
@@ -55,11 +54,11 @@ namespace :bootstrap do
     #   error "unable to find the .ruby-#{t} file" unless File.exists?(".ruby-#{t}")
     # end
     info "=> initialize RVM -- see http://rvm.io"
-    run %{ rvm install `cat .ruby-version` }
+    run %( rvm install `cat .ruby-version` )
     rvm_current = `rvm current`.chomp
     rvm_version = `cat .ruby-version`.chomp
     rvm_gemset  = `cat .ruby-gemset`.chomp
-    if rvm_current.empty? or rvm_current !~ /#{rvm_version}[^@]*@#{rvm_gemset}/
+    if rvm_current.empty? || rvm_current !~ /#{rvm_version}[^@]*@#{rvm_gemset}/
       warn "You need to manually force the reloading of the RVM configuration."
       warn "To do that, simply run \n\t\tcd .. && cd -"
       error "manual RVM reloading required"
@@ -73,9 +72,8 @@ namespace :bootstrap do
     # }
 
     info "=> installing the Bundler gem -- see http://bundler.io"
-    run %{ gem install bundler }
+    run %( gem install bundler )
   end
-
 end # namespace bootstrap
 
 

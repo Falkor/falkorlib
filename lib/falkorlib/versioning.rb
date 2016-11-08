@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-11-07 23:37 svarrette>
+# Time-stamp: <Tue 2016-11-08 23:49 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -84,7 +84,7 @@ module FalkorLib #:nodoc:
       when 'file'
         versionfile = File.join( rootdir, source[:filename] )
         puts "versionfile = '#{versionfile}'"
-        version = File.read( versionfile ).chomp if File.exist? ( versionfile )
+        version = File.read( versionfile ).chomp if File.exist?( versionfile )
       when 'gem'
         getmethod = source[:getmethod ]
         version = eval( getmethod ) unless (getmethod.nil? || getmethod.empty?)
@@ -141,14 +141,10 @@ module FalkorLib #:nodoc:
             exit_status = FalkorLib::Git.add(versionfile, "Adding the version file '#{source[:filename]}', inialized to the '#{version}' version" )
             next
           end
-          run %(
-                   git diff #{source[:filename]}
-                    )
+          run %( git diff #{source[:filename]} )
           answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
           next if answer =~ /n.*/i
-          run %(
-                   git commit -s -m "bump to version '#{version}'" #{source[:filename]}
-                    )
+          run %( git commit -s -m "bump to version '#{version}'" #{source[:filename]} )
           exit_status = $CHILD_STATUS.to_i
           # if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
           #     run %{
