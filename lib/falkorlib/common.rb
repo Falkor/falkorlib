@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 00:27 svarrette>
+# Time-stamp: <Wed 2016-11-09 11:54 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -136,7 +136,7 @@ module FalkorLib #:nodoc:
     def execute(cmd)
       puts bold("[Running] #{cmd.gsub(/^\s*/, ' ')}")
       system(cmd)
-      $?
+      $?.exitstatus
     end
 
     ## Execute in a given directory
@@ -167,7 +167,7 @@ module FalkorLib #:nodoc:
       cmds.split(/\n */).each do |cmd|
         next if cmd.empty?
         system(cmd.to_s) unless FalkorLib.config.debug
-        exit_status = $?
+        exit_status = $?.exitstatus
       end
       exit_status
     end
