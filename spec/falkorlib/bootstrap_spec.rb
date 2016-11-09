@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mon 2016-11-07 11:02 svarrette>
+# Time-stamp: <Wed 2016-11-09 16:27 svarrette>
 #
 # @description Check the Bootstrapping operations
 #
