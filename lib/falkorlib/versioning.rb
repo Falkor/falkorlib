@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2016-11-08 23:49 svarrette>
+# Time-stamp: <Wed 2016-11-09 00:28 svarrette>
 ################################################################################
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -36,7 +36,7 @@ module FalkorLib #:nodoc:
             :suffix => 'v'
           }
         }
-      }.freeze
+      }
 
     end
   end
@@ -76,9 +76,9 @@ module FalkorLib #:nodoc:
     # * :source  [Hash] information on the way to retrieve the information
     def get_version(path = Dir.pwd, options = {})
       rootdir = normalized_path(path)
-      version = options[:default] ? options[:default] : FalkorLib.config[:versioning][:default]
-      type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
-      source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
+      version = (options[:default]) ? options[:default] : FalkorLib.config[:versioning][:default]
+      type    = (options[:type])    ? options[:type]    : FalkorLib.config[:versioning][:type]
+      source  = (options[:source])  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
       puts "type = '#{type}'"
       case type
       when 'file'
@@ -103,8 +103,8 @@ module FalkorLib #:nodoc:
     # * :source  [Hash] information on the way to retrieve the information
     def set_version(version, rootdir = Dir.pwd, options = {})
       exit_status = 0
-      type    = options[:type]    ? options[:type]    : FalkorLib.config[:versioning][:type]
-      source  = options[:source]  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
+      type    = (options[:type])    ? options[:type]    : FalkorLib.config[:versioning][:type]
+      source  = (options[:source])  ? options[:source]  : FalkorLib.config[:versioning][:source][ type ]
       versionfile = File.join( rootdir, source[:filename] ) unless source[:filename].nil?
       major, minor, patch = major(version), minor(version), patch(version)
       #tocommit = ""
@@ -145,7 +145,7 @@ module FalkorLib #:nodoc:
           answer = ask(cyan("=> Commit the changes of the version file to the repository? (Y|n)"), 'Yes')
           next if answer =~ /n.*/i
           run %( git commit -s -m "bump to version '#{version}'" #{source[:filename]} )
-          exit_status = $CHILD_STATUS.to_i
+          exit_status = $?.to_i
           # if (type == 'gem' && File.exists?(File.join(rootdir, 'Gemfile')) )
           #     run %{
           #        sleep 2

@@ -44,6 +44,7 @@ begin
     specsuite[$1] = [] unless specsuite[$1]
     specsuite[$1] << f
   end
+  rspec_opts = [ "--color", "--format p" ]
   unless specsuite.empty?
     #.....................
     namespace :rspec do
@@ -56,7 +57,7 @@ begin
           RSpec::Core::RakeTask.new(name.to_sym) do |t|
             t.pattern = "spec/**/#{name}*_spec.rb"
             t.verbose = false
-            t.rspec_opts = [ "--format p" ]
+            t.rspec_opts = rspec_opts
           end # task #{name}
         end
       end # namespace suite
@@ -70,7 +71,7 @@ begin
     #t.pattern = "spec/**/common_*.rb"
     #t.pattern = "spec/**/versioning_*spec.rb"
     #t.pattern = "spec/**/puppet*spec.rb"
-    t.pattern = "spec/**/bootstrap_spec.rb"
+    #t.pattern = "spec/**/bootstrap_spec.rb"
     #t.pattern = "spec/**/git*spec.rb"
     #t.pattern = "spec/**/error*spec.rb"
     #t.pattern = "spec/**/config*spec.rb"
@@ -103,7 +104,7 @@ begin
 
     # Command line options to pass to rspec. See 'rspec --help' about this
     #t.rspec_opts = ["--color", "--backtrace"]
-    t.rspec_opts = ["--color", "--format d", "--backtrace"] # "--format d",
+    t.rspec_opts = rspec_opts #["--color", "--format d", "--backtrace"] # "--format d",
   end
 rescue LoadError => ex
   task :spec_test do

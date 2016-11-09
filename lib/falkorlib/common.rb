@@ -1,18 +1,17 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2016-11-08 23:55 svarrette>
+# Time-stamp: <Wed 2016-11-09 00:27 svarrette>
 ################################################################################
 
 require "falkorlib"
 require 'open3'
-require 'erb'      # required for module generation
+require 'erb' # required for module generation
 require 'diffy'
 require 'json'
 require "pathname"
 require "facter"
 
 module FalkorLib #:nodoc:
-
   # @abstract
   # Recipe for all my toolbox and versatile Ruby functions I'm using
   # everywhere.
@@ -32,28 +31,30 @@ module FalkorLib #:nodoc:
   #   error "that's an error text, let's exit with status code 1"
   #
   module Common
+
     module_function
+
     ##################################
     ### Default printing functions ###
     ##################################
     # Print a text in bold
     def bold(str)
-      COLOR == true ? Term::ANSIColor.bold(str) : str
+      (COLOR == true) ? Term::ANSIColor.bold(str) : str
     end
 
     # Print a text in green
     def green(str)
-      COLOR == true ? Term::ANSIColor.green(str) : str
+      (COLOR == true) ? Term::ANSIColor.green(str) : str
     end
 
     # Print a text in red
     def red(str)
-      COLOR == true ? Term::ANSIColor.red(str) : str
+      (COLOR == true) ? Term::ANSIColor.red(str) : str
     end
 
     # Print a text in cyan
     def cyan(str)
-      COLOR == true ? Term::ANSIColor.cyan(str) : str
+      (COLOR == true) ? Term::ANSIColor.cyan(str) : str
     end
 
     # Print an info message
@@ -65,7 +66,7 @@ module FalkorLib #:nodoc:
     def warning(str)
       puts cyan("/!\\ WARNING: " + str)
     end
-    alias :warn :warning
+    alias_method :warn, :warning
 
     ## Print an error message and abort
     def error(str)
@@ -75,7 +76,7 @@ module FalkorLib #:nodoc:
     end
 
     ## simple helper text to mention a non-implemented feature
-    def not_implemented()
+    def not_implemented
       error("NOT YET IMPLEMENTED")
     end
 
@@ -84,14 +85,14 @@ module FalkorLib #:nodoc:
     ##############################
 
     ## Ask a question
-    def ask(question, default_answer='')
+    def ask(question, default_answer = '')
       return default_answer if FalkorLib.config[:no_interaction]
       print "#{question} "
       print "[Default: #{default_answer}]" unless default_answer == ''
       print ": "
       STDOUT.flush
       answer = STDIN.gets.chomp
-      return answer.empty?() ? default_answer : answer
+      (answer.empty?) ? default_answer : answer
     end
 
     ## Ask whether or not to really continue
@@ -142,7 +143,7 @@ module FalkorLib #:nodoc:
     def execute_in_dir(path, cmd)
       exit_status = 0
       Dir.chdir(path) do
-        exit_status = run %{ #{cmd} }
+        exit_status = run %( #{cmd} )
       end
       exit_status
     end # execute_in_dir
@@ -165,7 +166,7 @@ module FalkorLib #:nodoc:
       #puts cmds.split(/\n */).inspect
       cmds.split(/\n */).each do |cmd|
         next if cmd.empty?
-        system("#{cmd}") unless FalkorLib.config.debug
+        system(cmd.to_s) unless FalkorLib.config.debug
         exit_status = $?
       end
       exit_status
@@ -183,10 +184,10 @@ module FalkorLib #:nodoc:
       index = 1
       raw_list = { 0 => 'Exit' }
 
-      Dir["#{glob_pattern}"].each do |elem|
+      Dir[glob_pattern.to_s].each do |elem|
         #puts "=> element '#{elem}' - dir = #{File.directory?(elem)}; file = #{File.file?(elem)}"
-        next if (! options[:only_files].nil?) && options[:only_files] && File.directory?(elem)
-        next if (! options[:only_dirs].nil?)  && options[:only_dirs]  && File.file?(elem)
+        next if (!options[:only_files].nil?) && options[:only_files] && File.directory?(elem)
+        next if (!options[:only_dirs].nil?)  && options[:only_dirs]  && File.file?(elem)
         entry = File.basename(elem)
         # unless options[:pattern_include].nil?
         #     select_entry = false
@@ -209,9 +210,9 @@ module FalkorLib #:nodoc:
         raw_list[index] = elem
         index += 1
       end
-      text        = options[:text].nil?    ? "select the index" : options[:text]
-      default_idx = options[:default].nil? ? 0 : options[:default]
-      raise SystemExit.new('Empty list') if index == 1
+      text        = (options[:text].nil?)    ? "select the index" : options[:text]
+      default_idx = (options[:default].nil?) ? 0 : options[:default]
+      raise SystemExit, 'Empty list' if index == 1
       #ap list
       #ap raw_list
       # puts list.to_yaml
@@ -227,17 +228,17 @@ module FalkorLib #:nodoc:
       error "list and raw_list differs in size" if list.size != raw_list.size
       l     = list
       raw_l = raw_list
-      if list.kind_of?(Array)
+      if list.is_a?(Array)
         l = raw_l = { 0 => 'Exit' }
         list.each_with_index do |e, idx|
-          l[idx+1] = e
-          raw_l[idx+1] = raw_list[idx]
+          l[idx + 1] = e
+          raw_l[idx + 1] = raw_list[idx]
         end
       end
       puts l.to_yaml
-      answer = ask("=> #{text}", "#{default_idx}")
-      raise SystemExit.new('exiting selection') if answer == '0'
-      raise RangeError.new('Undefined index')   if Integer(answer) >= l.length
+      answer = ask("=> #{text}", default_idx.to_s)
+      raise SystemExit, 'exiting selection' if answer == '0'
+      raise RangeError, 'Undefined index'   if Integer(answer) >= l.length
       raw_l[Integer(answer)]
     end # select_from
 
@@ -248,10 +249,10 @@ module FalkorLib #:nodoc:
 
     # Return the yaml content as a Hash object
     def load_config(file)
-      unless File.exists?(file)
+      unless File.exist?(file)
         raise FalkorLib::Error, "Unable to find the YAML file '#{file}'"
       end
-      loaded = YAML::load_file(file)
+      loaded = YAML.load_file(file)
       unless loaded.is_a?(Hash)
         raise FalkorLib::Error, "Corrupted or invalid YAML file '#{file}'"
       end
@@ -306,8 +307,8 @@ module FalkorLib #:nodoc:
       error "Unable to find the template directory" unless File.directory?(templatedir)
       warning "about to initialize/update the directory #{rootdir}"
       really_continue?
-      run %{ mkdir -p #{rootdir} } unless File.directory?( rootdir )
-      run %{ rsync --exclude '*.erb' --exclude '.texinfo*' -avzu #{templatedir}/ #{rootdir}/ }
+      run %( mkdir -p #{rootdir} ) unless File.directory?( rootdir )
+      run %( rsync --exclude '*.erb' --exclude '.texinfo*' -avzu #{templatedir}/ #{rootdir}/ )
       Dir["#{templatedir}/**/*.erb"].each do |erbfile|
         relative_outdir = Pathname.new( File.realpath( File.dirname(erbfile) )).relative_path_from Pathname.new(templatedir)
         filename = File.basename(erbfile, '.erb')
@@ -321,12 +322,12 @@ module FalkorLib #:nodoc:
           if exclude_entry
             info "copying non-interpreted ERB file"
             # copy this file since it has been probably excluded from teh rsync process
-            run %{ cp #{erbfile} #{outdir}/ }
+            run %( cp #{erbfile} #{outdir}/ )
             next
           end
         end
         # Let's go
-        info "updating '#{relative_outdir.to_s}/#{filename}'"
+        info "updating '#{relative_outdir}/#{filename}'"
         puts "  using ERB template '#{erbfile}'"
         write_from_erb_template(erbfile, outfile, config, options)
       end
@@ -339,18 +340,18 @@ module FalkorLib #:nodoc:
     #   :srcdir         [string]: source dir for all considered ERB files
     def write_from_erb_template(erbfile, outfile, config = {},
                                 options = {
-                                  :no_interaction => false,
+                                  :no_interaction => false
                                 })
-      erbfiles = erbfile.is_a?(Array) ? erbfile : [ erbfile ]
+      erbfiles = (erbfile.is_a?(Array)) ? erbfile : [ erbfile ]
       content = ""
       erbfiles.each do |f|
-        erb = options[:srcdir].nil? ? f : File.join(options[:srcdir], f)
-        unless File.exists? (erb)
+        erb = (options[:srcdir].nil?) ? f : File.join(options[:srcdir], f)
+        unless File.exist? (erb)
           warning "Unable to find the template ERBfile '#{erb}'"
           really_continue? unless options[:no_interaction]
           next
         end
-        content += ERB.new(File.read("#{erb}"), nil, '<>').result(binding)
+        content += ERB.new(File.read(erb.to_s), nil, '<>').result(binding)
       end
       # error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
       # template = File.read("#{erbfile}")
@@ -367,11 +368,11 @@ module FalkorLib #:nodoc:
     #   :no_commit [boolean]:          do not (offer to) commit the changes
     # return 0 if nothing happened, 1 if a write has been done
     def show_diff_and_write(content, outfile, options = {
-                              :no_interaction     => false,
-                              :json_pretty_format => false,
-                              :no_commit      => false,
-                            })
-      if File.exists?( outfile )
+      :no_interaction => false,
+      :json_pretty_format => false,
+      :no_commit => false
+    })
+      if File.exist?( outfile )
         ref = File.read( outfile )
         if options[:json_pretty_format]
           ref = JSON.pretty_generate (JSON.parse( IO.read( outfile ) ))
@@ -385,20 +386,20 @@ module FalkorLib #:nodoc:
         Diffy::Diff.default_format = :color
         puts Diffy::Diff.new(ref, content, :context => 1)
       else
-        watch =  options[:no_interaction] ? 'no' : ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
+        watch = (options[:no_interaction]) ? 'no' : ask( cyan("  ==> Do you want to see the generated file before commiting the writing (y|N)"), 'No')
         puts content if watch =~ /y.*/i
       end
-      proceed = options[:no_interaction] ? 'yes' : ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
+      proceed = (options[:no_interaction]) ? 'yes' : ask( cyan("  ==> proceed with the writing (Y|n)"), 'Yes')
       return 0 if proceed =~ /n.*/i
       info("=> writing #{outfile}")
-      File.open("#{outfile}", "w+") do |f|
+      File.open(outfile.to_s, "w+") do |f|
         f.write content
       end
-      if FalkorLib::Git.init?(File.dirname(outfile)) and ! options[:no_commit]
-        do_commit = options[:no_interaction] ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
+      if FalkorLib::Git.init?(File.dirname(outfile)) && !options[:no_commit]
+        do_commit = (options[:no_interaction]) ? 'yes' : ask( cyan("  ==> commit the changes (Y|n)"), 'Yes')
         FalkorLib::Git.add(outfile, "update content of '#{File.basename(outfile)}'") if do_commit =~ /y.*/i
       end
-      return 1
+      1
     end
 
 
@@ -408,16 +409,16 @@ module FalkorLib #:nodoc:
     #   :srcdir [string]: source directory, make the `src` file relative to that directory
     #   :outfile [string]: alter the outfile name (File.basename(src) by default)
     #   :no_commit [boolean]:          do not (offer to) commit the changes
-    def write_from_template(src,dstdir,options = {
-                              :no_interaction => false,
-                              :no_commit      => false,
-                              :srcdir         => '',
-                              :outfile        => ''
-                            })
-      srcfile = options[:srcdir].nil? ? src : File.join(options[:srcdir], src)
-      error "Unable to find the source file #{srcfile}" unless File.exists? ( srcfile )
+    def write_from_template(src, dstdir, options = {
+      :no_interaction => false,
+      :no_commit      => false,
+      :srcdir         => '',
+      :outfile        => ''
+    })
+      srcfile = (options[:srcdir].nil?) ? src : File.join(options[:srcdir], src)
+      error "Unable to find the source file #{srcfile}" unless File.exist? ( srcfile )
       error "The destination directory '#{dstdir}' do not exist" unless File.directory?( dstdir )
-      dstfile = options[:outfile].nil? ? File.basename(srcfile) : options[:outfile]
+      dstfile = (options[:outfile].nil?) ? File.basename(srcfile) : options[:outfile]
       outfile = File.join(dstdir, dstfile)
       content = File.read( srcfile )
       show_diff_and_write(content, outfile, options)
@@ -430,7 +431,7 @@ module FalkorLib #:nodoc:
         :version => File.join(rootdir, '.ruby-version'),
         :gemset  => File.join(rootdir, '.ruby-gemset')
       }
-      unless File.exists?( "#{rvm_files[:version]}")
+      unless File.exist?( (rvm_files[:version]).to_s)
         v = select_from(FalkorLib.config[:rvm][:rubies],
                         "Select RVM ruby to configure for this directory",
                         3)
@@ -438,13 +439,12 @@ module FalkorLib #:nodoc:
           f.puts v
         end
       end
-      unless File.exists?( "#{rvm_files[:gemset]}")
-        g = gemset.empty? ? ask("Enter RVM gemset name for this directory", File.basename(rootdir)) : gemset
+      unless File.exist?( (rvm_files[:gemset]).to_s)
+        g = (gemset.empty?) ? ask("Enter RVM gemset name for this directory", File.basename(rootdir)) : gemset
         File.open( rvm_files[:gemset], 'w') do |f|
           f.puts g
         end
       end
-
     end
 
     ###### normalize_path ######
@@ -454,16 +454,16 @@ module FalkorLib #:nodoc:
     #  * :relative   [boolean] return relative path to the root dir
     ##
     def normalized_path(dir = Dir.pwd, options = {})
-      rootdir = FalkorLib::Git.init?(dir) ? FalkorLib::Git.rootdir(dir) : dir
+      rootdir = (FalkorLib::Git.init?(dir)) ? FalkorLib::Git.rootdir(dir) : dir
       path = dir
       path = Dir.pwd if dir == '.'
-      path = File.join(Dir.pwd,  dir) unless (dir =~ /^\// or dir == '.')
-      if (options[:relative] or options[:relative_to])
-        root = options[:relative_to] ? options[:relative_to] : rootdir
+      path = File.join(Dir.pwd, dir) unless (dir =~ /^\// || (dir == '.'))
+      if (options[:relative] || options[:relative_to])
+        root = (options[:relative_to]) ? options[:relative_to] : rootdir
         relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
         path = relative_path_to_root.to_s
       end
-      return path
+      path
     end # normalize_path
 
   end
