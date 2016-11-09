@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 16:35 svarrette>
+# Time-stamp: <Wed 2016-11-09 17:25 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -36,6 +36,8 @@ module FalkorLib
                    options = {
                      :no_interaction => false
                    })
+        raise FalkorLib::ExecError "Not used in a Git repository" unless FalkorLib::Git.init?
+        exit_status = 0
         path   = normalized_path(dir)
         rootdir = FalkorLib::Git.rootdir(path)
         info "Create a symlink to one of Falkor's Makefile"
@@ -61,7 +63,7 @@ module FalkorLib
         makefile = 'Makefile'
         type     = 'latex'
         # recall to place the default option (--latex) at the last position
-        [ :gnuplot, :images, :generic, :markdown] .each do |e|
+        [ :gnuplot, :images, :generic, :markdown, :repo] .each do |e|
           if options[e.to_sym]
             type = e.to_s
             break
@@ -75,13 +77,15 @@ module FalkorLib
           info "Bootstrapping #{type.capitalize} Makefile (as symlink to Falkor's Makefile)"
           really_continue? unless options[:no_interaction]
           Dir.chdir( path ) do
-            run %{ ln -s #{dst} Makefile }
+             exit_status = run %{ ln -s #{dst} Makefile }
           end
           #ap File.join(path, 'Makefile')
-          FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
+           exit_status = FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
         else
           puts "  ... Makefile already setup"
+          exit_status = 1
         end
+        exit_status.to_i
       end # makefile_link
 
       ###### rootlink ######
@@ -91,6 +95,7 @@ module FalkorLib
       ##
       def root(dir = Dir.pwd, options = {})
         raise FalkorLib::ExecError "Not used in a Git repository" unless FalkorLib::Git.init?
+        exit_status = 0
         path  = normalized_path(dir)
         relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path)))
         if "#{relative_path_to_root}" == "."
@@ -104,12 +109,15 @@ module FalkorLib
           # Format: ln_s(old, new, options = {}) -- Creates a symbolic link new which points to old.
           #FileUtils.ln_s "#{relative_path_to_root}", "#{target}"
           Dir.chdir( path ) do
-            run %{ ln -s #{relative_path_to_root} #{target} }
+            exit_status = run %{ ln -s #{relative_path_to_root} #{target} }
           end
-          FalkorLib::Git.add(File.join(path, target), "Add symlink to the root directory as .root")
+          exit_status = FalkorLib::Git.add(File.join(path, target),
+                                           "Add symlink to the root directory as .root")
         else
           puts "  ... the symbolic link '#{target}' already exists"
+          exit_status = 1
         end
+        exit_status.to_i
       end # rootlink
 
 
