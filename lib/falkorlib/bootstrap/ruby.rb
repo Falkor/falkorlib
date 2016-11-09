@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-11-03 00:53 svarrette>
+# Time-stamp: <Wed 2016-11-09 20:16 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -57,7 +57,7 @@ module FalkorLib
                   options[:ruby] :
                   select_from(FalkorLib.config[:rvm][:rubies],
                               "Select RVM ruby to configure for this directory",
-                              1)
+                              (FalkorLib.config[:rvm][:rubies].find_index(FalkorLib.config[:rvm][:version]) + 1))
                 info " ==>  configuring RVM version file '#{files[:versionfile]}' for ruby version '#{v}'"
                 File.open(file, 'w') do |f|
                     f.puts v
@@ -92,7 +92,7 @@ module FalkorLib
                 end
                 FalkorLib::Git.add(gemfile) if use_git
             end
-            exit_status
+            exit_status.to_i
         end # rvm
 
     end # module Bootstrap
