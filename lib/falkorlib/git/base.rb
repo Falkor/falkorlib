@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 09:14 svarrette>
+# Time-stamp: <Wed 2016-11-09 13:38 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -200,13 +200,11 @@ module FalkorLib  #:nodoc:
       error "no branch provided" if branch.nil?
       remotes  = FalkorLib::Git.remotes(path)
       branches = FalkorLib::Git.list_branch(path)
-      Dir.chdir(FalkorLib::Git.rootdir( path ) ) do
-        if branches.include? "remotes/#{remote}/#{branch}"
-          info "Grab the branch '#{remote}/#{branch}'"
-          exit_status = execute "git branch --set-upstream #{branch} #{remote}/#{branch}"
-        else
-          warning "the remote branch '#{remote}/#{branch}' cannot be found"
-        end
+      if branches.include? "remotes/#{remote}/#{branch}"
+        info "Grab the branch '#{remote}/#{branch}'"
+        exit_status = execute_in_dir(FalkorLib::Git.rootdir( path ), "git branch --track #{branch} #{remote}/#{branch}")
+      else
+        warning "the remote branch '#{remote}/#{branch}' cannot be found"
       end
       exit_status
     end
@@ -225,7 +223,7 @@ module FalkorLib  #:nodoc:
           exit_status = run %{
                           git push #{remote} #{branch}:refs/heads/#{branch}
                           git fetch #{remote}
-                          git branch --set-upstream-to #{remote}/#{branch} #{branch}
+                          git branch -u #{remote}/#{branch} #{branch}
                 }
         end
       end
@@ -268,11 +266,13 @@ module FalkorLib  #:nodoc:
 
     ## Get the last tag commit, or nil if no tag can be found
     def last_tag_commit(path = Dir.pwd)
-      res = nil
+      res = ""
       g = MiniGit.new(path)
-      # git rev-list --tags --max-count=1)
-      a = g.capturing.rev_list :tags => true, :max_count => 1
-      a
+      unless (g.capturing.tag :list => true).empty?
+        # git rev-list --tags --max-count=1
+        res = (g.capturing.rev_list :tags => true, :max_count => 1).chomp
+      end
+      res
     end # last_tag_commit
 
     ## List of Git remotes
@@ -281,10 +281,29 @@ module FalkorLib  #:nodoc:
       g.capturing.remote.split()
     end
 
-    ## remotes?(path = Dir.pw)
+    ## Check existence of remotes
     def remotes?(path = Dir.pwd)
       return ! remotes(path).empty?
     end
+
+    # Create a new remote <name> targeting url <url>
+    # You can pass additional options expected by git remote add in <opts>,
+    # for instance as follows:
+    #
+    #  create_remote('origin', url, dir, { :fetch => true })
+    #
+    def create_remote(name, url, path = Dir.pwd, opts = {})
+      g = MiniGit.new(path)
+      g.remote :add, opts, name, "#{url}"
+    end
+
+    # Delete a branch.
+    # def delete_branch(branch, path = Dir.pwd, opts = { :force => false })
+    #   g = MiniGit.new(path)
+    #   error "'#{branch}' is not a valid existing branch" unless list_branch(path).include?( branch )
+    #   g.branch (opts[:force] ? :D : :d) => "#{branch}"
+    # end
+
 
     ###
     # Initialize git submodule from the configuration
@@ -432,7 +451,7 @@ module FalkorLib  #:nodoc:
 
     # Raise a warning message if subtree/submodule section is not present
     def config_warn(type = :subtrees)
-      warn "You shall setup 'FalkorLib.config.git[#{type.to_sym}]' to configure #{type} as follows:"
+      warn "You shall setup 'Falkorlib.config.git[#{type.to_sym}]' to configure #{type} as follows:"
       warn "     FalkorLib.config.git do |c|"
       warn "       c[#{type.to_sym}] = {"
       warn "          '<subdir>' => {"
@@ -442,7 +461,8 @@ module FalkorLib  #:nodoc:
       warn "        }"
       warn "     end"
       if type == :submodules
-        warn "This will configure the Git submodule into FalkorLib.config.git.submodulesdir i.e. '#{ FalkorLib.config.git.submodulesdir}'"
+        warn "This will configure the Git submodule into FalkorLib.config.git.submodulesdir"
+        warn "i.e. '#{FalkorLib.config.git[:submodulesdir]}'" if FalkorLib.config.git[:submodulesdir]
       end
     end
 
