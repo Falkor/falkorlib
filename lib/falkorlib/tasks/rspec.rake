@@ -44,7 +44,7 @@ begin
     specsuite[$1] = [] unless specsuite[$1]
     specsuite[$1] << f
   end
-  rspec_opts = [ "--color", "--format p" ]
+  rspec_opts = [ "--color", "--format d", "--backtrace" ]
   unless specsuite.empty?
     #.....................
     namespace :rspec do
@@ -55,7 +55,7 @@ begin
           ###########   #{name}   ###########
           desc "Run all specs in #{name} spec suite"
           RSpec::Core::RakeTask.new(name.to_sym) do |t|
-            t.pattern = "spec/**/#{name}*_spec.rb"
+            t.pattern = "spec/**/#{name}_*spec.rb"
             t.verbose = false
             t.rspec_opts = rspec_opts
           end # task #{name}
