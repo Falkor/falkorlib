@@ -21,6 +21,8 @@ Style/ParenthesesAroundCondition:
   Enabled: false
 Style/RedundantParentheses:
   Enabled: false
+Style/TernaryParentheses:
+  EnforcedStyle: require_parentheses
 
 # Rules for spaces
 Style/EmptyLinesAroundBlockBody:
@@ -29,6 +31,17 @@ Style/EmptyLinesAroundClassBody:
   EnforcedStyle: empty_lines_except_namespace
 Style/EmptyLinesAroundModuleBody:
   EnforcedStyle: empty_lines_except_namespace
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+# this one would crash with configatron
+Style/MutableConstant:
+  Enabled: false
+
+# No I don't want $? to be changed in $CHILD_STATUS...
+Style/SpecialGlobalVars:
+  Enabled: false
 
 ### Metrics
 # Rubocop was chosen only for style, and not for complexity or quality checks.
