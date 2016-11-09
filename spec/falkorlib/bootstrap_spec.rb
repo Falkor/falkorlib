@@ -2,9 +2,9 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 16:27 svarrette>
+# Time-stamp: <Wed 2016-11-09 16:28 svarrette>
 #
-# @description Check the Bootstrapping operations
+# @description Check the basic Bootstrapping operations
 #
 # Copyright (c) 2013 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
