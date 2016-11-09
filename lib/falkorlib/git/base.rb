@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 13:38 svarrette>
+# Time-stamp: <Wed 2016-11-09 16:14 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -145,7 +145,7 @@ module FalkorLib  #:nodoc:
     # Retrieve the Git configuration
     # You can propose a pattern as key
     # Supported options:
-    #  * :list [boolean] list all configutations
+    #  * :list [boolean] list all configurations
     #  * :hash [boolean] return a Hash
     ##
     def config(key, dir = Dir.pwd, options = {})
@@ -188,6 +188,7 @@ module FalkorLib  #:nodoc:
       res.each { |e| e.sub!(/^\*?\s+/, '')  }
       res
     end
+
 
     ## Get the current git branch
     def branch?(path = Dir.pwd)
@@ -264,6 +265,19 @@ module FalkorLib  #:nodoc:
       ! a.empty?
     end
 
+    ## Get a hash table of tags under the format
+    #  { <tag> => <commit> }
+    def list_tag(path = Dir.pwd)
+      res = {}
+      cg  = MiniGit::Capturing.new(path)
+      unless (cg.tag :list => true).empty?
+        # git show-ref --tags
+        a = (cg.show_ref :tags => true).split("\n")
+        res = Hash[ a.collect{ |item| item.split(' refs/tags/') } ].invert
+      end
+      res
+    end # list_tag
+
     ## Get the last tag commit, or nil if no tag can be found
     def last_tag_commit(path = Dir.pwd)
       res = ""
@@ -274,6 +288,16 @@ module FalkorLib  #:nodoc:
       end
       res
     end # last_tag_commit
+
+    ## Create a new tag
+    # You can add extra options to the git tag command through the opts hash.
+    # Ex:
+    #   FalkorLib::Git.tag('name', dir,  { :delete => true } )
+    #
+    def tag(name, path = Dir.pwd, opts = {})
+      g = MiniGit.new(path)
+      g.tag opts, name
+    end # tag
 
     ## List of Git remotes
     def remotes(path = Dir.pwd)

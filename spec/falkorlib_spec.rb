@@ -5,4 +5,9 @@ describe FalkorLib do
         expect(FalkorLib.const_defined?(:VERSION)).to be true
     end
 
+    it "self.lib" do
+      expect(FalkorLib.lib).to include 'lib'
+    end
+
+
 end
