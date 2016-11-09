@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 #########################################
-# bootstrap_link_spec.rb
+# bootstrap_ruby_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 20:28 svarrette>
+# Time-stamp: <Wed 2016-11-09 20:36 svarrette>
 #
-# @description Check the Bootstrapping operations for [sym]link
+# @description Check the Bootstrapping operations for ruby-based projects
 #
 # Copyright (c) 2013 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -91,24 +91,24 @@ describe FalkorLib::Bootstrap do
 
       end
 
-      # it "#rvm -- change targets (ctx = #{ctx}; dir = #{dir})" do
-      #     opts = {
-      #         :ruby        => '1.2.3',
-      #         :versionfile => '.myversion',
-      #         :gemset      => 'newgemset',
-      #         :gemsetfile  => '.mygemset'
-      #     }
-      #     c = FalkorLib::Bootstrap.rvm(dir, opts)
-      #     expect(c).to eq(0)
-      #     content = {}
-      #     [:versionfile, :gemsetfile].each do |type|
-      #         f = File.join("#{dir}", opts[type.to_sym])
-      #         t = File.exists?(f)
-      #         content[type.to_sym] = `cat #{f}`.chomp
-      #     end
-      #     expect(content[:versionfile]).to eq(opts[:ruby])
-      #     expect(content[:gemsetfile]).to  eq(opts[:gemset])
-      # end
+      it "#rvm -- change targets (ctx = #{ctx}; dir = #{dir})" do
+          opts = {
+              :ruby        => '1.2.3',
+              :versionfile => '.myversion',
+              :gemset      => 'newgemset',
+              :gemsetfile  => '.mygemset'
+          }
+          c = FalkorLib::Bootstrap.rvm(dir, opts)
+          expect(c).to eq(0)
+          content = {}
+          [:versionfile, :gemsetfile].each do |type|
+              f = File.join("#{dir}", opts[type.to_sym])
+              t = File.exists?(f)
+              content[type.to_sym] = `cat #{f}`.chomp
+          end
+          expect(content[:versionfile]).to eq(opts[:ruby])
+          expect(content[:gemsetfile]).to  eq(opts[:gemset])
+      end
 
 
 
