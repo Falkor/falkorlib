@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-11-10 00:40 svarrette>
+# Time-stamp: <Thu 2016-11-10 01:36 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -22,14 +22,15 @@ module FalkorLib
 
     ###### latex ######
     # Bootstrap a LaTeX sub-project of type <type> within a given repository <dir>.
-    # Supported types:
     #  * :beamer    LaTeX Beamer Slides
     #  * :article   LaTeX article
-    #  * :ieee      LaTeX IEEE article
+    #  * :ieee      LaTeX IEEE conference article
     #  * :ieee_jnl  LaTeX IEEE journal
+    #  * :acm       LaTeX ACM conference article
     #  * :letter    LaTeX Letter
     # Supported options:
     #  * :force [boolean] force action
+    #  * :no_interaction [boolean]: do not interact
     ##
     def latex(dir = Dir.pwd, type = :beamer, options = {})
       ap options if options[:debug]
@@ -44,13 +45,13 @@ module FalkorLib
       # initiate the repository if needed
       unless File.directory?( path )
         warn "The directory '#{path}' does not exists and will be created"
-        really_continue? unless options[:force]
+        really_continue? unless options[:no_interaction]
         run %{ mkdir -p #{path} }
       end
       repo(path, options) unless FalkorLib::Git.init?(path)
       rootdir = FalkorLib::Git.rootdir(path)
       info "Initiate a LaTeX #{type} project from the Git root directory: '#{rootdir}'"
-      really_continue? unless options[:force]
+      really_continue? unless options[:no_interaction]
       relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path))).to_s
       config[:name] = options[:name] ? options[:name] : ask("\tEnter the name of the #{type} LaTeX project: ", File.basename(path))
       raise FalkorLib::ExecError "Empty project name" if config[:name].empty?
@@ -71,13 +72,14 @@ module FalkorLib
       else
         default_project_dir += "/#{config[:name]}" unless default_project_dir =~ /#{config[:name]}$/
       end
-      project_dir = options[:dir] ? options[:dir] : ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{default_project_dir}")
+      project_dir = (options[:dir]) ? options[:dir] : default_project_dir
+      project_dir = ask("\tLaTeX Sources directory (relative to the Git root directory)", "#{project_dir}") unless options[:no_interaction]
       raise FalkorLib::ExecError "Empty project directory" if project_dir.empty?
       src_project_dir = File.join(project_dir, 'src')
       srcdir = File.join(rootdir, src_project_dir)
       if File.exists?(File.join(srcdir, '.root'))
         warn "The directory '#{project_dir}' seems to have been already initialized"
-        really_continue? unless options[:force]
+        really_continue? unless options[:no_interaction]
       end
       FalkorLib::GitFlow.start('feature', config[:name], rootdir) if FalkorLib::GitFlow.init?(rootdir)
       # === prepare Git submodules ===
@@ -111,12 +113,14 @@ module FalkorLib
       end
 
       # Bootstrap the directory
-      templatedir = File.join( FalkorLib.templates, 'latex', "#{type}")
+      src_templatedir = File.join( FalkorLib.templates, 'latex')
       unless File.exists?( File.join(srcdir, "#{config[:name]}.tex"))
         info "gathering information for the LaTeX templates"
         prefix = case type
-                 when :article, :ieee
+                 when :article, :ieee, :acm
                    'Article '
+                 when :ieee_journal
+                   'IEEE Journal '
                  when :beamer
                    'Slides '
                  when :bookchapter
@@ -128,10 +132,22 @@ module FalkorLib
                  end
         config.each do |k,v|
           next if k == :name
-          config[k.to_sym] = ask( "\t" + sprintf("%-20s", "#{prefix}#{k.capitalize}"), v)
+          config[k.to_sym] = ask( "\t" + sprintf("%-20s", "#{prefix}#{k.capitalize}"), v) unless options[:no_interaction]
         end
-        init_from_template(templatedir, srcdir, config, {:no_interaction => true,
-                                                         :no_commit      => true })
+        templates = [ File.join(src_templatedir, "#{type}") ]
+        if [ :ieee, :ieee_journal, :acm].include?( type )
+          templates << File.join(src_templatedir, 'article')
+          templates << File.join(src_templatedir, "article-#{type}")
+        end
+        if type == :article
+          templates << File.join(src_templatedir, 'ieee')
+          templates << File.join(src_templatedir, 'article-ieee')
+        end
+        templates.each do |templatedir|
+          info "**** using templatedir = #{templatedir}"
+          init_from_template(templatedir, srcdir, config, { :no_interaction => true,
+                                                            :no_commit      => true })
+        end
         # Rename the main file
         Dir.chdir( srcdir ) do
           run %{ mv main.tex #{config[:name]}.tex }

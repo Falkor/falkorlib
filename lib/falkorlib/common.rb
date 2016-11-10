@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 11:54 svarrette>
+# Time-stamp: <Thu 2016-11-10 01:24 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -306,7 +306,7 @@ module FalkorLib #:nodoc:
                            })
       error "Unable to find the template directory" unless File.directory?(templatedir)
       warning "about to initialize/update the directory #{rootdir}"
-      really_continue?
+      really_continue? unless options[:no_interaction]
       run %( mkdir -p #{rootdir} ) unless File.directory?( rootdir )
       run %( rsync --exclude '*.erb' --exclude '.texinfo*' -avzu #{templatedir}/ #{rootdir}/ )
       Dir["#{templatedir}/**/*.erb"].each do |erbfile|
