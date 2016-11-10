@@ -12,3 +12,4 @@ tmp/
 /.falkorlib.yaml
 /lib/falkorlib/thor.old/
 /.falkor/
+.vagrant/
