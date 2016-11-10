@@ -2,7 +2,7 @@
 #########################################
 # versioning_puppet_module_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-10 02:03 svarrette>
+# Time-stamp: <Thu 2016-11-10 02:04 svarrette>
 #
 # @description Check the versioning operations on Gems
 #
@@ -30,17 +30,21 @@ describe FalkorLib::Versioning::Puppet do
     :major   => '5.0.0'
   }
 
+  #_____________
   before :all do
     configatron.temp_start
+    FalkorLib.config[:no_interaction] = true
     FalkorLib.config.versioning do |c|
       c[:type] = 'puppet_module'
     end
   end
 
+  #_____________
   after :all do
     configatron.temp_end
     FileUtils.remove_entry_secure dir
     FalkorLib.config.versioning[:type] = 'file'
+    FalkorLib.config[:no_interaction] = false
   end
 
   # configatron.temp do
@@ -53,7 +57,7 @@ describe FalkorLib::Versioning::Puppet do
 
     ap default_version
     it "#get_version -- get default version #{default_version} after initialization" do
-      Array.new(17).each { |e|  expect(STDIN).to receive(:gets).and_return('') }
+      #Array.new(17).each { |e|  expect(STDIN).to receive(:gets).and_return('') }
       FalkorLib::Puppet::Modules.init(moduledir)
       v = FalkorLib::Versioning.get_version(moduledir)
       expect(v).to eq(default_version)
@@ -64,7 +68,7 @@ describe FalkorLib::Versioning::Puppet do
     end
 
     it "#set_version -- should set the '#{workingversion[:default]}' version" do
-      expect(STDIN).to receive(:gets).and_return('Yes')
+      #expect(STDIN).to receive(:gets).and_return('Yes')
       v = FalkorLib::Versioning.set_version(workingversion[:default], moduledir)
       expect(v).to eq(0)
     end
