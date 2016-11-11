@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 14:47 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:05 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -9,7 +9,7 @@ require "falkorlib"
 require "falkorlib/common"
 require "falkorlib/bootstrap"
 
-require 'erb'      # required for module generation
+require 'erb' # required for module generation
 require 'artii'
 require 'facter'
 
@@ -17,7 +17,8 @@ include FalkorLib::Common
 
 
 module FalkorLib
-  module Bootstrap
+  module Bootstrap #:nodoc:
+
     module_function
 
     ###### repo ######
@@ -77,22 +78,22 @@ module FalkorLib
       if options[:make]
         info " ==> prepare Root Makefile"
         makefile = File.join(path, "Makefile")
-        unless File.exist?( makefile )
+        if File.exist?( makefile )
+          puts "  ... not overwriting the root Makefile which already exists"
+        else
           src_makefile = File.join(path, FalkorLib.config.git[:submodulesdir],
                                    'Makefiles', 'repo', 'Makefile')
           FileUtils.cp src_makefile, makefile
           info "adapting Makefile to the gitflow branches"
           Dir.chdir( path ) do
-            run %{
+            run %(
    sed -i '' \
         -e \"s/^GITFLOW_BR_MASTER=production/GITFLOW_BR_MASTER=#{gitflow_branches[:master]}/\" \
         -e \"s/^GITFLOW_BR_DEVELOP=devel/GITFLOW_BR_DEVELOP=#{gitflow_branches[:develop]}/\" \
         Makefile
-                        }
+                        )
           end
           FalkorLib::Git.add(makefile, 'Initialize root Makefile for the repo')
-        else
-          puts "  ... not overwriting the root Makefile which already exists"
         end
       end
       if options[:rake]
@@ -103,7 +104,7 @@ module FalkorLib
           erbfiles = [ 'header_rakefile.erb' ]
           erbfiles << 'rakefile_gitflow.erb' if FalkorLib::GitFlow.init?(path)
           erbfiles << 'footer_rakefile.erb'
-          write_from_erb_template(erbfiles, rakefile, {}, { :srcdir => "#{templatedir}" })
+          write_from_erb_template(erbfiles, rakefile, {}, :srcdir => templatedir.to_s)
         end
       end
 
@@ -118,7 +119,7 @@ module FalkorLib
 
       #===== remote synchro ========
       if options[:remote_sync]
-        remotes  = FalkorLib::Git.remotes(path)
+        remotes = FalkorLib::Git.remotes(path)
         if remotes.include?( 'origin' )
           info "perform remote synchronization"
           [ :master, :develop ].each do |t|
@@ -128,7 +129,6 @@ module FalkorLib
           warning "no Git remote  'origin' found, thus no remote synchronization performed"
         end
       end
-
     end # repo
 
 
