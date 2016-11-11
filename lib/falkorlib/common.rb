@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-11-10 01:24 svarrette>
+# Time-stamp: <Fri 2016-11-11 14:17 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -151,7 +151,7 @@ module FalkorLib #:nodoc:
     ## Execute a given command - exit if status != 0
     def exec_or_exit(cmd)
       status = execute(cmd)
-      if (status.to_i != 0)
+      if (status.to_i.nonzero?)
         error("The command '#{cmd}' failed with exit status #{status.to_i}")
       end
       status
@@ -346,7 +346,7 @@ module FalkorLib #:nodoc:
       content = ""
       erbfiles.each do |f|
         erb = (options[:srcdir].nil?) ? f : File.join(options[:srcdir], f)
-        unless File.exist? (erb)
+        unless File.exist?(erb)
           warning "Unable to find the template ERBfile '#{erb}'"
           really_continue? unless options[:no_interaction]
           next
@@ -375,7 +375,7 @@ module FalkorLib #:nodoc:
       if File.exist?( outfile )
         ref = File.read( outfile )
         if options[:json_pretty_format]
-          ref = JSON.pretty_generate (JSON.parse( IO.read( outfile ) ))
+          ref = JSON.pretty_generate(JSON.parse( IO.read( outfile ) ))
         end
         if ref == content
           warn "Nothing to update"
@@ -416,7 +416,7 @@ module FalkorLib #:nodoc:
       :outfile        => ''
     })
       srcfile = (options[:srcdir].nil?) ? src : File.join(options[:srcdir], src)
-      error "Unable to find the source file #{srcfile}" unless File.exist? ( srcfile )
+      error "Unable to find the source file #{srcfile}" unless File.exist?( srcfile )
       error "The destination directory '#{dstdir}' do not exist" unless File.directory?( dstdir )
       dstfile = (options[:outfile].nil?) ? File.basename(srcfile) : options[:outfile]
       outfile = File.join(dstdir, dstfile)
