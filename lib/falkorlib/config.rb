@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 20:13 svarrette>
+# Time-stamp: <Fri 2016-11-11 14:21 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -16,6 +16,7 @@ require "deep_merge"
 module FalkorLib #:nodoc:
 
   class << self
+
     # Yields up a configuration object when given a block.
     # Without a block it just returns the configuration object.
     # Uses Configatron under the covers.
@@ -26,19 +27,21 @@ module FalkorLib #:nodoc:
     #   end
     #
     #   FalkorLib.config.foo # => :bar
-    def config(&block)
+    def config
       yield configuration if block_given?
       configuration
     end
 
     ## initiate the configuration (with default value) if needed
     def configuration
-      @config ||= Configatron::Store.new(options = FalkorLib::Config.default)
+      @config ||= Configatron::Store.new(FalkorLib::Config.default)
     end
+
   end
 
 
   module Config #:nodoc:
+
     # Defaults global settings
     DEFAULTS = {
       :debug          => false,
@@ -76,14 +79,14 @@ module FalkorLib #:nodoc:
         res[:gitflow]    = FalkorLib::Config::GitFlow::DEFAULTS    if path.include?('lib/falkorlib/git.rb')
         res[:versioning] = FalkorLib::Config::Versioning::DEFAULTS if path.include?('lib/falkorlib/versioning.rb')
         if path.include?('lib/falkorlib/puppet.rb')
-          res[:puppet]     = FalkorLib::Config::Puppet::DEFAULTS
+          res[:puppet] = FalkorLib::Config::Puppet::DEFAULTS
           res[:templates][:puppet][:modules] = FalkorLib::Config::Puppet::Modules::DEFAULTS[:metadata]
         end
       end
       # Check the potential local customizations
       [:local, :private].each do |type|
         custom_cfg = File.join( res[:root], res[:config_files][type.to_sym])
-        if File.exists?( custom_cfg )
+        if File.exist?( custom_cfg )
           res.deep_merge!( load_config( custom_cfg ) )
         end
       end
@@ -96,9 +99,9 @@ module FalkorLib #:nodoc:
     #  * :file [string] filename for the local configuration
     ##
     def get(dir = Dir.pwd, type = :local, options = {})
-      conffile = config_file(dir,type,options)
+      conffile = config_file(dir, type, options)
       res = {}
-      res = load_config( conffile ) if File.exists?( conffile )
+      res = load_config( conffile ) if File.exist?( conffile )
       res
     end # get
 
@@ -109,7 +112,7 @@ module FalkorLib #:nodoc:
       path = normalized_path(dir)
       path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
       raise FalkorLib::Error, "Wrong FalkorLib configuration type" unless FalkorLib.config[:config_files].keys.include?( type.to_sym)
-      return options[:file] ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
+      (options[:file]) ? options[:file] : File.join(path, FalkorLib.config[:config_files][type.to_sym])
     end # get_or_save
 
 
@@ -120,15 +123,16 @@ module FalkorLib #:nodoc:
     #  * :no_interaction [boolean]: do not interact
     ##
     def save(dir = Dir.pwd, config = {}, type = :local, options = {})
-      conffile = config_file(dir,type,options)
+      conffile = config_file(dir, type, options)
       confdir  = File.dirname( conffile )
       unless File.directory?( confdir )
         warning "about to create the configuration directory #{confdir}"
         really_continue?  unless options[:no_interaction]
-        run %{ mkdir -p #{confdir} }
+        run %( mkdir -p #{confdir} )
       end
       store_config(conffile, config, options)
     end # save
 
   end
+
 end # module FalkorLib
