@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2016-11-11 16:04 svarrette>
+# Time-stamp: <Fri 2016-11-11 16:15 svarrette>
 #
 # @description Check the Git operations
 #
@@ -68,8 +68,8 @@ describe FalkorLib::Git do
             end
         end
 
-        it "#has_commits? - not yet any commits" do
-            b = FalkorLib::Git.has_commits?( dir )
+        it "#commits? - not yet any commits" do
+            b = FalkorLib::Git.commits?( dir )
             expect(b).to be false
         end
 
@@ -98,8 +98,8 @@ describe FalkorLib::Git do
         end
 
 
-        it "#has_commits? - no some commits have been done" do
-            b = FalkorLib::Git.has_commits?( dir )
+        it "#commits? - no some commits have been done" do
+            b = FalkorLib::Git.commits?( dir )
             expect(b).to be true
         end
 

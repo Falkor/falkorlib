@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 09:14 svarrette>
+# Time-stamp: <Fri 2016-11-11 16:15 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -76,7 +76,7 @@ module FalkorLib
       remotes      = FalkorLib::Git.remotes(path)
       git_root_dir = FalkorLib::Git.rootdir( path )
       Dir.chdir( git_root_dir ) do
-        unless FalkorLib::Git.has_commits?( git_root_dir)
+        unless FalkorLib::Git.commits?( git_root_dir)
           warn "Not yet any commit detected in this repository."
           readme = 'README.md'
           unless File.exist?( readme )

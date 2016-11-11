@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 16:02 svarrette>
+# Time-stamp: <Fri 2016-11-11 16:24 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -47,11 +47,11 @@ module FalkorLib #:nodoc:
     end
 
     ## Check if the repositories already holds some commits
-    def has_commits?(path)
+    def commits?(path)
       res = false
       Dir.chdir(path) do
-        stdout, stderr, exit_status = Open3.capture3( "git rev-parse HEAD" )
-        res = (exit_status == 0)
+        _stdout, _stderr, exit_status = Open3.capture3( "git rev-parse HEAD" )
+        res = (exit_status.zero?)
       end
       res
     end
@@ -132,7 +132,7 @@ module FalkorLib #:nodoc:
     def create_branch(branch, path = Dir.pwd)
       #ap method(__method__).parameters.map { |arg| arg[1] }
       g = MiniGit.new(path)
-      error "not yet any commit performed -- You shall do one" unless has_commits?(path)
+      error "not yet any commit performed -- You shall do one" unless commits?(path)
       g.branch branch.to_s
     end
 
@@ -184,7 +184,7 @@ module FalkorLib #:nodoc:
       res = res.split("\n")
       # Eventually reorder to make the first element of the array the current branch
       i = res.find_index { |e| e =~ /^\*\s/ }
-      res[0], res[i] = res[i], res[0] unless (i.nil? || i == 0)
+      res[0], res[i] = res[i], res[0] unless (i.nil? || i.zero?)
       res.each { |e| e.sub!(/^\*?\s+/, '') }
       res
     end
@@ -199,7 +199,7 @@ module FalkorLib #:nodoc:
     def grab(branch, path = Dir.pwd, remote = 'origin')
       exit_status = 1
       error "no branch provided" if branch.nil?
-      remotes  = FalkorLib::Git.remotes(path)
+      #remotes  = FalkorLib::Git.remotes(path)
       branches = FalkorLib::Git.list_branch(path)
       if branches.include? "remotes/#{remote}/#{branch}"
         info "Grab the branch '#{remote}/#{branch}'"
@@ -214,7 +214,7 @@ module FalkorLib #:nodoc:
     def publish(branch, path = Dir.pwd, remote = 'origin')
       exit_status = 1
       error "no branch provided" if branch.nil?
-      remotes  = FalkorLib::Git.remotes(path)
+      #remotes  = FalkorLib::Git.remotes(path)
       branches = FalkorLib::Git.list_branch(path)
       Dir.chdir(FalkorLib::Git.rootdir( path ) ) do
         if branches.include? "remotes/#{remote}/#{branch}"
@@ -242,7 +242,7 @@ module FalkorLib #:nodoc:
     # * :force [boolean]: force the add
     def add(path, msg = "", options = {})
       exit_status = 0
-      dir  = File.realpath (File.dirname(path))
+      dir  = File.realpath(File.dirname(path))
       root = rootdir(path)
       relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
       real_msg = ((msg.empty?) ? "add '#{relative_path_to_root}'" : msg)
@@ -266,7 +266,7 @@ module FalkorLib #:nodoc:
     end
 
     ## Get a hash table of tags under the format
-    #  { <tag> => <commit> }
+    #  { <tag> => <commit> }
     def list_tag(path = Dir.pwd)
       res = {}
       cg  = MiniGit::Capturing.new(path)
@@ -433,12 +433,12 @@ module FalkorLib #:nodoc:
       Dir.chdir(git_root_dir) do
         FalkorLib.config.git[:subtrees].each do |dir, conf|
           next if conf[:url].nil?
-          url    = conf[:url]
+          #url    = conf[:url]
           remote = dir.gsub(/\//, '-')
           branch = (conf[:branch].nil?) ? 'master' : conf[:branch]
           remotes = FalkorLib::Git.remotes
           raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
-          raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory? ( File.join(git_root_dir, dir) )
+          raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory?( File.join(git_root_dir, dir) )
           info "Git diff on subtree '#{dir}' with remote '#{remote}/#{branch}'"
           exit_status = execute "git diff #{remote}/#{branch} #{FalkorLib::Git.branch?( git_root_dir )}:#{dir}"
         end
@@ -454,7 +454,7 @@ module FalkorLib #:nodoc:
       Dir.chdir(git_root_dir) do
         FalkorLib.config.git[:subtrees].each do |dir, conf|
           next if conf[:url].nil?
-          url    = conf[:url]
+          #url    = conf[:url]
           remote = dir.gsub(/\//, '-')
           branch = (conf[:branch].nil?) ? 'master' : conf[:branch]
           remotes = FalkorLib::Git.remotes
@@ -462,7 +462,7 @@ module FalkorLib #:nodoc:
           raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
           info "\t\\__ fetching remote '#{remotes.join(',')}'"
           FalkorLib::Git.fetch( git_root_dir )
-          raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory? ( File.join(git_root_dir, dir) )
+          raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory?( File.join(git_root_dir, dir) )
           info "\t\\__ pulling changes"
           exit_status = execute "git subtree pull --prefix #{dir} --squash #{remote} #{branch}"
           #exit_status = puts "git subtree pull --prefix #{dir} --squash #{remote} #{branch}"
