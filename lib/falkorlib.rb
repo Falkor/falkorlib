@@ -33,6 +33,7 @@ require 'yaml'
 # Sebastien Varrette aka Falkor's Common library to share Ruby code
 # and `{rake,cap}` tasks
 module FalkorLib
+
   # Return the root directory of the gem
   def self.root
     File.expand_path '../..', __FILE__
@@ -45,6 +46,7 @@ module FalkorLib
   def self.templates
     File.join root, 'templates'
   end
+
 end # module FalkorLib
 
 require 'falkorlib/version'

@@ -105,7 +105,7 @@ begin
     #t.rspec_opts = ["--color", "--backtrace"]
     t.rspec_opts = rspec_opts #["--color", "--format d", "--backtrace"] # "--format d",
   end
-rescue LoadError => ex
+rescue LoadError
   task :spec_test do
     abort 'rspec is not available. In order to run spec, you must: gem install rspec'
   end

@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"] + Dir["spec/**/*"]
 
   # Alternative:
-  s.files         = `git ls-files`.split("\n")
+  s.files = `git ls-files`.split("\n")
   #s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   #s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   #
   #s.bindir = "bin"
 
-  s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
+  s.executables = (Dir["bin/*"]).collect { |f| File.basename(f) }
 
   ################################################################### REQUIREMENTS & INSTALL
   # Remember the gem version requirements operators and schemes:
@@ -97,12 +97,12 @@ Gem::Specification.new do |s|
   # for each development dependency. These gems are required for developers
   #
   #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
-  s.add_development_dependency("bundler",        "~> 1.0")
-  s.add_development_dependency 'rspec', '~> 3.0'   #, '>= 2.7.0'
+  s.add_development_dependency("bundler", "~> 1.0")
+  s.add_development_dependency 'rspec', '~> 3.0' #, '>= 2.7.0'
   s.add_development_dependency("pry",    "~> 0.9")
   s.add_development_dependency("yard",   "~> 0.8")
   s.add_development_dependency('rubocop', '~> 0.45.0')
-  s.add_development_dependency("rubygems-tasks",   "~> 0.2")
+  s.add_development_dependency("rubygems-tasks", "~> 0.2")
   s.add_development_dependency("travis",        "~> 1.6")
   s.add_development_dependency("travis-lint",   "~> 1.8")
   s.add_development_dependency('simplecov', '~> 0.12.0')
@@ -166,5 +166,4 @@ Gem::Specification.new do |s|
   # Extra files to add to RDoc such as README
   #
   s.extra_rdoc_files = Dir["README.md"] + Dir["CHANGELOG.md"] + Dir["LICENCE.md"]
-
 end

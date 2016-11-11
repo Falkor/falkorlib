@@ -40,9 +40,9 @@ end
 # Adapt the Git flow aspects
 FalkorLib.config.gitflow do |c|
   c[:branches] = {
-                  :master  => 'production',
-                  :develop => 'devel'
-                 }
+    :master => 'production',
+    :develop => 'devel'
+  }
 end
 
 require "falkorlib/tasks/git"    # OR require "falkorlib/git_tasks"

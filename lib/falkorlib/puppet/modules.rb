@@ -320,8 +320,8 @@ module FalkorLib #:nodoc:
                                          options)
           else
             i += write_from_template(f, moduledir,
-                                     { :no_interaction => options[:no_interaction],
-                                       :srcdir => templatedir })
+                                     :no_interaction => options[:no_interaction],
+                                     :srcdir => templatedir)
 
           end
         end
