@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-11-07 10:57 svarrette>
+# Time-stamp: <Fri 2016-11-11 14:58 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -124,7 +124,7 @@ end
 
 
 module FalkorLib
-  module Bootstrap
+  module Bootstrap #:nodoc:
 
     module_function
 
@@ -214,7 +214,7 @@ module FalkorLib
       info "Generate a motd (Message of the Day) file '#{outfile}'"
       FalkorLib::Config::Bootstrap::DEFAULTS[:motd].keys.each do |k|
         next if [:file, :width].include?(k)
-        config[k.to_sym] = ask( "\t" + sprintf("Message of the Day (MotD) %-10s", k.to_s), config[k.to_sym]) unless options[:no_interaction]
+        config[k.to_sym] = ask( "\t" + format("Message of the Day (MotD) %-10s", k.to_s), config[k.to_sym]) unless options[:no_interaction]
       end
       config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
       config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
@@ -278,8 +278,8 @@ module FalkorLib
           config[:forge] = Regexp.last_match(2).to_sym
           config[:by]    = Regexp.last_match(3)
         end
-      else
-        config[:forge] = select_forge(config[:forge]).to_sym if config[:forge].empty?
+      elsif config[:forge].empty?
+        config[:forge] = select_forge(config[:forge]).to_sym
       end
       forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ]
       #ap config
@@ -312,7 +312,7 @@ module FalkorLib
                          else
                            (config[k.to_sym].empty?) ? v : config[k.to_sym]
                          end
-        config[k.to_sym] = ask( "\t" + sprintf("Project %-20s", k.to_s), default_answer)
+        config[k.to_sym] = ask( "\t" + format("Project %-20s", k.to_s), default_answer)
       end
       tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
       config[:tags]    = tags.split(',')
@@ -363,7 +363,7 @@ module FalkorLib
       #ap forge
       default_idx = forge.keys.index(default)
       default_idx = 0 if default_idx.nil?
-      v = select_from(forge.map { |_k, v| v[:name] },
+      v = select_from(forge.map { |_k, u| u[:name] },
                       "Select the Forge hosting the project sources",
                       default_idx + 1,
                       forge.keys)
