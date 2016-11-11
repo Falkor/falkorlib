@@ -11,17 +11,20 @@ require "falkorlib/common"
 
 include FalkorLib::Common
 
-module FalkorLib  #:nodoc:
+module FalkorLib #:nodoc:
+
   module Config
     module Puppet
+
       # Puppet defaults for FalkorLib
       DEFAULTS = {
         :modulesdir => File.join(Dir.pwd, 'modules')
       }
+
     end
   end
 
-  module Puppet  #:nodoc
+  module Puppet #:nodoc
 
   end
 
