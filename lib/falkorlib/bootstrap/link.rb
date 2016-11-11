@@ -8,7 +8,7 @@ require "falkorlib"
 require "falkorlib/common"
 require "falkorlib/bootstrap"
 
-require 'erb'      # required for module generation
+require 'erb' # required for module generation
 require 'artii'
 require 'facter'
 
@@ -38,24 +38,26 @@ module FalkorLib
                    })
         raise FalkorLib::ExecError "Not used in a Git repository" unless FalkorLib::Git.init?
         exit_status = 0
-        path   = normalized_path(dir)
+        path = normalized_path(dir)
         rootdir = FalkorLib::Git.rootdir(path)
         info "Create a symlink to one of Falkor's Makefile"
         # Add Falkor's Makefiles
         submodules = FalkorLib.config[:git][:submodules]
-        submodules['Makefiles'] = {
-          :url   => 'https://github.com/Falkor/Makefiles.git',
-          :branch => 'devel'
-        } if submodules['Makefiles'].nil?
+        if submodules['Makefiles'].nil?
+          submodules['Makefiles'] = {
+            :url => 'https://github.com/Falkor/Makefiles.git',
+            :branch => 'devel'
+          }
+        end
         FalkorLib::Git.submodule_init(rootdir, submodules)
         FalkorLib::Bootstrap::Link.root(dir)
         refdir = File.join(FalkorLib.config[:git][:submodulesdir], 'Makefiles')
         refdir = options[:refdir] unless options[:refdir].nil?
         dst        = File.join('.root', refdir)
         makefile_d = '.makefile.d'
-        unless File.exists?(File.join(path, makefile_d))
+        unless File.exist?(File.join(path, makefile_d))
           Dir.chdir( path ) do
-            run %{ ln -s #{dst} #{makefile_d} }
+            run %( ln -s #{dst} #{makefile_d} )
             FalkorLib::Git.add(File.join(path, makefile_d), "Add symlink '#{makefile_d}' to Falkor's Makefile directory")
           end
         end
@@ -73,17 +75,17 @@ module FalkorLib
         makefile = 'Makefile.insubdir' if options[:generic]
         makefile = 'Makefile.to_html'  if options[:markdown]
         dst = File.join(makefile_d, type, makefile)
-        unless File.exists?( File.join(path, 'Makefile'))
+        if File.exist?( File.join(path, 'Makefile'))
+          puts "  ... Makefile already setup"
+          exit_status = 1
+        else
           info "Bootstrapping #{type.capitalize} Makefile (as symlink to Falkor's Makefile)"
           really_continue? unless options[:no_interaction]
           Dir.chdir( path ) do
-             exit_status = run %{ ln -s #{dst} Makefile }
+            exit_status = run %( ln -s #{dst} Makefile )
           end
           #ap File.join(path, 'Makefile')
-           exit_status = FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
-        else
-          puts "  ... Makefile already setup"
-          exit_status = 1
+          exit_status = FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
         end
         exit_status.to_i
       end # makefile_link
@@ -96,26 +98,26 @@ module FalkorLib
       def root(dir = Dir.pwd, options = {})
         raise FalkorLib::ExecError "Not used in a Git repository" unless FalkorLib::Git.init?
         exit_status = 0
-        path  = normalized_path(dir)
+        path = normalized_path(dir)
         relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path)))
-        if "#{relative_path_to_root}" == "."
+        if relative_path_to_root.to_s == "."
           FalkorLib::Common.warning "Already at the root directory of the Git repository"
           FalkorLib::Common.really_continue? unless options[:no_interaction]
         end
-        target = options[:name] ? options[:name] : '.root'
+        target = (options[:name]) ? options[:name] : '.root'
         puts "Entering '#{relative_path_to_root}'"
-        unless File.exists?( File.join(path, target))
+        if File.exist?( File.join(path, target))
+          puts "  ... the symbolic link '#{target}' already exists"
+          exit_status = 1
+        else
           warning "creating the symboling link '#{target}' which points to '#{relative_path_to_root}'" if options[:verbose]
           # Format: ln_s(old, new, options = {}) -- Creates a symbolic link new which points to old.
           #FileUtils.ln_s "#{relative_path_to_root}", "#{target}"
           Dir.chdir( path ) do
-            exit_status = run %{ ln -s #{relative_path_to_root} #{target} }
+            exit_status = run %( ln -s #{relative_path_to_root} #{target} )
           end
           exit_status = FalkorLib::Git.add(File.join(path, target),
                                            "Add symlink to the root directory as .root")
-        else
-          puts "  ... the symbolic link '#{target}' already exists"
-          exit_status = 1
         end
         exit_status.to_i
       end # rootlink
