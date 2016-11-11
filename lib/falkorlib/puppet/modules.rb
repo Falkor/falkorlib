@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 15:13 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:24 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -319,8 +319,10 @@ module FalkorLib #:nodoc:
                                          metadata,
                                          options)
           else
-            i += write_from_template(f, moduledir, :no_interaction => options[:no_interaction],
-                                                   :srcdir => templatedir)
+            i += write_from_template(f, moduledir,
+                                     { :no_interaction => options[:no_interaction],
+                                       :srcdir => templatedir })
+
           end
         end
         i
