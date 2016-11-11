@@ -15,22 +15,25 @@ require "pathname"
 
 include FalkorLib::Common
 
-module FalkorLib  #:nodoc:
-  module Config
+module FalkorLib #:nodoc:
 
+  module Config
     # Default configuration for Git
     module Git
+
       # Git defaults for FalkorLib
       DEFAULTS = {
         :submodulesdir => '.submodules',
         :submodules => {},
         :subtrees   => {}
       }
+
     end
   end
 
   # Management of Git operations
   module Git
+
     module_function
 
     ## Check if a git directory has been initialized
@@ -40,7 +43,7 @@ module FalkorLib  #:nodoc:
       rescue Exception
         return false
       end
-      return true
+      true
     end
 
     ## Check if the repositories already holds some commits
@@ -55,7 +58,7 @@ module FalkorLib  #:nodoc:
 
     ## Check the availability of a given git command
     def command?(cmd)
-      cg = MiniGit::Capturing.new()
+      cg = MiniGit::Capturing.new
       cmd_list = cg.help :a => true
       # typical run:
       # usage: git [--version] [--help] [-C <path>] [-c name=value]
@@ -76,7 +79,7 @@ module FalkorLib  #:nodoc:
       l = cmd_list.split("\n\n")
       l.shift # useless first part
       #ap l
-      subl = l.each_index.select{|i| l[i] =~ /^\s\s+/ } # find sublines that starts with at least two whitespaces
+      subl = l.each_index.select { |i| l[i] =~ /^\s\s+/ } # find sublines that starts with at least two whitespaces
       #ap subl
       return false if subl.empty?
       subl.any? { |i| l[i].split.include?(cmd) }
@@ -85,21 +88,20 @@ module FalkorLib  #:nodoc:
     ###
     # Initialize a git repository
     ##
-    def init(path = Dir.pwd, options = {})
-      # FIXME for travis test: ensure the global git configurations
+    def init(path = Dir.pwd, _options = {})
+      # FIXME: for travis test: ensure the global git configurations
       # 'user.email' and 'user.name' are set
       [ 'user.name', 'user.email' ].each do |userconf|
-        if MiniGit[userconf].nil?
-          warn "The Git global configuration '#{userconf}' is not set so"
-          warn "you should *seriously* consider setting them by running\n\t git config --global #{userconf} 'your_#{userconf.sub(/\./, '_')}'"
-          default_val = ENV['USER']
-          default_val += '@domain.org' if userconf =~ /email/
-          warn "Now putting a default value '#{default_val}' you could change later on"
-          run %{
-                         git config --global #{userconf} "#{default_val}"
-                    }
-          #MiniGit[userconf] = default_val
-        end
+        next unless MiniGit[userconf].nil?
+        warn "The Git global configuration '#{userconf}' is not set so"
+        warn "you should *seriously* consider setting them by running\n\t git config --global #{userconf} 'your_#{userconf.sub(/\./, '_')}'"
+        default_val = ENV['USER']
+        default_val += '@domain.org' if userconf =~ /email/
+        warn "Now putting a default value '#{default_val}' you could change later on"
+        run %(
+                       git config --global #{userconf} "#{default_val}"
+                  )
+        #MiniGit[userconf] = default_val
       end
       exit_status = 1
       Dir.mkdir( path ) unless Dir.exist?( path )
@@ -131,14 +133,14 @@ module FalkorLib  #:nodoc:
       #ap method(__method__).parameters.map { |arg| arg[1] }
       g = MiniGit.new(path)
       error "not yet any commit performed -- You shall do one" unless has_commits?(path)
-      g.branch "#{branch}"
+      g.branch branch.to_s
     end
 
     # Delete a branch.
     def delete_branch(branch, path = Dir.pwd, opts = { :force => false })
       g = MiniGit.new(path)
       error "'#{branch}' is not a valid existing branch" unless list_branch(path).include?( branch )
-      g.branch (opts[:force] ? :D : :d) => "#{branch}"
+      g.branch ((opts[:force]) ? :D : :d) => branch.to_s
     end
 
     ###### config ######
@@ -151,10 +153,10 @@ module FalkorLib  #:nodoc:
     def config(key, dir = Dir.pwd, options = {})
       #info "Retrieve the Git configuration"
       res = nil
-      if (options[:list] or (key.is_a? Regexp) or (key =~ /\*/))
+      if (options[:list] || (key.is_a? Regexp) || (key =~ /\*/))
         cg  = MiniGit::Capturing.new(dir)
         res = (cg.config :list => true).split("\n")
-        res.select! { |e| e.match(key) } unless key =='*'
+        res.select! { |e| e.match(key) } unless key == '*'
         #res = res.map { |e| e.split('=') }.to_h if options[:hash]
         res = Hash[ res.map { |e| e.split('=') } ] if options[:hash]
       else
@@ -182,10 +184,8 @@ module FalkorLib  #:nodoc:
       res = res.split("\n")
       # Eventually reorder to make the first element of the array the current branch
       i = res.find_index { |e| e =~ /^\*\s/ }
-      unless (i.nil? || i == 0)
-        res[0], res[i] = res[i], res[0]
-      end
-      res.each { |e| e.sub!(/^\*?\s+/, '')  }
+      res[0], res[i] = res[i], res[0] unless (i.nil? || i == 0)
+      res.each { |e| e.sub!(/^\*?\s+/, '') }
       res
     end
 
@@ -221,11 +221,11 @@ module FalkorLib  #:nodoc:
           warning "the  remote branch '#{remote}/#{branch}' already exists"
         else
           info "Publish the branch '#{branch}' on the remote '#{remote}'"
-          exit_status = run %{
+          exit_status = run %(
                           git push #{remote} #{branch}:refs/heads/#{branch}
                           git fetch #{remote}
                           git branch -u #{remote}/#{branch} #{branch}
-                }
+                )
         end
       end
       exit_status
@@ -245,13 +245,13 @@ module FalkorLib  #:nodoc:
       dir  = File.realpath (File.dirname(path))
       root = rootdir(path)
       relative_path_to_root = Pathname.new( File.realpath(path) ).relative_path_from Pathname.new(root)
-      real_msg = (msg.empty? ? "add '#{relative_path_to_root}'" : msg)
+      real_msg = ((msg.empty?) ? "add '#{relative_path_to_root}'" : msg)
       opts = '-f' if options[:force]
       Dir.chdir( dir ) do
-        exit_status = run %{
+        exit_status = run %(
                   git add #{opts} #{path}
                   git commit -s -m "#{real_msg}" #{path}
-                }
+                )
       end
       exit_status.to_i
     end
@@ -262,7 +262,7 @@ module FalkorLib  #:nodoc:
       g = MiniGit.new(path)
       a = g.capturing.diff :shortstat => true
       #ap a
-      ! a.empty?
+      !a.empty?
     end
 
     ## Get a hash table of tags under the format
@@ -273,7 +273,7 @@ module FalkorLib  #:nodoc:
       unless (cg.tag :list => true).empty?
         # git show-ref --tags
         a = (cg.show_ref :tags => true).split("\n")
-        res = Hash[ a.collect{ |item| item.split(' refs/tags/') } ].invert
+        res = Hash[ a.collect { |item| item.split(' refs/tags/') } ].invert
       end
       res
     end # list_tag
@@ -302,12 +302,12 @@ module FalkorLib  #:nodoc:
     ## List of Git remotes
     def remotes(path = Dir.pwd)
       g = MiniGit.new(path)
-      g.capturing.remote.split()
+      g.capturing.remote.split
     end
 
     ## Check existence of remotes
     def remotes?(path = Dir.pwd)
-      return ! remotes(path).empty?
+      !remotes(path).empty?
     end
 
     # Create a new remote <name> targeting url <url>
@@ -318,7 +318,7 @@ module FalkorLib  #:nodoc:
     #
     def create_remote(name, url, path = Dir.pwd, opts = {})
       g = MiniGit.new(path)
-      g.remote :add, opts, name, "#{url}"
+      g.remote :add, opts, name, url.to_s
     end
 
     # Delete a branch.
@@ -332,10 +332,10 @@ module FalkorLib  #:nodoc:
     ###
     # Initialize git submodule from the configuration
     ##
-    def submodule_init(path = Dir.pwd, submodules = FalkorLib.config.git[:submodules], options = {})
+    def submodule_init(path = Dir.pwd, submodules = FalkorLib.config.git[:submodules], _options = {})
       exit_status  = 1
       git_root_dir = rootdir(path)
-      if File.exists?("#{git_root_dir}/.gitmodules")
+      if File.exist?("#{git_root_dir}/.gitmodules")
         unless submodules.empty?
           # TODO: Check if it contains all submodules of the configuration
         end
@@ -343,19 +343,19 @@ module FalkorLib  #:nodoc:
       #ap FalkorLib.config.git
       Dir.chdir(git_root_dir) do
         exit_status = FalkorLib::Git.submodule_update( git_root_dir )
-        submodules.each do |subdir,conf|
+        submodules.each do |subdir, conf|
           next if conf[:url].nil?
           url = conf[:url]
           dir = "#{FalkorLib.config.git[:submodulesdir]}/#{subdir}"
-          branch = conf[:branch].nil? ? 'master' : conf[:branch]
+          branch = (conf[:branch].nil?) ? 'master' : conf[:branch]
           if File.directory?( dir )
             puts "  ... the git submodule '#{subdir}' is already setup."
           else
             info "adding Git submodule '#{dir}' from '#{url}'"
-            exit_status = run %{
+            exit_status = run %(
                            git submodule add -b #{branch} #{url} #{dir}
                            git commit -s -m "Add Git submodule '#{dir}' from '#{url}'" .gitmodules #{dir}
-                        }
+                        )
           end
         end
       end
@@ -365,11 +365,11 @@ module FalkorLib  #:nodoc:
     ## Update the Git submodules to the **local** registered version
     def submodule_update(path = Dir.pwd)
       execute_in_dir(rootdir(path),
-                     %{
+                     %(
                    git submodule init
                    git submodule foreach git fetch
                    git submodule update
-            })
+            ))
     end
 
     ## Upgrade the Git submodules to the latest HEAD version from the remote
@@ -391,11 +391,11 @@ module FalkorLib  #:nodoc:
       exit_status = 0
       git_root_dir = rootdir(path)
       Dir.chdir(git_root_dir) do
-        FalkorLib.config.git[:subtrees].each do |dir,conf|
+        FalkorLib.config.git[:subtrees].each do |dir, conf|
           next if conf[:url].nil?
           url    = conf[:url]
           remote = dir.gsub(/\//, '-')
-          branch = conf[:branch].nil? ? 'master' : conf[:branch]
+          branch = (conf[:branch].nil?) ? 'master' : conf[:branch]
           remotes = FalkorLib::Git.remotes
           unless remotes.include?( remote )
             info "Initialize Git remote '#{remote}' from URL '#{url}'"
@@ -406,7 +406,6 @@ module FalkorLib  #:nodoc:
             exit_status = execute "git subtree add --prefix #{dir} --squash #{remote}/#{branch}"
           end
         end
-
       end
       exit_status
     end
@@ -416,7 +415,7 @@ module FalkorLib  #:nodoc:
     def subtree_init?(path = Dir.pwd)
       res = true
       FalkorLib.config.git[:subtrees].keys.each do |dir|
-        res = res && File.directory?(File.join(path, dir))
+        res &&= File.directory?(File.join(path, dir))
       end
       res
     end # subtree_init?
@@ -432,11 +431,11 @@ module FalkorLib  #:nodoc:
       exit_status = 0
       git_root_dir = rootdir(path)
       Dir.chdir(git_root_dir) do
-        FalkorLib.config.git[:subtrees].each do |dir,conf|
+        FalkorLib.config.git[:subtrees].each do |dir, conf|
           next if conf[:url].nil?
           url    = conf[:url]
           remote = dir.gsub(/\//, '-')
-          branch = conf[:branch].nil? ? 'master' : conf[:branch]
+          branch = (conf[:branch].nil?) ? 'master' : conf[:branch]
           remotes = FalkorLib::Git.remotes
           raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
           raise IOError, "The git subtree directory '#{dir}' does not exists" unless File.directory? ( File.join(git_root_dir, dir) )
@@ -453,11 +452,11 @@ module FalkorLib  #:nodoc:
       exit_status = 0
       git_root_dir = rootdir(path)
       Dir.chdir(git_root_dir) do
-        FalkorLib.config.git[:subtrees].each do |dir,conf|
+        FalkorLib.config.git[:subtrees].each do |dir, conf|
           next if conf[:url].nil?
           url    = conf[:url]
           remote = dir.gsub(/\//, '-')
-          branch = conf[:branch].nil? ? 'master' : conf[:branch]
+          branch = (conf[:branch].nil?) ? 'master' : conf[:branch]
           remotes = FalkorLib::Git.remotes
           info "Pulling changes into subtree '#{dir}' using remote '#{remote}/#{branch}'"
           raise IOError, "The git remote '#{remote}' is not configured" unless remotes.include?( remote )
@@ -471,7 +470,7 @@ module FalkorLib  #:nodoc:
       end
       exit_status
     end
-    alias :subtree_pull :subtree_up
+    alias_method :subtree_pull, :subtree_up
 
     # Raise a warning message if subtree/submodule section is not present
     def config_warn(type = :subtrees)
@@ -496,4 +495,5 @@ module FalkorLib  #:nodoc:
 
 
   end # module FalkorLib::Git
+
 end # module FalkorLib
