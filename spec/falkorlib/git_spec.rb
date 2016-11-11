@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 16:20 svarrette>
+# Time-stamp: <Fri 2016-11-11 16:04 svarrette>
 #
 # @description Check the Git operations
 #
@@ -279,7 +279,7 @@ describe FalkorLib::Git do
         if FalkorLib::Git.command? 'subtree'
             FalkorLib.config.git do |c|
                 c[:subtrees] = {
-                    'falkor/lib' => {
+                    'falkor-lib' => {
                         :url    => 'https://github.com/Falkor/falkorlib.git',
                         :branch => 'devel'
                     },

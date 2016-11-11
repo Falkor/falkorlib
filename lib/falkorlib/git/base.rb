@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 16:14 svarrette>
+# Time-stamp: <Fri 2016-11-11 16:02 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -39,7 +39,7 @@ module FalkorLib #:nodoc:
     ## Check if a git directory has been initialized
     def init?(path = Dir.pwd)
       begin
-        g = MiniGit.new(path)
+        MiniGit.new(path)
       rescue Exception
         return false
       end
