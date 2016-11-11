@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # puppet_modules.rake - Special tasks for the management of Puppet modules
-# Time-stamp: <Fri 2016-11-11 15:35 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:49 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -19,7 +19,7 @@ namespace :bootstrap do
     ###########  bootstrap:puppet:module   ###########
     desc "Bootstrap a new Puppet module"
     task :module, [:name] do |t, args|
-      info (t.comment).to_s
+      info(t.comment).to_s
       name = (args.name.nil? || args.name.empty? || (args.name == 'name')) ? ask("Enter the module name (ex: 'ULHPC/modulename')") : args.name
       error "You need to provide a module name" unless name != ''
       error "The module name cannot contain spaces" if name =~ /\s+/
@@ -43,9 +43,9 @@ namespace :puppet do
       ###########   puppet:module:build   ###########
       desc "Build the puppet module to publish it on the Puppet Forge"
       task :build do |t|
-        info (t.comment).to_s
+        info(t.comment).to_s
         run %( puppet module build )
-        if File.exist? ('metadata.json')
+        if File.exist?('metadata.json')
           metadata = JSON.parse( IO.read( 'metadata.json' ) )
           name    = metadata["name"]
           version = metadata["version"]
@@ -58,7 +58,7 @@ namespace :puppet do
       ###########   puppet:module:parse   ###########
       desc "Parse a given module"
       task :parse do |t|
-        info (t.comment).to_s
+        info(t.comment).to_s
         FalkorLib::Puppet::Modules.parse
       end # task parse
 
@@ -90,7 +90,7 @@ namespace :puppet do
       task :classes do |_t|
         c = FalkorLib::Puppet::Modules.classes
         info "Implemented classes:"
-        puts (c.empty?) ? red('NONE') : c.to_yaml
+        puts((c.empty?) ? red('NONE') : c.to_yaml)
       end # task classes
 
       ###########   puppet:module:definitions   ###########
@@ -98,7 +98,7 @@ namespace :puppet do
       task :definitions do |_t|
         d = FalkorLib::Puppet::Modules.definitions
         info "Implemented definitions:"
-        puts (d.empty?) ? red('NONE') : d.to_yaml
+        puts((d.empty?) ? red('NONE') : d.to_yaml)
       end # task definitions
 
       ###########   puppet:module:deps   ###########
@@ -106,7 +106,7 @@ namespace :puppet do
       task :deps do |_t|
         d = FalkorLib::Puppet::Modules.deps
         info "Module dependencies:"
-        puts (d.empty?) ? red('NONE') : d.to_yaml
+        puts((d.empty?) ? red('NONE') : d.to_yaml)
       end # task deps
     end
   end # namespace module

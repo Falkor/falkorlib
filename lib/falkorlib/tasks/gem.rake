@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Fri 2016-11-11 15:25 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:40 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -34,7 +34,7 @@ namespace :gem do
       a = run %(
               gem push #{gem}
       )
-      error "Unable to publish the gem '#{gem}'" if a.to_i != 0
+      error "Unable to publish the gem '#{gem}'" if a.to_i.nonzero?
     end
   end # task gem:release
   task :publish, :release

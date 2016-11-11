@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Fri 2016-11-11 15:25 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:43 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -41,7 +41,7 @@ namespace :git do
       Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
       info "=> prepare new 'feature' using git flow"
       o = FalkorLib::GitFlow.start('feature', name)
-      error "Git flow feature operation failed" unless o == 0
+      error "Git flow feature operation failed" unless o.zero?
       # Now you should be in the new branch
     end
 
@@ -56,7 +56,7 @@ namespace :git do
       name = branch.sub(/^#{expected_branch_prefix}/, '')
       info t.comment
       o = FalkorLib::GitFlow.finish('feature', name)
-      error "Git flow feature operation failed" unless o == 0
+      error "Git flow feature operation failed" unless o.zero?
       unless FalkorLib::Git.remotes.empty?
         info "=> about to update remote tracked branches"
         really_continue?
@@ -96,7 +96,7 @@ namespace :version do
         Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
         info "=> prepare release using git flow"
         o = FalkorLib::GitFlow.start('release', release_version)
-        error "Git flow release process failed" unless o == 0
+        error "Git flow release process failed" unless o.zero?
         # Now you should be in the new branch
         current_branch = FalkorLib::Git.branch?
         expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + release_version
@@ -130,13 +130,13 @@ namespace :version do
     error "You are not in the '#{expected_branch}' branch but in the '#{branch}' one. May be you forgot to run 'rake version:bump:{patch,minor,major}' first" if branch != expected_branch
     info "=> Finalize the release of the version '#{version}' into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch/environment"
     o = FalkorLib::GitFlow.finish('release', version, Dir.pwd, '-s')
-    error "Git flow release process failed" unless o == 0
+    error "Git flow release process failed" unless o.zero?
     if FalkorLib::Git.remotes?
       info("=> about to update remote tracked branches")
       really_continue?
-      FalkorLib.config[:gitflow][:branches].each do |_type, branch|
+      FalkorLib.config[:gitflow][:branches].each do |_type, br|
         run %(
-                   git checkout #{branch}
+                   git checkout #{br}
                    git push origin
         )
       end
