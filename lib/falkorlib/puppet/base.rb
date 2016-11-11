@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 15:13 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:58 svarrette>
 ################################################################################
 # Interface for the main Puppet operations
 #
@@ -12,7 +12,6 @@ require "falkorlib/common"
 include FalkorLib::Common
 
 module FalkorLib #:nodoc:
-
   module Config
     module Puppet
 
@@ -23,11 +22,4 @@ module FalkorLib #:nodoc:
 
     end
   end
-
-  module Puppet #:nodoc
-
-  end
-
-
-
 end

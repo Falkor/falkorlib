@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 15:24 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:59 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -113,7 +113,7 @@ module FalkorLib #:nodoc:
                            else
                              v
                            end
-          config[k.to_sym] = ask( "\t" + sprintf("%-20s", "Module #{k}"), default_answer)
+          config[k.to_sym] = ask( "\t" + format("%-20s", "Module #{k}"), default_answer)
         end
         config[:shortname] = name = config[:name].gsub(/.*[-\/]/, '')
         config[:docs_project] = ask("\tRead the Docs (RTFD) project:", config[:name].downcase.gsub(/\//, '-puppet-'))
@@ -126,7 +126,7 @@ module FalkorLib #:nodoc:
                               'Select the license index for the Puppet module:',
                               (idx.nil?) ? 1 : idx + 1)
         config[:license] = license unless license.empty?
-        puts "\t" + sprintf("%-20s", "Module License:") + config[:license]
+        puts "\t" + format("%-20s", "Module License:") + config[:license]
 
         # Supported platforms
         config[:platforms] = [ 'debian' ]
@@ -196,11 +196,11 @@ module FalkorLib #:nodoc:
         jsonfile = File.join( moduledir, 'metadata.json')
         # error "Unable to find #{jsonfile}" unless File.exist?( jsonfile )
         # metadata = JSON.parse( IO.read( jsonfile ) )
-        ref = JSON.pretty_generate( metadata )
+        #ref = JSON.pretty_generate( metadata )
         metadata["classes"]     = classes(moduledir)
         metadata["definitions"] = definitions(moduledir)
         deps        = deps(moduledir)
-        listed_deps = metadata["dependencies"]
+        #listed_deps = metadata["dependencies"]
         missed_deps = []
         metadata["dependencies"].each do |dep|
           lib = dep["name"].gsub(/^[^\/-]+[\/-]/, '')
@@ -215,7 +215,7 @@ module FalkorLib #:nodoc:
         end
         unless deps.empty?
           deps.each do |l|
-            next if [name, metadata["name"], name.gsub(/.*-/, ''), metadata["name"].gsub(/.*-/, '') ].include? ( l )
+            next if [name, metadata["name"], name.gsub(/.*-/, ''), metadata["name"].gsub(/.*-/, '') ].include?( l )
             warn "The module '#{l}' is missing in the dependencies thus added"
             login   = ask("[Github] login for the module '#{l}'")
             version = ask("Version requirement (ex: '>=1.0.0 <2.0.0' or '1.2.3' or '1.x')")
