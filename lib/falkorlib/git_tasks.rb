@@ -11,9 +11,9 @@ require 'falkorlib'
 require 'falkorlib/tasks'
 
 module FalkorLib #:nodoc:
-
   # Rake tasks to pilot Git operations
   class GitTasks
+
     include Rake::DSL if defined? Rake::DSL
 
     # Install the git[flow] tasks for Rake
@@ -21,6 +21,7 @@ module FalkorLib #:nodoc:
       load 'falkorlib/tasks/git.rake'
       load 'falkorlib/tasks/gitflow.rake'
     end
+
   end # class FalkorLib::GitTasks
 end # module FalkorLib
 
@@ -47,6 +48,5 @@ else
         FalkorLib::GitFlow.init
       end
     end # namespace git:flow
-
   end # namespace git
 end

@@ -16,6 +16,9 @@ Style/HashSyntax:
 Style/StringLiterals:
   Enabled: false
 
+Style/RegexpLiteral:
+  Enabled: false
+
 # Parenthesis
 Style/ParenthesesAroundCondition:
   Enabled: false

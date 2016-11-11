@@ -11,24 +11,26 @@ require "falkorlib/git/base"
 include FalkorLib::Common
 
 module FalkorLib
-  module Config
 
+  module Config
     # Default configuration for Gitflow
     module GitFlow
+
       # git flow defaults
       DEFAULTS = {
         :branches => {
           :master     => 'production',
-          :develop    => 'master',
+          :develop    => 'master'
         },
         :prefix => {
           :feature    => 'feature/',
           :release    => 'release/',
           :hotfix     => 'hotfix/',
           :support    => 'support/',
-          :versiontag => "v",
+          :versiontag => "v"
         }
       }
+
     end
   end
 
@@ -55,9 +57,7 @@ module FalkorLib
     ##
     def init?(dir = Dir.pwd)
       res = FalkorLib::Git.init?(dir)
-      if res
-        res &= !FalkorLib::Git.config('gitflow*', dir).empty?
-      end
+      res &= !FalkorLib::Git.config('gitflow*', dir).empty? if res
       res
     end # init?
 
@@ -79,22 +79,20 @@ module FalkorLib
         unless FalkorLib::Git.has_commits?( git_root_dir)
           warn "Not yet any commit detected in this repository."
           readme = 'README.md'
-          unless File.exists?( readme )
+          unless File.exist?( readme )
             answer = ask(cyan("=> initialize a commit with an [empty] #{readme} file (Y|n)?"), 'Yes')
             exit 0 if answer =~ /n.*/i
             FileUtils.touch(readme)
           end
           FalkorLib::Git.add(readme, "Initiate the repository with a '#{readme}' file")
         end
-        branches     = FalkorLib::Git.list_branch(path)
+        branches = FalkorLib::Git.list_branch(path)
         gitflow_branches = FalkorLib.config.gitflow[:branches].clone
         # correct eventually the considered branch from the options
-        gitflow_branches.each do |t,b|
+        gitflow_branches.each do |t, _b|
           gitflow_branches[t] = options[t.to_sym] if options[t.to_sym]
           confs = FalkorLib::Git.config('gitflow*', path, :hash => true)
-          unless confs.empty?
-            gitflow_branches[t] = confs["gitflow.branch.#{t}"]
-          end
+          gitflow_branches[t] = confs["gitflow.branch.#{t}"] unless confs.empty?
         end
         if options[:interactive]
           gitflow_branches[:master]  = ask("=> branch name for production releases", gitflow_branches[:master])
@@ -104,7 +102,7 @@ module FalkorLib
         if remotes.include?( 'origin' )
           info "=> configure remote (tracked) branches"
           exit_status = FalkorLib::Git.fetch(path)
-          gitflow_branches.each do |type,branch|
+          gitflow_branches.each do |_type, branch|
             if branches.include? "remotes/origin/#{branch}"
               exit_status = FalkorLib::Git.grab(branch, path)
             else
@@ -116,7 +114,7 @@ module FalkorLib
             end
           end
         else
-          gitflow_branches.each do |type, branch|
+          gitflow_branches.each do |_type, branch|
             unless branches.include? branch
               info " => creating the branch '#{branch}'"
               exit_status = FalkorLib::Git.create_branch( branch, path )
@@ -124,20 +122,20 @@ module FalkorLib
           end
         end
         #info "initialize git flow configs"
-        gitflow_branches.each do |t,branch|
+        gitflow_branches.each do |t, branch|
           exit_status = execute "git config gitflow.branch.#{t} #{branch}"
         end
-        FalkorLib.config.gitflow[:prefix].each do |t,prefix|
+        FalkorLib.config.gitflow[:prefix].each do |t, prefix|
           exit_status = execute "git config gitflow.prefix.#{t} #{prefix}"
         end
         devel_branch = gitflow_branches[:develop]
         #info "checkout to the main development branch '#{devel_branch}'"
-        exit_status = run %{
+        exit_status = run %(
                    git checkout #{devel_branch}
-                }
+                )
         # git config branch.$(git rev-parse --abbrev-ref HEAD).mergeoptions --no-edit for the develop branch
         exit_status = execute "git config branch.#{devel_branch}.mergeoptions --no-edit"
-        if branches.include?('master') && ! gitflow_branches.values.include?( 'master' )
+        if branches.include?('master') && !gitflow_branches.values.include?( 'master' )
           warn "Your git-flow confuguration does not hold the 'master' branch any more"
           warn "You probably want to get rid of it asap by running 'git branch -d master'"
         end
@@ -154,26 +152,26 @@ module FalkorLib
 
     ## generic function to run any of the gitflow commands
     def command(name, type = 'feature', action = 'start', path = Dir.pwd, optional_args = '')
-      error "Invalid git-flow type '#{type}'" unless ['feature', 'release', 'hotfix', 'support'].include?(type)
-      error "Invalid action '#{action}'" unless ['start', 'finish'].include?(action)
+      error "Invalid git-flow type '#{type}'" unless %w(feature release hotfix support).include?(type)
+      error "Invalid action '#{action}'" unless %w(start finish).include?(action)
       error "You must provide a name" if name == ''
       error "The name '#{name}' cannot contain spaces" if name =~ /\s+/
       exit_status = 1
       Dir.chdir( FalkorLib::Git.rootdir(path) ) do
-        exit_status = run %{
+        exit_status = run %(
                    git flow #{type} #{action} #{optional_args} #{name}
-                }
+                )
       end
       exit_status
     end
 
     ## git flow {feature, hotfix, release, support} start <name>
-    def start (type, name, path = Dir.pwd, optional_args = '')
+    def start(type, name, path = Dir.pwd, optional_args = '')
       command(name, type, 'start', path, optional_args)
     end
 
     ## git flow {feature, hotfix, release, support} finish <name>
-    def finish (type, name, path = Dir.pwd, optional_args = '')
+    def finish(type, name, path = Dir.pwd, optional_args = '')
       command(name, type, 'finish', path, optional_args)
     end
 
@@ -182,7 +180,7 @@ module FalkorLib
     # :master:   Master Branch name for production releases
     # :develop:
     ##
-    def branches(type = :master, dir = Dir.pwd, options = {})
+    def branches(type = :master, dir = Dir.pwd, _options = {})
       FalkorLib::Git.config("gitflow.branch.#{type}", dir)
       #confs[type.to_sym]
     end # master_branch
