@@ -32,45 +32,43 @@ require "falkorlib"
 #.....................
 namespace :yard do
   begin
-   require "yard"
+    require "yard"
 
-   ###########  yard:doc   ###########
-   desc "Generate yard documentation"
-   YARD::Rake::YardocTask.new(:doc) do |t|
-     # Array of options passed to yardoc commandline. See 'yardoc --help' about this
-     t.options = ["--output-dir", "doc/api", "-", "README.md", "CHANGELOG.md", "LICENCE.md"]
+    ###########  yard:doc   ###########
+    desc "Generate yard documentation"
+    YARD::Rake::YardocTask.new(:doc) do |t|
+      # Array of options passed to yardoc commandline. See 'yardoc --help' about this
+      t.options = ["--output-dir", "doc/api", "-", "README.md", "CHANGELOG.md", "LICENCE.md"]
 
-     # Array of ruby source files (and any extra documentation files
-     # separated by '-')
-     t.files = ["lib/**/*.rb"]
+      # Array of ruby source files (and any extra documentation files
+      # separated by '-')
+      t.files = ["lib/**/*.rb"]
 
-     # A proc to call before running the task
-     # t.before = proc{ }
+      # A proc to call before running the task
+      # t.before = proc{ }
 
-     # A proc to call after running the task
-     t.after = proc{
-       puts "\nFull documentation is now generated -- you probably want now to\n\t open doc/api/index.html"
-     }
+      # A proc to call after running the task
+      t.after = proc {
+        puts "\nFull documentation is now generated -- you probably want now to\n\t open doc/api/index.html"
+      }
 
-     # An optional lambda to run against all objects being generated.
-     # Any object that the lambda returns false for will be excluded
-     # from documentation.
-     # t.verifier = lambda{|obj| true}
-
-   end
+      # An optional lambda to run against all objects being generated.
+      # Any object that the lambda returns false for will be excluded
+      # from documentation.
+      # t.verifier = lambda{|obj| true}
+    end
 
   rescue LoadError
-   task :yard do
-     abort 'yard is not available. In order to run yard, you must: gem install yard'
-   end
+    task :yard do
+      abort 'yard is not available. In order to run yard, you must: gem install yard'
+    end
   end
 
   ###########  yard:stats   ###########
   desc "Collect statistics as regards yard documentation"
-  task :stats do |t|
+  task :stats do |_t|
     Dir.chdir(FalkorLib.config.root) do
-      FalkorLib::Common.run %{yard stats --list-undoc}
+      FalkorLib::Common.run %(yard stats --list-undoc)
     end
   end
-
 end

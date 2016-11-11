@@ -12,7 +12,6 @@ require 'falkorlib/git'
 
 #.....................
 namespace :git do
-
   include FalkorLib::Common
   git_root_dir = FalkorLib::Git.rootdir
 
@@ -22,24 +21,21 @@ namespace :git do
 
   #.....................
   namespace :flow do
-
     ###########   git:flow:init   ###########
     desc "Initialize your local clone of the repository for the git-flow management"
     task :init do |t|
       info t.comment
       FalkorLib::GitFlow.init(git_root_dir)
     end # task init
-
   end # namespace git::flow
 
   #.....................
   namespace :feature do
-
     #########   git:feature:start ##########################
     desc "Start a new feature operation on the repository using the git-flow framework"
     task :start, [:name] do |t, args|
       #args.with_default[:name => '']
-      name = args.name == 'name' ? ask("Name of the feature (the git branch will be 'feature/<name>')") : args.name
+      name = (args.name == 'name') ? ask("Name of the feature (the git branch will be 'feature/<name>')") : args.name
       info t.comment + " with name 'feature/#{name}'"
       really_continue?
       Rake::Task['git:up'].invoke unless FalkorLib::Git.remotes.empty?
@@ -68,16 +64,14 @@ namespace :git do
       end
     end
   end # End namespace 'git:feature'
-
 end # namespace git
 
 
 #.....................
 namespace :version do
-
   ###########   version:info   ###########
   #desc "Get versioning information"
-  task :info do |t|
+  task :info do |_t|
     include FalkorLib::Versioning
     version = get_version
     #major, minor, patch =  bump(version, :major), bumpversion, :minor), bump(version, :patch)
@@ -91,8 +85,7 @@ namespace :version do
 
   #.....................
   namespace :bump do
-    [ 'major', 'minor', 'patch' ].each do |level|
-
+    %w(major minor patch).each do |level|
       #################   version:bump:{major,minor,patch} ##################################
       desc "Prepare the #{level} release of the repository"
       task level.to_sym do |t|
@@ -109,15 +102,15 @@ namespace :version do
         expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + release_version
         if (current_branch == expected_branch)
           FalkorLib::Versioning.set_version(release_version)
-          if (! FalkorLib.config[:versioning].nil?) &&
-              FalkorLib.config[:versioning][:type] == 'gem' &&
-              File.exists?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
+          if (!FalkorLib.config[:versioning].nil?) &&
+             FalkorLib.config[:versioning][:type] == 'gem' &&
+             File.exist?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
             info "Updating Gemfile information"
-            run %{
+            run %(
                            # Update cache info
                            bundle list > /dev/null
                            git commit -s -m "Update Gemfile.lock accordingly" Gemfile.lock
-            }
+            )
           end
           warning "The version number has already been bumped"
           warning "==> run 'rake version:release' to finalize the release and merge the current version of the repository into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch"
@@ -130,7 +123,7 @@ namespace :version do
 
   ###########   release   ###########
   desc "Finalize the release of a given bumped version"
-  task :release do |t|
+  task :release do |_t|
     version = FalkorLib::Versioning.get_version
     branch  = FalkorLib::Git.branch?
     expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + version
@@ -141,17 +134,17 @@ namespace :version do
     if FalkorLib::Git.remotes?
       info("=> about to update remote tracked branches")
       really_continue?
-      FalkorLib.config[:gitflow][:branches].each do |type, branch|
-        run %{
+      FalkorLib.config[:gitflow][:branches].each do |_type, branch|
+        run %(
                    git checkout #{branch}
                    git push origin
-        }
+        )
       end
-      run %{ git push origin --tags }
+      run %( git push origin --tags )
     end
     #info "Update the changelog"
-    if (! FalkorLib.config[:versioning].nil?) &&
-        FalkorLib.config[:versioning][:type] == 'gem'
+    if (!FalkorLib.config[:versioning].nil?) &&
+       FalkorLib.config[:versioning][:type] == 'gem'
       warn "About to push the released new gem (version #{version}) to the gem server (rybygems.org)"
       really_continue?
       Rake::Task['gem:release'].invoke
@@ -159,7 +152,4 @@ namespace :version do
 
     #Rake::Task['git:push'].invoke
   end # task version:release
-
-
-
 end # namespace version

@@ -41,17 +41,16 @@ begin
   specsuite = {}
   Dir.glob('spec/**/*_spec.rb').each do |f|
     File.basename(f) =~ /^([^_]+)_*/
-    specsuite[$1] = [] unless specsuite[$1]
-    specsuite[$1] << f
+    specsuite[Regexp.last_match(1)] = [] unless specsuite[Regexp.last_match(1)]
+    specsuite[Regexp.last_match(1)] << f
   end
   rspec_opts = [ "--color", "--format d", "--backtrace" ]
   unless specsuite.empty?
     #.....................
     namespace :rspec do
-
       #.....................
       namespace :suite do
-        specsuite.each do |name, files|
+        specsuite.each do |name, _files|
           ###########   #{name}   ###########
           desc "Run all specs in #{name} spec suite"
           RSpec::Core::RakeTask.new(name.to_sym) do |t|
@@ -119,15 +118,14 @@ end
 namespace :setenv do
   ###########   code_climate   ###########
   #desc "Set Code Climate token to report rspec results"
-  task :code_climate do |t|
-    unless FalkorLib.config[:tokens].nil? or
-        FalkorLib.config[:tokens][:code_climate].nil? or
-        FalkorLib.config[:tokens][:code_climate].empty?
+  task :code_climate do |_t|
+    unless FalkorLib.config[:tokens].nil? ||
+           FalkorLib.config[:tokens][:code_climate].nil? ||
+           FalkorLib.config[:tokens][:code_climate].empty?
       ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No')
       ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
     end
   end # task code_climate
-
 end # namespace set
 
 task :rspec => 'setenv:code_climate'

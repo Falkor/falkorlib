@@ -21,19 +21,19 @@ namespace :gem do
   task :release => [ :build ] do |t|
     pkgdir = Gem::Tasks::Project::PKG_DIR
     Dir.glob("*.gemspec") do |gemspecfile|
-      spec = Gem::Specification::load(gemspecfile)
+      spec = Gem::Specification.load(gemspecfile)
       name    = spec.name
       version = spec.version
-      gem     = File.join( pkgdir , "#{name}-#{version}.gem")
-      unless File.exists?( gem )
+      gem     = File.join( pkgdir, "#{name}-#{version}.gem")
+      unless File.exist?( gem )
         warn "Unable to find the built gem '#{gem}'... Thus exiting."
         next
       end
       info t.comment + " '#{gem}'"
       really_continue?
-      a = run %{
+      a = run %(
               gem push #{gem}
-      }
+      )
       error "Unable to publish the gem '#{gem}'" if a.to_i != 0
     end
   end # task gem:release
@@ -44,7 +44,7 @@ namespace :gem do
   task :info do |t|
     require "rubygems"
     Dir.glob("*.gemspec") do |gemspecfile|
-      spec = Gem::Specification::load(gemspecfile)
+      spec = Gem::Specification.load(gemspecfile)
       info t.comment + " '#{spec.name}' (version #{spec.version})"
       puts <<-eos
 - Summary:     #{spec.summary}
@@ -55,7 +55,6 @@ namespace :gem do
 eos
     end
   end # task info
-
 end # namespace gem
 
 # Until [Issue#13](https://github.com/postmodern/rubygems-tasks/issues/13) it solved,
@@ -72,7 +71,7 @@ Rake::Task['build'].enhance do
   end
 end
 
-[ 'major', 'minor', 'patch' ].each do |level|
+%w(major minor patch).each do |level|
   Rake::Task["version:bump:#{level}"].enhance do
     warn "about to run the rspec tests to ensure the release can be done"
     really_continue?

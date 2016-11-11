@@ -16,21 +16,18 @@ require 'falkorlib/puppet'
 namespace :bootstrap do
   #.....................
   namespace :puppet do
-
     ###########  bootstrap:puppet:module   ###########
     desc "Bootstrap a new Puppet module"
     task :module, [:name] do |t, args|
-      info "#{t.comment}"
-      name = (args.name.nil? or args.name.empty? or args.name == 'name') ? ask("Enter the module name (ex: 'ULHPC/modulename')") : args.name
+      info (t.comment).to_s
+      name = (args.name.nil? || args.name.empty? || (args.name == 'name')) ? ask("Enter the module name (ex: 'ULHPC/modulename')") : args.name
       error "You need to provide a module name" unless name != ''
       error "The module name cannot contain spaces" if name =~ /\s+/
-      moduledir = File.join( FalkorLib.config[:puppet][:modulesdir], name.gsub(/^\w*\//,'puppet-'))
+      moduledir = File.join( FalkorLib.config[:puppet][:modulesdir], name.gsub(/^\w*\//, 'puppet-'))
       dir = ask("Destination directory:", moduledir)
       error "The module '#{name}' already exists" if File.directory?(dir)
       FalkorLib::Puppet::Modules.init(dir, name)
     end
-
-
   end # namespace bootstrap:puppet
 end # namespace bootstrap
 
@@ -43,35 +40,34 @@ namespace :puppet do
   if command?('puppet')
     #.....................
     namespace :module do
-
       ###########   puppet:module:build   ###########
       desc "Build the puppet module to publish it on the Puppet Forge"
       task :build do |t|
-        info "#{t.comment}"
-        run %{ puppet module build }
-        if File.exists? ('metadata.json')
-      metadata = JSON.parse( IO.read( 'metadata.json' ) )
-      name    = metadata["name"]
-      version = metadata["version"]
-      url = metadata["forge_url"].nil? ? "https://forge.puppetlabs.com/#{name.gsub(/-/,'/')}" : metadata["forge_url"]
-      warn "you can now upload the generated file 'pkg/#{name}-#{version}.tar.gz' on the puppet forge"
-      warn "         #{url}"
+        info (t.comment).to_s
+        run %( puppet module build )
+        if File.exist? ('metadata.json')
+          metadata = JSON.parse( IO.read( 'metadata.json' ) )
+          name    = metadata["name"]
+          version = metadata["version"]
+          url = (metadata["forge_url"].nil?) ? "https://forge.puppetlabs.com/#{name.tr('-', '/')}" : metadata["forge_url"]
+          warn "you can now upload the generated file 'pkg/#{name}-#{version}.tar.gz' on the puppet forge"
+          warn "         #{url}"
         end
       end # task build
 
       ###########   puppet:module:parse   ###########
       desc "Parse a given module"
       task :parse do |t|
-        info "#{t.comment}"
-        FalkorLib::Puppet::Modules.parse()
+        info (t.comment).to_s
+        FalkorLib::Puppet::Modules.parse
       end # task parse
 
       ###########   puppet:module:validate   ###########
       desc "Validate the module by checking the syntax and programming style of the module"
       task :validate => [
-                      #:syntax,
-                      :lint
-                        ]
+        #:syntax,
+        :lint
+      ]
       #     do
       #         info "validate parsing"
       #         Dir['manifests/**/*.pp'].each do |manifest|
@@ -91,62 +87,57 @@ namespace :puppet do
 
       ###########   puppet:module:classes   ###########
       desc "Parse the module for classes definitions"
-      task :classes do |t|
-        c = FalkorLib::Puppet::Modules.classes()
+      task :classes do |_t|
+        c = FalkorLib::Puppet::Modules.classes
         info "Implemented classes:"
-        puts c.empty? ? red('NONE') : c.to_yaml
+        puts (c.empty?) ? red('NONE') : c.to_yaml
       end # task classes
 
       ###########   puppet:module:definitions   ###########
       desc "Parse the module for definitions"
-      task :definitions do |t|
-        d = FalkorLib::Puppet::Modules.definitions()
+      task :definitions do |_t|
+        d = FalkorLib::Puppet::Modules.definitions
         info "Implemented definitions:"
-        puts d.empty? ? red('NONE') : d.to_yaml
+        puts (d.empty?) ? red('NONE') : d.to_yaml
       end # task definitions
 
       ###########   puppet:module:deps   ###########
       desc "Parse the module for its exact dependencies"
-      task :deps do |t|
-        d = FalkorLib::Puppet::Modules.deps()
+      task :deps do |_t|
+        d = FalkorLib::Puppet::Modules.deps
         info "Module dependencies:"
-        puts d.empty? ? red('NONE') : d.to_yaml
+        puts (d.empty?) ? red('NONE') : d.to_yaml
       end # task deps
-
-
     end
   end # namespace module
 end # namespace puppet
 
 #.....................
 namespace :templates do
-
   namespace :upgrade do
     ###########   templates:upgrade:all   ###########
     task :all do
       info "Upgrade all key module files from FalkorLib templates"
-      FalkorLib::Puppet::Modules.upgrade()
+      FalkorLib::Puppet::Modules.upgrade
     end
 
-    [ 'docs', 'readme', 'rake', 'vagrant' ].each do |t|
+    %w(docs readme rake vagrant).each do |t|
       ###########   templates:upgrade:{readme,rake,vagrant}   ###########
       desc "Upgrade (overwrite) #{t.capitalize} using the current FalkorLib template"
       task t.to_sym do
         list = case t
                when 'readme'
-             [ 'README.md' ]
+                 [ 'README.md' ]
                when 'docs'
-                 [ 'docs/contacts.md',  'docs/contributing/index.md', 'docs/contributing/layout.md', 'docs/contributing/setup.md', 'docs/contributing/versioning.md', 'docs/index.md', 'docs/rtfd.md', 'docs/vagrant.md' ]
+                 [ 'docs/contacts.md', 'docs/contributing/index.md', 'docs/contributing/layout.md', 'docs/contributing/setup.md', 'docs/contributing/versioning.md', 'docs/index.md', 'docs/rtfd.md', 'docs/vagrant.md' ]
                when 'rake'
-                 [ 'Gemfile', 'Rakefile' ]
+                 %w(Gemfile Rakefile)
                when 'vagrant'
-             [ 'Vagrantfile', '.vagrant_init.rb']
+                 [ 'Vagrantfile', '.vagrant_init.rb']
                else []
                end
         #info "Upgrade the module files '#{list.join(',')}' from FalkorLib templates"
-        FalkorLib::Puppet::Modules.upgrade(Dir.pwd,{
-                                                :only => list
-                                                   })
+        FalkorLib::Puppet::Modules.upgrade(Dir.pwd, :only => list)
       end
     end
 
@@ -155,17 +146,15 @@ namespace :templates do
       info "Upgrade the basic tests manifests in tests/"
       FalkorLib::Puppet::Modules.upgrade_from_template(Dir.pwd, 'tests')
     end
-
-
   end # namespace upgrade
 end # namespace module
 
 
 #.....................
 require 'rake/clean'
-CLEAN.add   'pkg'
+CLEAN.add 'pkg'
 
-exclude_tests_paths = ['pkg/**/*','spec/**/*','manifests.old/**/*']
+exclude_tests_paths = ['pkg/**/*', 'spec/**/*', 'manifests.old/**/*']
 
 #.........................................................................
 # puppet-lint tasks -- see http://puppet-lint.com/checks/
@@ -223,7 +212,7 @@ PuppetSyntax.exclude_paths = exclude_tests_paths
 
 ################################################
 
-[ 'major', 'minor', 'patch' ].each do |level|
+%w(major minor patch).each do |level|
   task "version:bump:#{level}" => 'puppet:module:validate'
 end
 
