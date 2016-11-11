@@ -2,7 +2,7 @@
 ################################################################################
 # Time-stamp: <Ven 2015-01-30 16:19 svarrette>
 ################################################################################
-# Place the component you wish to see loaded  
+# Place the component you wish to see loaded
 
 
 require "falkorlib/error"

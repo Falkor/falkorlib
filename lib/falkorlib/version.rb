@@ -8,9 +8,11 @@
 #
 
 module FalkorLib #:nodoc:
+
   # Management of the current version of the library
   # @see falkorlib/tasks/versioning.rake
   module Version
+
     # Change the MAJOR, MINOR and PATCH constants below
     # to adjust the version of the FalkorLib gem
     #
@@ -64,8 +66,10 @@ module FalkorLib #:nodoc:
     #     end
     #     version = [major, minor, patch].compact.join('.')
     # end
+
   end
 
   # Shorter version of the Gem's VERSION
   VERSION = Version.to_s
+
 end
