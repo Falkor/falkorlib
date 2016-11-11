@@ -9,7 +9,7 @@ require "falkorlib"
 require "falkorlib/common"
 require "falkorlib/bootstrap"
 
-require 'erb'      # required for module generation
+require 'erb' # required for module generation
 require 'artii'
 require 'facter'
 
@@ -19,6 +19,7 @@ include FalkorLib::Common
 
 module FalkorLib
   module Bootstrap
+
     module_function
 
     ###### rvm ######
@@ -36,12 +37,12 @@ module FalkorLib
       ap options if options[:debug]
       path = normalized_path(dir)
       use_git = FalkorLib::Git.init?(path)
-      rootdir = use_git ? FalkorLib::Git.rootdir(path) : path
+      rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
       files = {}
       exit_status = 1
       [:versionfile, :gemsetfile].each do |type|
-        f = options[type.to_sym].nil? ? FalkorLib.config[:rvm][type.to_sym] : options[type.to_sym]
-        if File.exists?( File.join( rootdir, f ))
+        f = (options[type.to_sym].nil?) ? FalkorLib.config[:rvm][type.to_sym] : options[type.to_sym]
+        if File.exist?( File.join( rootdir, f ))
           content = `cat #{File.join( rootdir, f)}`.chomp
           warning "The RVM file '#{f}' already exists (and contains '#{content}')"
           next unless options[:force]
@@ -53,7 +54,7 @@ module FalkorLib
       unless files[:versionfile].nil?
         file = File.join(rootdir, files[:versionfile])
         v =
-          options[:ruby] ?
+          (options[:ruby]) ?
             options[:ruby] :
             select_from(FalkorLib.config[:rvm][:rubies],
                         "Select RVM ruby to configure for this directory",
@@ -62,25 +63,25 @@ module FalkorLib
         File.open(file, 'w') do |f|
           f.puts v
         end
-        exit_status = (File.exists?(file) and `cat #{file}`.chomp == v) ? 0 : 1
+        exit_status = (File.exist?(file) && (`cat #{file}`.chomp == v)) ? 0 : 1
         FalkorLib::Git.add(File.join(rootdir, files[:versionfile])) if use_git
       end
       # === Gemset ===
       if files[:gemsetfile]
         file = File.join(rootdir, files[:gemsetfile])
         default_gemset = File.basename(rootdir)
-        default_gemset = `cat #{file}`.chomp if File.exists?( file )
-        g = options[:gemset] ? options[:gemset] : ask("Enter RVM gemset name for this directory", default_gemset)
+        default_gemset = `cat #{file}`.chomp if File.exist?( file )
+        g = (options[:gemset]) ? options[:gemset] : ask("Enter RVM gemset name for this directory", default_gemset)
         info " ==>  configuring RVM gemset file '#{files[:gemsetfile]}' with content '#{g}'"
         File.open( File.join(rootdir, files[:gemsetfile]), 'w') do |f|
           f.puts g
         end
-        exit_status = (File.exists?(file) and `cat #{file}`.chomp == g) ? 0 : 1
+        exit_status = (File.exist?(file) && (`cat #{file}`.chomp == g)) ? 0 : 1
         FalkorLib::Git.add(File.join(rootdir, files[:gemsetfile])) if use_git
       end
       # ==== Gemfile ===
       gemfile = File.join(rootdir, 'Gemfile')
-      unless File.exists?( gemfile )
+      unless File.exist?( gemfile )
         # Dir.chdir(rootdir) do
         #     run %{ bundle init }
         # end
