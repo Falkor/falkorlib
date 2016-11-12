@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2016-11-11 16:15 svarrette>
+# Time-stamp: <Sat 2016-11-12 12:30 svarrette>
 #
 # @description Check the Git operations
 #
@@ -27,7 +27,7 @@ describe FalkorLib::Git do
 
     before :all do
       $stdout.sync = true
-      MiniGit.debug = true
+      #MiniGit.debug = true
     end
 
     after :all do
