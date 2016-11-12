@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2016-11-09 17:25 svarrette>
+# Time-stamp: <Fri 2016-11-11 16:34 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -17,6 +17,7 @@ include FalkorLib::Common
 
 module FalkorLib
   module Bootstrap
+    # Hold [sim]link fonction creations
     module Link
 
       module_function

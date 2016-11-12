@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 14:11 svarrette>
+# Time-stamp: <Sat 2016-11-12 02:32 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -18,7 +18,7 @@ include FalkorLib::Common
 
 
 module FalkorLib
-  module Bootstrap
+  module Bootstrap #:nodoc:
 
     module_function
 
@@ -53,12 +53,14 @@ module FalkorLib
       # ==== Ruby version ===
       unless files[:versionfile].nil?
         file = File.join(rootdir, files[:versionfile])
-        v =
-          (options[:ruby]) ?
-            options[:ruby] :
-            select_from(FalkorLib.config[:rvm][:rubies],
-                        "Select RVM ruby to configure for this directory",
-                        (FalkorLib.config[:rvm][:rubies].find_index(FalkorLib.config[:rvm][:version]) + 1))
+        v = FalkorLib.config[:rvm][:version]
+        if options[:ruby]
+          v = options[:ruby]
+        else
+          select_from(FalkorLib.config[:rvm][:rubies],
+                      "Select RVM ruby to configure for this directory",
+                      (FalkorLib.config[:rvm][:rubies].find_index(FalkorLib.config[:rvm][:version]) + 1))
+        end
         info " ==>  configuring RVM version file '#{files[:versionfile]}' for ruby version '#{v}'"
         File.open(file, 'w') do |f|
           f.puts v

@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_ruby_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 20:36 svarrette>
+# Time-stamp: <Sat 2016-11-12 02:28 svarrette>
 #
 # @description Check the Bootstrapping operations for ruby-based projects
 #
@@ -38,8 +38,8 @@ describe FalkorLib::Bootstrap do
     FalkorLib.config[:no_interaction] = false
   end
 
-  [ :without_git, :with_git ].each do |ctx|
-    # [ :without_git ].each do |ctx|
+  #[ :without_git, :with_git ].each do |ctx|
+    [ :without_git ].each do |ctx|
     # [ :with_git ].each do |ctx|
     dir = dirs[ctx]
     ########################################################################
@@ -103,7 +103,7 @@ describe FalkorLib::Bootstrap do
           content = {}
           [:versionfile, :gemsetfile].each do |type|
               f = File.join("#{dir}", opts[type.to_sym])
-              t = File.exists?(f)
+              expect(File.exists?(f)).to be true
               content[type.to_sym] = `cat #{f}`.chomp
           end
           expect(content[:versionfile]).to eq(opts[:ruby])

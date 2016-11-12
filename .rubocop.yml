@@ -48,6 +48,8 @@ Style/SpecialGlobalVars:
 
 ### Metrics
 # Rubocop was chosen only for style, and not for complexity or quality checks.
+Metrics/BlockLength:
+  Enabled: false
 Metrics/ClassLength:
   Enabled: false
 

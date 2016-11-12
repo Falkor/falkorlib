@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 require "falkorlib/version"
-$version = FalkorLib::Version.to_s
+#$version = FalkorLib::Version.to_s
 
 Gem::Specification.new do |s|
   s.name         = "falkorlib"
-  s.version      = $version
+  s.version      = FalkorLib::Version.to_s #$version
   s.date         = Time.now.strftime('%Y-%m-%d')
   s.summary      = "Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap} tasks"
   s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several element of my daily workflow (new git repository, new beamer slides etc.).\nThis is also my first gem so any comments on the code/organization are welcome, I'm a newbie in this domain. \nNote that I used [Noe](https://github.com/blambeau/noe) to bootstrap this project and get a fully documented environment."
@@ -133,7 +133,7 @@ Gem::Specification.new do |s|
   s.extensions = []
 
   # External (to RubyGems) requirements that must be met for this gem to work.
-  # It’s simply information for the user.
+  # It's simply information for the user.
   #
   s.requirements = nil
 

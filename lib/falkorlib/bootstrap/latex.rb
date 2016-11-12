@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2016-11-10 01:36 svarrette>
+# Time-stamp: <Sat 2016-11-12 02:42 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -17,7 +17,7 @@ include FalkorLib::Common
 
 
 module FalkorLib
-  module Bootstrap
+  module Bootstrap #:nodoc:
 
     module_function
 
@@ -134,7 +134,7 @@ module FalkorLib
                  end
         config.each do |k, v|
           next if k == :name
-          config[k.to_sym] = ask( "\t" + sprintf("%-20s", "#{prefix}#{k.capitalize}"), v) unless options[:no_interaction]
+          config[k.to_sym] = ask( "\t" + Kernel::format("%-20s", "#{prefix}#{k.capitalize}"), v) unless options[:no_interaction]
         end
         templates = [ File.join(src_templatedir, type.to_s) ]
         if [ :ieee, :ieee_journal, :acm].include?( type )

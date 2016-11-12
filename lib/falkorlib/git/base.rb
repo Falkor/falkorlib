@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 16:24 svarrette>
+# Time-stamp: <Sat 2016-11-12 02:11 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -51,7 +51,7 @@ module FalkorLib #:nodoc:
       res = false
       Dir.chdir(path) do
         _stdout, _stderr, exit_status = Open3.capture3( "git rev-parse HEAD" )
-        res = (exit_status.zero?)
+        res = (exit_status.to_i.zero?)
       end
       res
     end
