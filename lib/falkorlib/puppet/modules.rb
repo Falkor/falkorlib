@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 15:59 svarrette>
+# Time-stamp: <Sat 2016-11-12 12:18 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -113,7 +113,7 @@ module FalkorLib #:nodoc:
                            else
                              v
                            end
-          config[k.to_sym] = ask( "\t" + format("%-20s", "Module #{k}"), default_answer)
+          config[k.to_sym] = ask( "\t" + Kernel.format("%-20s", "Module #{k}"), default_answer)
         end
         config[:shortname] = name = config[:name].gsub(/.*[-\/]/, '')
         config[:docs_project] = ask("\tRead the Docs (RTFD) project:", config[:name].downcase.gsub(/\//, '-puppet-'))

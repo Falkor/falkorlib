@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 14:58 svarrette>
+# Time-stamp: <Sat 2016-11-12 09:21 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -312,7 +312,7 @@ module FalkorLib
                          else
                            (config[k.to_sym].empty?) ? v : config[k.to_sym]
                          end
-        config[k.to_sym] = ask( "\t" + format("Project %-20s", k.to_s), default_answer)
+        config[k.to_sym] = ask( "\t" + Kernel.format("Project %-20s", k.to_s), default_answer)
       end
       tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
       config[:tags]    = tags.split(',')

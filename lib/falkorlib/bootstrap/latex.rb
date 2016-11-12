@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 02:42 svarrette>
+# Time-stamp: <Sat 2016-11-12 12:18 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -134,7 +134,7 @@ module FalkorLib
                  end
         config.each do |k, v|
           next if k == :name
-          config[k.to_sym] = ask( "\t" + Kernel::format("%-20s", "#{prefix}#{k.capitalize}"), v) unless options[:no_interaction]
+          config[k.to_sym] = ask( "\t" + Kernel.format("%-20s", "#{prefix}#{k.capitalize}"), v) unless options[:no_interaction]
         end
         templates = [ File.join(src_templatedir, type.to_s) ]
         if [ :ieee, :ieee_journal, :acm].include?( type )
@@ -148,7 +148,7 @@ module FalkorLib
         templates.each do |templatedir|
           info "**** using templatedir = #{templatedir}"
           init_from_template(templatedir, srcdir, config, :no_interaction => true,
-                                                          :no_commit => true)
+                             :no_commit => true)
         end
         # Rename the main file
         Dir.chdir( srcdir ) do

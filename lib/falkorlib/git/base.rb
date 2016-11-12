@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 02:11 svarrette>
+# Time-stamp: <Sat 2016-11-12 12:27 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -367,7 +367,6 @@ module FalkorLib #:nodoc:
       execute_in_dir(rootdir(path),
                      %(
                    git submodule init
-                   git submodule foreach git fetch
                    git submodule update
             ))
     end
