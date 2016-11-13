@@ -8,10 +8,20 @@ addons:
   apt:
     packages:
     - build-essential
+    - texlive-base
+    - texlive-binaries
+    - texlive-latex-base
     - texlive-latex-extra
+    - texlive-bibtex-extra
+    - lmodern
+    - texlive-fonts-recommended
+    - texlive-latex-recommended
+    - texlive-science
     - latex-beamer
+    - pgf
     - pandoc
-    - git-flow git-core
+    - unzip
+    - git-core git-flow git-core
   hosts:
     - travis.dev
 before_install:
@@ -22,11 +32,19 @@ rvm:
  - 2.2
  - 2.3
 env:
-  - TRAVIS_CI_RUN=true GIT_SSH='ssh -o StrictHostKeyChecking=no' GIT_AUTHOR_NAME='Travis CI' GIT_AUTHOR_EMAIL='travis@example.com'
+  global:
+  - TRAVIS_CI_RUN=true
+  - GIT_SSH='ssh -o StrictHostKeyChecking=no'
+  - GIT_AUTHOR_NAME='Travis CI'
+  - GIT_AUTHOR_EMAIL='travis@example.com'
 notifications:
+  email:
+    on_success: never
   hipchat:
     rooms:
       secure: E0V9xQtCyPSB+SZ5n+ztdM5tzJ7d1eR+XR1gIBfAwe0JYnRb735B1v0Z3CVBmosKpv16KEoKUDjum1vHGk8fnOOcxoHx+TtTCF1TVpuBtKzXqG6t4YZAYjkGSIBUM1Zd7kXLlsdmdwRToGmKRqblQHutnm0LkyII/CAwaO+UeY8=
+  slack:
+    secure: NBN4QhHuaXpwZIxUOzZi29Z4iW0EK/d2ID7zZqz+1RDO/9BD7QqX5unM/SFP46oTbhEqNH/vMLLMFQ9i9l7Z1i6Z6nCNRiLRIjgPSL+3GMamPQm1Pj4JaLkwLHogxHdRvozfU3tdSG9uGmK++Aak/NLC/i5TASGrBMgKrmXLXEk=
 # addons:
 #   code_climate:
 #     repo_token:
