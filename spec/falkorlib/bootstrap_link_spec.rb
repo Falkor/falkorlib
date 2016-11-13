@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_link_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 17:43 svarrette>
+# Time-stamp: <Sun 2016-11-13 06:46 svarrette>
 #
 # @description Check the Bootstrapping operations for [sym]link
 #

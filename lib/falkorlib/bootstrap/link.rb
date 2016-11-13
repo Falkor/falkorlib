@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 16:34 svarrette>
+# Time-stamp: <Sun 2016-11-13 06:44 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -59,7 +59,7 @@ module FalkorLib
         unless File.exist?(File.join(path, makefile_d))
           Dir.chdir( path ) do
             run %( ln -s #{dst} #{makefile_d} )
-            FalkorLib::Git.add(File.join(path, makefile_d), "Add symlink '#{makefile_d}' to Falkor's Makefile directory")
+            FalkorLib::Git.add(makefile_d, "Add symlink '#{makefile_d}' to Falkor's Makefile directory")
           end
         end
         #ap options
@@ -84,9 +84,8 @@ module FalkorLib
           really_continue? unless options[:no_interaction]
           Dir.chdir( path ) do
             exit_status = run %( ln -s #{dst} Makefile )
+            exit_status = FalkorLib::Git.add('Makefile', "Add symlink to the #{type.capitalize} Makefile")
           end
-          #ap File.join(path, 'Makefile')
-          exit_status = FalkorLib::Git.add(File.join(path, 'Makefile'), "Add symlink to the #{type.capitalize} Makefile")
         end
         exit_status.to_i
       end # makefile_link
