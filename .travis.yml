@@ -43,10 +43,14 @@ before_install:
   - mkdir -p $TEXMFLOCAL/tex/latex/
   - wget -q http://mirrors.ctan.org/install/macros/latex/contrib/tcolorbox.tds.zip
   - wget -q http://mirrors.ctan.org/macros/latex/contrib/floatflt.zip
+  - wget -q http://mirrors.ctan.org/macros/latex/contrib/todonotes.zip
   - unzip -qq tcolorbox.tds.zip -d $TEXMFLOCAL
   - unzip -qq floatflt.zip
+  - unzip -qq todonotes.zip
   - cd ./floatflt/ && latex floatflt.ins && cd -
   - cp ./floatflt/floatflt.sty $TEXMFLOCAL/tex/latex/
+  - cd ./todonotes/ && latex todonotes.ins && cd -
+  - cp ./todonotes/todonotes.sty $TEXMFLOCAL/tex/latex/
   - texhash
 notifications:
   email:
