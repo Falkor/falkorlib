@@ -21,7 +21,8 @@ addons:
     - pgf
     - pandoc
     - unzip
-    - git-core git-flow git-core
+    - git-core
+    - git-flow
   hosts:
     - travis.dev
 before_install:
