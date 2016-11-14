@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Sun 2016-11-13 07:08 svarrette>
+# Time-stamp: <Sun 2016-11-13 20:53 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -19,7 +19,7 @@
 # require 'rubygems'
 # FALKORLIB_SPEC = Gem::Specification.load("falkorlib.gemspec")
 
-task :default => [ 'rspec:suite:latex' ]
+task :default => [ 'rspec' ]
 
 #.....................
 require 'rake/clean'
