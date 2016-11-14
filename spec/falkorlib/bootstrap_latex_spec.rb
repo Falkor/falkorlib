@@ -3,7 +3,7 @@
 #########################################
 # bootstrap_latex_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2016-11-13 21:33 svarrette>
+# Time-stamp: <Sun 2016-11-13 21:37 svarrette>
 #
 # @description Check the Bootstrapping operations for LaTeX-based projects
 #
@@ -22,8 +22,9 @@ describe FalkorLib::Bootstrap do
   dir = Dir.mktmpdir
   supported_latex_types = [ :article ]
   # I give up on making the compilation working on travis (it currently fails
-  # with the message 'LaTeX Error: There's no line here to end. l.57') I could
-  # not figure out as it works fine on vagrant/ubuntu-precise and mac.
+  # with the message 'LaTeX Error: There's no line here to end. l.57') -- see build
+  # [#326.1](https://travis-ci.org/Falkor/falkorlib/jobs/175603403) for instance.
+  # not figure out the problem as it works fine on vagrant/ubuntu-precise and mac.
   supported_latex_types << :beamer unless ENV['TRAVIS_CI_RUN']
 
   #_____________

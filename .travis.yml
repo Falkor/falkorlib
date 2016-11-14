@@ -61,8 +61,10 @@ notifications:
   hipchat:
     rooms:
       secure: E0V9xQtCyPSB+SZ5n+ztdM5tzJ7d1eR+XR1gIBfAwe0JYnRb735B1v0Z3CVBmosKpv16KEoKUDjum1vHGk8fnOOcxoHx+TtTCF1TVpuBtKzXqG6t4YZAYjkGSIBUM1Zd7kXLlsdmdwRToGmKRqblQHutnm0LkyII/CAwaO+UeY8=
+# slack:
+# secure: NBN4QhHuaXpwZIxUOzZi29Z4iW0EK/d2ID7zZqz+1RDO/9BD7QqX5unM/SFP46oTbhEqNH/vMLLMFQ9i9l7Z1i6Z6nCNRiLRIjgPSL+3GMamPQm1Pj4JaLkwLHogxHdRvozfU3tdSG9uGmK++Aak/NLC/i5TASGrBMgKrmXLXEk=
   slack:
-    secure: NBN4QhHuaXpwZIxUOzZi29Z4iW0EK/d2ID7zZqz+1RDO/9BD7QqX5unM/SFP46oTbhEqNH/vMLLMFQ9i9l7Z1i6Z6nCNRiLRIjgPSL+3GMamPQm1Pj4JaLkwLHogxHdRvozfU3tdSG9uGmK++Aak/NLC/i5TASGrBMgKrmXLXEk=
+    secure: BKYRevAa4+qThbhsYbsgBxA8bzuNx0lUFTDnIkS1Vw+lwnM0I4o38X7/ZtJccL1YXqEbCBIaz21mNx4UWxMQEcPNyJENHXYLX9zjHxPPuW83KNnrgVLtel0keGwgxl0Ah4eRhPvYzdA5FonfAurw9GuxW4au2XcUNFNy/iKEpX0=
 # addons:
 #   code_climate:
 #     repo_token:
