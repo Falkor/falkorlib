@@ -3,7 +3,7 @@
 #########################################
 # bootstrap_latex_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-10 01:46 svarrette>
+# Time-stamp: <Sun 2016-11-13 20:28 svarrette>
 #
 # @description Check the Bootstrapping operations for LaTeX-based projects
 #
@@ -31,7 +31,7 @@ describe FalkorLib::Bootstrap do
 
   #____________
   after :all do
-    FileUtils.remove_entry_secure dir
+    #FileUtils.remove_entry_secure dir
     FalkorLib.config[:no_interaction] = false
   end
 
