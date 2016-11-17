@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Sat 2016-11-05 01:45 svarrette>
+# Time-stamp: <Mon 2016-11-14 15:24 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -20,6 +20,10 @@
 #
 #      bundle exec falkor zsh-completion > completion/_falkor.autogen
 #
+# Test modification in live in your shell:
+#
+#  unfunction _falkor && autoload -U _falkor
+
 typeset -A opt_args
 
 # local _falkor_common_opts
