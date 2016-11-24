@@ -4,11 +4,11 @@ group :development do
   gem "bundler"
   gem "pry"
   gem "rake"
-  gem "thor-zsh_completion"
 end
 
-# group :test do
-#   gem "rspec", ">= 3"
-# end
+group :test do
+  gem "simplecov", :require => false
+  gem "rubocop",   :require => false
+end
 
 gemspec

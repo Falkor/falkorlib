@@ -1,0 +1,88 @@
+# -*- mode: yaml; -*-
+AllCops:
+  DisplayCopNames: true
+  Exclude:
+    - 'templates/**/*'
+    - 'spec/**/*'
+
+Style/EmptyLines:
+  Enabled: false
+Style/LeadingCommentSpace:
+  Enabled: false
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+# I dislike these test
+Style/StringLiterals:
+  Enabled: false
+
+Style/RegexpLiteral:
+  Enabled: false
+
+# Parenthesis
+Style/ParenthesesAroundCondition:
+  Enabled: false
+Style/RedundantParentheses:
+  Enabled: false
+Style/TernaryParentheses:
+  EnforcedStyle: require_parentheses
+
+# Rules for spaces
+Style/EmptyLinesAroundBlockBody:
+  EnforcedStyle: no_empty_lines
+Style/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines_except_namespace
+Style/EmptyLinesAroundModuleBody:
+  EnforcedStyle: empty_lines_except_namespace
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+# this one would crash with configatron
+Style/MutableConstant:
+  Enabled: false
+
+# No I don't want $? to be changed in $CHILD_STATUS...
+Style/SpecialGlobalVars:
+  Enabled: false
+
+### Metrics
+# Rubocop was chosen only for style, and not for complexity or quality checks.
+Metrics/BlockLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/LineLength:
+  Enabled: false
+
+Style/ParallelAssignment:
+  Enabled: false
+
+Style/SpaceInsideBrackets:
+  Enabled: false
+Style/SpaceInsideParens:
+  Enabled: false
+
+# It will be obvious which code is complex, Rubocop should only lint simple
+# rules for us.
+Metrics/PerceivedComplexity:
+  Enabled: false

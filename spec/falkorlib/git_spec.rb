@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2016-10-16 22:05 svarrette>
+# Time-stamp: <Sat 2016-11-12 12:30 svarrette>
 #
 # @description Check the Git operations
 #
@@ -17,16 +17,21 @@ describe FalkorLib::Git do
 
     include FalkorLib::Common
     default_branches = [ 'devel', 'production' ]
+    remote_name      = 'custom-origin'
+    filename         = 'custom-file.txt'
+    tagname          = 'customtag'
 
     dir   = Dir.mktmpdir
-    afile = File.join(dir, 'a_file')
+    dir2  = Dir.mktmpdir
+    dirs  = [ dir, dir2 ]
 
     before :all do
-        $stdout.sync = true
+      $stdout.sync = true
+      #MiniGit.debug = true
     end
 
     after :all do
-        FileUtils.remove_entry_secure dir
+      dirs.each { |d| FileUtils.remove_entry_secure d }
     end
 
     #############################################################
@@ -37,12 +42,15 @@ describe FalkorLib::Git do
             expect(t).to be false
         end
 
-        it "#init - initialize a git repository" do
-            c = FalkorLib::Git.init(dir)
+        dirs.each do |d|
+          it "#init - initialize a git repository" do
+            c = FalkorLib::Git.init(d)
             expect(c).to eq(0)
-            t = FalkorLib::Git.init?(dir)
+            t = FalkorLib::Git.init?(d)
             expect(t).to be true
+          end
         end
+
 
         it "#remotes? -- should be false" do
             t = FalkorLib::Git.remotes?(dir)
@@ -60,8 +68,8 @@ describe FalkorLib::Git do
             end
         end
 
-        it "#has_commits? - not yet any commits" do
-            b = FalkorLib::Git.has_commits?( dir )
+        it "#commits? - not yet any commits" do
+            b = FalkorLib::Git.commits?( dir )
             expect(b).to be false
         end
 
@@ -75,20 +83,23 @@ describe FalkorLib::Git do
             expect(l).to be_empty
         end
 
-        it "#add - makes a first commit" do
-            FileUtils.touch( afile )
-            t = FalkorLib::Git.add(afile)
+        dirs.each do |d|
+          it "#add - makes a first commit" do
+            f = File.join(d, filename )
+            FileUtils.touch( f )
+            t = FalkorLib::Git.add(f)
             expect(t).to eq(0)
+          end
         end
 
         it "#list_files -- should list a single files" do
             l = FalkorLib::Git.list_files( dir )
-            expect(l).to include 'a_file'
+            expect(l).to include filename
         end
 
 
-        it "#has_commits? - no some commits have been done" do
-            b = FalkorLib::Git.has_commits?( dir )
+        it "#commits? - no some commits have been done" do
+            b = FalkorLib::Git.commits?( dir )
             expect(b).to be true
         end
 
@@ -110,6 +121,65 @@ describe FalkorLib::Git do
                 expect(l).to include "#{br}"
             end
         end
+
+        it "#create_remote" do
+          r = FalkorLib::Git.create_remote(remote_name, "#{dir}", dir2, { :fetch => true })
+          expect(r).to be true
+        end
+
+        it "#remotes? -- should be true for dir2 = '#{dir2}" do
+            t = FalkorLib::Git.remotes?(dir2)
+            expect(t).to be true
+        end
+
+        it "#remotes" do
+          l = FalkorLib::Git.remotes(dir2)
+          expect(l).to include remote_name
+        end
+
+        default_branches.each do |br|
+          it "#grab branch '#{remote_name}/#{br}'" do
+            t = FalkorLib::Git.grab(br, dir2, remote_name)
+            expect(t).to eq(0)
+          end
+        end
+
+        it "#publish" do
+          br = 'custom-branch'
+          c = FalkorLib::Git.create_branch(br, dir2)
+          expect(c).to be true
+          t = FalkorLib::Git.publish(br, dir2, remote_name)
+          expect(t).to eq(0)
+        end
+
+        it "#list_tag -- empty" do
+          l = FalkorLib::Git.list_tag( dir )
+          expect(l).to be_empty
+        end
+
+        it "#last_tag_commit -- empty" do
+          l = FalkorLib::Git.last_tag_commit(dir)
+          expect(l).to be_empty
+        end
+
+        it "#tag(#{tagname})" do
+          t = FalkorLib::Git.tag(tagname, dir)
+          expect(t).to be true
+        end
+
+        it "#list_tag" do
+          l = FalkorLib::Git.list_tag( dir )
+          expect(l).to include tagname
+        end
+
+        it "#last_tag_commit" do
+          c = FalkorLib::Git.last_tag_commit(dir)
+          l = FalkorLib::Git.list_tag( dir )
+          expect(c).to eq(l[tagname])
+        end
+
+
+
 
         default_branches.each do |br|
             it "#delete_branch #list_branch - deletes branch #{br}" do
@@ -209,7 +279,7 @@ describe FalkorLib::Git do
         if FalkorLib::Git.command? 'subtree'
             FalkorLib.config.git do |c|
                 c[:subtrees] = {
-                    'falkor/lib' => {
+                    'falkor-lib' => {
                         :url    => 'https://github.com/Falkor/falkorlib.git',
                         :branch => 'devel'
                     },
@@ -244,18 +314,20 @@ describe FalkorLib::Git do
             end
         end
 
-
-
+        [ :subtrees, :submodules ].each do |type|
+          it "#config_warn(#{type})" do
+            t = capture(:stdout) { FalkorLib::Git.config_warn(type) }
+            expect(t).to include "FalkorLib.config.git"
+            expect(t).to include "FalkorLib.config.git.submodulesdir" if type == :submodules
+          end
+        end
 
         # shall be the last check
         it "#dirty? - check dirty git directory" do
-            execute "echo 'toto' > #{afile}"
+            execute "echo 'toto' > #{File.join(dir, filename)}"
             b = FalkorLib::Git.dirty?( dir )
             expect(b).to be true
         end
 
     end
-
-
-
 end

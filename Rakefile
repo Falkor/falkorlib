@@ -1,6 +1,6 @@
 ##############################################################################
 # Rakefile - Configuration file for rake (http://rake.rubyforge.org/)
-# Time-stamp: <Lun 2015-01-12 21:10 svarrette>
+# Time-stamp: <Sun 2016-11-13 20:53 svarrette>
 #
 # Copyright (c) 2012 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 # .             http://varrette.gforge.uni.lu
@@ -16,10 +16,13 @@
 # * http://www.stuartellis.eu/articles/rake/
 ##############################################################################
 
-task :default => [ :rspec ]
+# require 'rubygems'
+# FALKORLIB_SPEC = Gem::Specification.load("falkorlib.gemspec")
+
+task :default => [ 'rspec' ]
+
 #.....................
 require 'rake/clean'
-
 CLEAN.add   'pkg'
 CLOBBER.add 'doc'
 
@@ -31,19 +34,20 @@ require "falkorlib"
 
 # Adapt the versioning aspects
 FalkorLib.config.versioning do |c|
-	c[:type] = 'gem'
+  c[:type] = 'gem'
 end
 
 # Adapt the Git flow aspects
 FalkorLib.config.gitflow do |c|
-	c[:branches] = { 
-		:master  => 'production',
-		:develop => 'devel'
-	} 
+  c[:branches] = {
+    :master => 'production',
+    :develop => 'devel'
+  }
 end
 
 require "falkorlib/tasks/git"    # OR require "falkorlib/git_tasks"
 require "falkorlib/tasks/gem"    # OR require "falkorlib/gem_tasks"
+
 
 # [ 'rspec', 'yard' ] .each do |tasks|
 #     load "falkorlib/tasks/#{tasks}.rake"

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
 # gem.rake - Special tasks for the management of Gem operations
-# Time-stamp: <Lun 2015-01-12 21:14 svarrette>
+# Time-stamp: <Fri 2016-11-11 15:40 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -14,48 +14,47 @@ require 'rubygems/tasks'
 
 #.....................
 namespace :gem do
-    Gem::Tasks::Console.new(:command => 'pry')
+  Gem::Tasks::Console.new(:command => 'pry')
 
-    ###########  gem:release   ###########
-    desc "Release the gem "
-    task :release => [ :build ] do |t|
-        pkgdir = Gem::Tasks::Project::PKG_DIR
-        Dir.glob("*.gemspec") do |gemspecfile|
-            spec = Gem::Specification::load(gemspecfile)
-            name    = spec.name
-            version = spec.version
-            gem     = File.join( pkgdir , "#{name}-#{version}.gem")
-            unless File.exists?( gem )
-                warn "Unable to find the built gem '#{gem}'... Thus exiting."
-                next
-            end
-            info t.comment + " '#{gem}'"
-            really_continue?
-            a = run %{
+  ###########  gem:release   ###########
+  desc "Release the gem "
+  task :release => [ :build ] do |t|
+    pkgdir = Gem::Tasks::Project::PKG_DIR
+    Dir.glob("*.gemspec") do |gemspecfile|
+      spec = Gem::Specification.load(gemspecfile)
+      name    = spec.name
+      version = spec.version
+      gem     = File.join( pkgdir, "#{name}-#{version}.gem")
+      unless File.exist?( gem )
+        warn "Unable to find the built gem '#{gem}'... Thus exiting."
+        next
+      end
+      info t.comment + " '#{gem}'"
+      really_continue?
+      a = run %(
               gem push #{gem}
-            }
-            error "Unable to publish the gem '#{gem}'" if a.to_i != 0
-        end
-    end # task gem:release
-	task :publish, :release
+      )
+      error "Unable to publish the gem '#{gem}'" if a.to_i.nonzero?
+    end
+  end # task gem:release
+  task :publish, :release
 
-    ###########   info   ###########
-    desc "Informations on the gem"
-    task :info do |t|
-        require "rubygems"
-        Dir.glob("*.gemspec") do |gemspecfile|
-            spec = Gem::Specification::load(gemspecfile)
-            info t.comment + " '#{spec.name}' (version #{spec.version})"
-            puts <<-eos
+  ###########   info   ###########
+  desc "Informations on the gem"
+  task :info do |t|
+    require "rubygems"
+    Dir.glob("*.gemspec") do |gemspecfile|
+      spec = Gem::Specification.load(gemspecfile)
+      info t.comment + " '#{spec.name}' (version #{spec.version})"
+      puts <<-eos
 - Summary:     #{spec.summary}
 - Author:      #{spec.author} #{spec.email}
 - Licence:     #{spec.license}
 - Homepage:    #{spec.homepage}
 - Description: #{spec.description}
 eos
-        end
-    end # task info
-
+    end
+  end # task info
 end # namespace gem
 
 # Until [Issue#13](https://github.com/postmodern/rubygems-tasks/issues/13) it solved,
@@ -72,13 +71,13 @@ Rake::Task['build'].enhance do
   end
 end
 
-[ 'major', 'minor', 'patch' ].each do |level|
-	Rake::Task["version:bump:#{level}"].enhance do 
-		warn "about to run the rspec tests to ensure the release can be done"
-		really_continue?
-		Rake::Task['rspec'].invoke
-	end
-end 
+%w(major minor patch).each do |level|
+  Rake::Task["version:bump:#{level}"].enhance do
+    warn "about to run the rspec tests to ensure the release can be done"
+    really_continue?
+    Rake::Task['rspec'].invoke
+  end
+end
 
 
 

@@ -26,71 +26,106 @@
 # http://relishapp.com/rspec
 #
 require 'rspec/core'
+require 'rubocop/rake_task'
+
+RuboCop::RakeTask.new
+
+# RSpec.configure do |c|
+#   c.fail_fast     = true
+#   c.color         = true
+# end
+
 begin
-    require "rspec/core/rake_task"
-    desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
-    RSpec::Core::RakeTask.new(:rspec) do |t|
-        # Glob pattern to match files.
-        #t.pattern = "spec/**/common_*.rb"
-        #t.pattern = "spec/**/versioning_*spec.rb"
-        #t.pattern = "spec/**/puppet*spec.rb"
-        #t.pattern = "spec/**/bootstrap_he*spec.rb"
-        #t.pattern = "spec/**/git*spec.rb"
-        #t.pattern = "spec/**/error*spec.rb"
-        #t.pattern = "spec/**/config*spec.rb"
+  require "rspec/core/rake_task"
+  #specfiles = Dir.glob['spec/**/*_spec.rb']
+  specsuite = {}
+  Dir.glob('spec/**/*_spec.rb').each do |f|
+    File.basename(f) =~ /^([^_]+)_*/
+    specsuite[Regexp.last_match(1)] = [] unless specsuite[Regexp.last_match(1)]
+    specsuite[Regexp.last_match(1)] << f
+  end
+  rspec_opts = [ "--color", "--format d", "--backtrace" ]
+  unless specsuite.empty?
+    #.....................
+    namespace :rspec do
+      #.....................
+      namespace :suite do
+        specsuite.each do |name, _files|
+          ###########   #{name}   ###########
+          desc "Run all specs in #{name} spec suite"
+          RSpec::Core::RakeTask.new(name.to_sym) do |t|
+            t.pattern = "spec/**/#{name}_*spec.rb"
+            t.verbose = false
+            t.rspec_opts = rspec_opts
+          end # task #{name}
+        end
+      end # namespace suite
+    end # namespace rspec
+  end
 
-        # Whether or not to fail Rake when an error occurs (typically when
-        # examples fail).
-        t.fail_on_error = true
 
-        # A message to print to stderr when there are failures.
-        t.failure_message = nil
+  desc "Run RSpec code examples '*_spec.rb' from the spec/ directory"
+  RSpec::Core::RakeTask.new(:rspec) do |t|
+    # Glob pattern to match files.
+    #t.pattern = "spec/**/common_*.rb"
+    #t.pattern = "spec/**/versioning_*spec.rb"
+    #t.pattern = "spec/**/puppet*spec.rb"
+    #t.pattern = "spec/**/bootstrap_spec.rb"
+    #t.pattern = "spec/**/git*spec.rb"
+    #t.pattern = "spec/**/error*spec.rb"
+    #t.pattern = "spec/**/config*spec.rb"
 
-        # Use verbose output. If this is set to true, the task will print the
-        # executed spec command to stdout.
-        t.verbose = true
+    # Whether or not to fail Rake when an error occurs (typically when
+    # examples fail).
+    t.fail_on_error = true
 
-        # Use rcov for code coverage?
-        #t.rcov = false
+    # A message to print to stderr when there are failures.
+    t.failure_message = nil
 
-        # Path to rcov.
-        #t.rcov_path = "rcov"
+    # Use verbose output. If this is set to true, the task will print the
+    # executed spec command to stdout.
+    t.verbose = true
 
-        # Command line options to pass to rcov. See 'rcov --help' about this
-        #t.rcov_opts = []
+    # Use rcov for code coverage?
+    #t.rcov = false
 
-        # Command line options to pass to ruby. See 'ruby --help' about this
-        t.ruby_opts = []
+    # Path to rcov.
+    #t.rcov_path = "rcov"
 
-        # Path to rspec
-        #t.rspec_path = "rspec"
+    # Command line options to pass to rcov. See 'rcov --help' about this
+    #t.rcov_opts = []
 
-        # Command line options to pass to rspec. See 'rspec --help' about this
-        #t.rspec_opts = ["--color", "--backtrace"]
-        t.rspec_opts = ["--color", "--format d", "--backtrace"] # "--format d",
-    end
-rescue LoadError => ex
-    task :spec_test do
-        abort 'rspec is not available. In order to run spec, you must: gem install rspec'
-    end
+    # Command line options to pass to ruby. See 'ruby --help' about this
+    t.ruby_opts = []
+
+    # Path to rspec
+    #t.rspec_path = "rspec"
+
+    # Command line options to pass to rspec. See 'rspec --help' about this
+    #t.rspec_opts = ["--color", "--backtrace"]
+    t.rspec_opts = rspec_opts #["--color", "--format d", "--backtrace"] # "--format d",
+  end
+rescue LoadError
+  task :spec_test do
+    abort 'rspec is not available. In order to run spec, you must: gem install rspec'
+  end
 ensure
-    task :spec => [:spec_test]
-    task :test => [:spec_test]
+  task :spec => [:spec_test]
+  task :test => [:spec_test]
 end
 
 #.....................
 namespace :setenv do
-    ###########   code_climate   ###########
-    #desc "Set Code Climate token to report rspec results"
-    task :code_climate do |t|
-        unless FalkorLib.config[:tokens].nil? or
-                FalkorLib.config[:tokens][:code_climate].nil? or
-                FalkorLib.config[:tokens][:code_climate].empty?
-            ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No')
-            ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
-        end
-    end # task code_climate
-
+  ###########   code_climate   ###########
+  #desc "Set Code Climate token to report rspec results"
+  task :code_climate do |_t|
+    unless FalkorLib.config[:tokens].nil? ||
+           FalkorLib.config[:tokens][:code_climate].nil? ||
+           FalkorLib.config[:tokens][:code_climate].empty?
+      ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No')
+      ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
+    end
+  end # task code_climate
 end # namespace set
 
 task :rspec => 'setenv:code_climate'

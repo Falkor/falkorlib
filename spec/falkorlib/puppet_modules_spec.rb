@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2016-10-16 22:06 svarrette>
+# Time-stamp: <Thu 2016-11-10 02:01 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -19,10 +19,11 @@ describe FalkorLib::Puppet::Modules do
   include FalkorLib::Common
 
   dir   = Dir.mktmpdir
+
   # Module name
   name      = 'toto'
   moduledir = File.join(dir, name)
-  jsonfile = File.join( moduledir, 'metadata.json')
+  jsonfile = File.join(moduledir, 'metadata.json')
 
   #afile = File.join(dir, 'a_file')
   # before :all do
@@ -30,8 +31,16 @@ describe FalkorLib::Puppet::Modules do
   #   ENV['GIT_AUTHOR_EMAIL'] = 'travis@domain.org' if ENV['GIT_AUTHOR_EMAIL'].nil?
   # end
 
+  #_____________
+  before :all do
+    $stdout.sync = true
+    FalkorLib.config[:no_interaction] = true
+  end
+
+  #____________
   after :all do
     FileUtils.remove_entry_secure dir
+    FalkorLib.config[:no_interaction] = false
   end
 
   #############################################################
@@ -40,7 +49,7 @@ describe FalkorLib::Puppet::Modules do
 
     it "#init -- create a puppet module" do
       # Prepare answer to the questions
-      Array.new(17).each { |e|  expect(STDIN).to receive(:gets).and_return('') }
+      #Array.new(17).each { |e|  expect(STDIN).to receive(:gets).and_return('') }
       FalkorLib::Puppet::Modules.init(moduledir)
       templatedir = File.join( FalkorLib.templates, 'puppet', 'modules')
       s = true
@@ -106,15 +115,15 @@ describe FalkorLib::Puppet::Modules do
       metadata = FalkorLib::Puppet::Modules.parse(moduledir, { :no_interaction => true })
       diff = (metadata.to_a - ref.to_a).flatten.sort
       expect(diff).to eq([
-        'classes',
-        'definitions',
-        'toto',
-        'toto::common',
-        'toto::common::debian',
-        'toto::common::redhat',
-        'toto::mydef',
-        'toto::params',
-      ])
+                           'classes',
+                           'definitions',
+                           'toto',
+                           'toto::common',
+                           'toto::common::debian',
+                           'toto::common::redhat',
+                           'toto::mydef',
+                           'toto::params',
+                         ])
     end
 
     it "#parse again -- should not exhibit any difference" do
@@ -132,20 +141,20 @@ describe FalkorLib::Puppet::Modules do
       expect(a).to include newdep
     end
 
-    it "#parse again -- should ask new dependency elements" do
-      ref      = JSON.parse( IO.read( jsonfile ) )
-      expect(STDIN).to receive(:gets).and_return('svarrette')
-      expect(STDIN).to receive(:gets).and_return('1.2')
-      expect(STDIN).to receive(:gets).and_return('Yes')
-      expect(STDIN).to receive(:gets).and_return('')
-      metadata = FalkorLib::Puppet::Modules.parse(moduledir)
-      diff = (metadata.to_a - ref.to_a).flatten
-      expect(diff).to eq([
-        'dependencies',
-        {"name"=>"puppetlabs-stdlib", "version_requirement"=>">=4.2.2 <5.0.0"},
-        {"name"=>"svarrette/tata", "version_requirement"=>"1.2"}
-      ])
-    end
+    # it "#parse again -- should ask new dependency elements" do
+    #   ref      = JSON.parse( IO.read( jsonfile ) )
+    #   expect(STDIN).to receive(:gets).and_return('svarrette')
+    #   expect(STDIN).to receive(:gets).and_return('1.2')
+    #   expect(STDIN).to receive(:gets).and_return('Yes')
+    #   expect(STDIN).to receive(:gets).and_return('')
+    #   metadata = FalkorLib::Puppet::Modules.parse(moduledir)
+    #   diff = (metadata.to_a - ref.to_a).flatten
+    #   expect(diff).to eq([
+    #                        'dependencies',
+    #                        {"name"=>"puppetlabs-stdlib", "version_requirement"=>">=4.2.2 <5.0.0"},
+    #                        {"name"=>"svarrette/tata", "version_requirement"=>"1.2"}
+    #                      ])
+    # end
 
     upgraded_files_default = 1
     it "#upgrade" do

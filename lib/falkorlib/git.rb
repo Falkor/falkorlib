@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Ven 2014-06-06 13:12 svarrette>
+# Time-stamp: <Wed 2016-11-09 09:15 svarrette>
 ################################################################################
 # Management of Git [flow] operations
 
@@ -10,6 +10,5 @@ module FalkorLib #:nodoc:
 
 end # module FalkorLib
 
-require "falkorlib/git/base"
-require "falkorlib/git/flow"
-
+require 'falkorlib/git/base'
+require 'falkorlib/git/flow'

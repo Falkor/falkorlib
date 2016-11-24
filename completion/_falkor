@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Sat 2016-10-15 22:20 svarrette>
+# Time-stamp: <Mon 2016-11-14 15:24 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -17,7 +17,12 @@
 ########################################################################################
 # You can inspired from the (unfortunately buggy) automatic generation of the ZSH
 # completion file (see https://github.com/labocho/thor-zsh_completion) using:
+#
 #      bundle exec falkor zsh-completion > completion/_falkor.autogen
+#
+# Test modification in live in your shell:
+#
+#  unfunction _falkor && autoload -U _falkor
 
 typeset -A opt_args
 
@@ -35,7 +40,9 @@ _falkor()
     _falkor_cmds=(
         'config:Print the current configuration of FalkorLib'
         'help:Describe available commands or one specific command'
-        'link:link:Initialize a special symlink (.root, .makefile.d etc.)'
+        'init:Bootstrap a Git Repository the falkor way'
+        'link:Initialize a special symlink (.root, .makefile.d etc.)'
+        'motd:bootstrap a Message of the Day (motd) file'
         'new:Initialize the directory PATH with one of Falkors template(s)'
         'version:Prints the FalkorLib version information'
     )
@@ -63,10 +70,14 @@ _falkor()
                     ;;
                 (config)
                     __falkor_config && ret=0 ;;
-                (new)
-                    __falkor_new    && ret=0 ;;
+                (init)
+                    __falkor_init && ret=0   ;;
                 (link)
                     __falkor_link   && ret=0 ;;
+                (motd)
+                    __falkor_motd && ret=0   ;;
+                (new)
+                    __falkor_new    && ret=0 ;;
                 (version|*)
                     _nothing
                     ;;
@@ -112,8 +123,8 @@ __falkor_new()
                 (letter)
                     _arguments -C \
                                '(-n --name)'{-n,--name}'[Name of the LaTeX project]' \
-                               '(-d --dir)'{-d,--dir=}':Project directory (relative to the git root directory):_directories' && ret=0
-                               ;;
+                               '(-d --dir)'{-d,--dir}':Project directory (relative to the git root directory):_directories' && ret=0
+                    ;;
                 (repo)
                     _arguments -C \
                                '(--no-git-flow)--git-flow[Bootstrap the repository with Git-flow]' \
@@ -130,7 +141,7 @@ __falkor_new()
                     case "$state" in
                         (path)
                             _directories ;;
-                        esac
+                    esac
                     ;;
             esac
             ;;
@@ -198,6 +209,43 @@ __falkor_config() {
                '(- *)'{-g,--global}'Operate on the global configuration' \
                '(- *)'{-l,--local}'Operate on the local configuration of the repository'
 }
+
+
+##################
+__falkor_init() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               {--git-flow,--no-git-flow}'[Bootstrap the repository with (or without) Git-flow]' \
+               {-i,--interactive}'[Interactive mode, in particular to confirm Gitflow branch names]' \
+               {-r,--remote-sync}'[Operate a git remote synchronization with remote. By default, all commits stay local]' \
+               '--master[Master Branch name for production releases]' \
+               {-b,--branch,--devel,--develop}'[Branch name for development commits]' \
+               '--make[Use a Makefile to pilot the repository actions (default)]' \
+               '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
+               '*:directory:_directories'
+}
+
+
+##################
+__falkor_motd() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               {--file,-f}'[File storing the message of the day]:filename:_files' \
+               {--width,-w}'[Width for the text]:[0-9]#' \
+               {--title,-t}'[Title to be placed in the motd (using asciify or figlet)]:title' \
+               '--subtitle[Eventual subtitle to place below the title]:subtitle' \
+               '--hostname[Hostname]:hostname' \
+               {--support,-s}"[Support/Contact mail]:email:($(git config user.email) hpc-sysadmins@uni.lu)" \
+               {--desc,-d}'[Short Description of the host]:desc' \
+               {--nodemodel,-n}'[Node Model]:model'  \
+               '*:directory:_files -/'
+}
+
+
 
 
 _falkor "$@"

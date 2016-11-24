@@ -4,12 +4,10 @@
 ################################################################################
 # Management of [Puppet](http://puppetlabs.com/) operations
 
-require "falkorlib"
+require 'falkorlib'
 
 module FalkorLib #:nodoc:
-
 end # module FalkorLib
 
-require "falkorlib/puppet/base"
-require "falkorlib/puppet/modules"
- 
+require 'falkorlib/puppet/base'
+require 'falkorlib/puppet/modules'

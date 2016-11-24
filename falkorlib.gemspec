@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 require "falkorlib/version"
-$version = FalkorLib::Version.to_s
+#$version = FalkorLib::Version.to_s
 
 Gem::Specification.new do |s|
   s.name         = "falkorlib"
-  s.version      = $version
+  s.version      = FalkorLib::Version.to_s #$version
   s.date         = Time.now.strftime('%Y-%m-%d')
   s.summary      = "Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap} tasks"
   s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several element of my daily workflow (new git repository, new beamer slides etc.).\nThis is also my first gem so any comments on the code/organization are welcome, I'm a newbie in this domain. \nNote that I used [Noe](https://github.com/blambeau/noe) to bootstrap this project and get a fully documented environment."
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"] + Dir["spec/**/*"]
 
   # Alternative:
-  s.files         = `git ls-files`.split("\n")
+  s.files = `git ls-files`.split("\n")
   #s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   #s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   #
   #s.bindir = "bin"
 
-  s.executables = (Dir["bin/*"]).collect{|f| File.basename(f)}
+  s.executables = (Dir["bin/*"]).collect { |f| File.basename(f) }
 
   ################################################################### REQUIREMENTS & INSTALL
   # Remember the gem version requirements operators and schemes:
@@ -83,8 +83,11 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("thor",   '>= 0.19')
   s.add_runtime_dependency("artii",  '>= 2.1')
   s.add_runtime_dependency("facter", '~> 2.4.1')
-
+  s.add_runtime_dependency("thor-zsh_completion", '>= 0')
+  s.add_runtime_dependency("activesupport", '~> 4.0')
+  #s.add_runtime_dependency("benchmark", '~> 4.0')
   #s.add_runtime_dependency("mercenary", '>= 0.3.5')
+
 
   #
   #
@@ -94,15 +97,15 @@ Gem::Specification.new do |s|
   # for each development dependency. These gems are required for developers
   #
   #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
-  s.add_development_dependency("bundler",        "~> 1.0")
-  s.add_development_dependency 'rspec', '~> 3.0'   #, '>= 2.7.0'
+  s.add_development_dependency("bundler", "~> 1.0")
+  s.add_development_dependency 'rspec', '~> 3.0' #, '>= 2.7.0'
   s.add_development_dependency("pry",    "~> 0.9")
   s.add_development_dependency("yard",   "~> 0.8")
-  #s.add_development_dependency("minitest",   "~> 5.3")
-  s.add_development_dependency("rubygems-tasks",   "~> 0.2")
+  s.add_development_dependency('rubocop', '~> 0.45.0')
+  s.add_development_dependency("rubygems-tasks", "~> 0.2")
   s.add_development_dependency("travis",        "~> 1.6")
   s.add_development_dependency("travis-lint",   "~> 1.8")
-
+  s.add_development_dependency('simplecov', '~> 0.12.0')
   s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
   #s.add_development_dependency("bluecloth",      "~> 2.2.0")
   #s.add_development_dependency("wlang",          "~> 0.10.2")
@@ -130,7 +133,7 @@ Gem::Specification.new do |s|
   s.extensions = []
 
   # External (to RubyGems) requirements that must be met for this gem to work.
-  # It’s simply information for the user.
+  # It's simply information for the user.
   #
   s.requirements = nil
 
@@ -163,5 +166,4 @@ Gem::Specification.new do |s|
   # Extra files to add to RDoc such as README
   #
   s.extra_rdoc_files = Dir["README.md"] + Dir["CHANGELOG.md"] + Dir["LICENCE.md"]
-
 end

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-10-15 18:45 svarrette>
+# Time-stamp: <Mon 2016-11-07 10:23 svarrette>
 ################################################################################
 
 require 'thor'
@@ -10,9 +10,15 @@ require "falkorlib/bootstrap"
 
 module FalkorLib
   module CLI
-
     # Thor class for all bootstrapping / initialization
     class New < ::Thor
+
+      package_name "Falkor[Lib] 'new'"
+      namespace :new
+
+      def self.banner(task, _namespace = true, subcommand = false)
+        "#{basename} #{task.formatted_usage(self, true, subcommand)}"
+      end
 
       ###### commands ######
       desc "commands", "Lists all available commands", :hide => true
@@ -21,12 +27,6 @@ module FalkorLib
       end
 
       #map %w[--help -h] => :help
-
-      ###### commands ######
-      # desc "commands", "Lists available commands" #, :hide => true
-      # def commands
-      #     puts App.all_commands.to_yaml #.keys - ["commands", "completions"]
-      # end
 
       ###### repo ######
       desc "repo NAME [options]", "Bootstrap a Git Repository"
@@ -41,23 +41,23 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       #......................................................
       method_option :git_flow, :default => true, :type => :boolean, :desc => 'Bootstrap the repository with Git-glow'
       method_option :make, :default => true,     :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
-      method_option :rake,       :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
+      method_option :rake, :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
       method_option :interactive, :aliases => '-i', :default => true,
-                    :type => :boolean, :desc => "Interactive mode, in particular to confirm Gitflow branch names"
+                                  :type => :boolean, :desc => "Interactive mode, in particular to confirm Gitflow branch names"
       method_option :remote_sync, :aliases => '-r',
-                    :type => :boolean, :desc => "Operate a git remote synchronization with remote. By default, all commits stay local"
+                                  :type => :boolean, :desc => "Operate a git remote synchronization with remote. By default, all commits stay local"
       method_option :master, :default => 'production', :banner => 'BRANCH', :desc => "Master Branch name for production releases"
       method_option :develop, :aliases => [ '-b', '--branch', '--devel'],
-                    :default => 'devel', :banner => 'BRANCH', :desc => "Branch name for development commits"
-      method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
+                              :default => 'devel', :banner => 'BRANCH', :desc => "Branch name for development commits"
+      #method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
       #method_option :gem,   :type => :boolean, :desc => "Initiate a Ruby gem project"
-      method_option :rvm,   :type => :boolean, :desc => "Initiate a RVM-based Ruby project"
-      method_option :ruby, :default => '1.9.3', :desc => "Ruby version to configure for RVM"
+      method_option :rvm, :type => :boolean, :desc => "Initiate a RVM-based Ruby project"
+      method_option :ruby, :default => '2.1.10', :desc => "Ruby version to configure for RVM"
       #method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
       #method_option :octopress, :aliases => ['-o', '--www'], :type => :boolean, :desc => "Initiate an Octopress web site"
       #___________________
       def repo(name = '.')
-        options[:rvm] = true if options[:rake] or options[:gem]
+        options[:rvm] = true if options[:rake] || options[:gem]
         # _newrepo(name, options)
         FalkorLib::Bootstrap.repo(name, options)
       end # repo
@@ -114,14 +114,14 @@ It consists of two files:
 These files will be committed in Git to ensure a consistent environment for the project.
 RVM_LONG_DESC
       method_option :force, :aliases => '-f',
-                    :type => :boolean, :desc => 'Force overwritting the RVM config'
+                            :type => :boolean, :desc => 'Force overwritting the RVM config'
       method_option :ruby, :banner => 'VERSION',
-                    :desc => 'Ruby version to configure / install for RVM'
+                           :desc => 'Ruby version to configure / install for RVM'
       method_option :versionfile, :banner => 'FILE',
-                    :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
+                                  :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
       method_option :gemset, :desc => 'RVM gemset to configure for this directory'
       method_option :gemsetfile, :banner => 'FILE',
-                    :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
+                                 :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
       #____________________
       def rvm(path = '.')
         FalkorLib::Bootstrap.rvm(path, options)
@@ -130,34 +130,20 @@ RVM_LONG_DESC
       ###### versionfile ######
       desc "versionfile PATH [options]", "initiate a VERSION file"
       method_option :file, :aliases => '-f',
-                    :desc => "Set the VERSION filename"
+                           :desc => "Set the VERSION filename"
       method_option :tag,  :aliases => '-t',
-                    :desc => "Git tag to use"
-      method_option :version,  :aliases => '-v',
-                    :desc => "Set the version to initialize in the version file"
+                           :desc => "Git tag to use"
+      method_option :version, :aliases => '-v',
+                              :desc => "Set the version to initialize in the version file"
       #_______________
       def versionfile(path = '.')
         FalkorLib::Bootstrap.versionfile(path, options)
       end # versionfile
 
-      ###### motd ######
-      method_option :file,     :aliases => '-f', :default => '/etc/motd', :desc => "File storing the message of the day"
-      method_option :width,    :aliases => '-w', :default => 80, :type => :numeric, :desc => "Width for the text"
-      method_option :title,    :aliases => '-t', :default => "Title", :desc => "Title to place in the motd"
-      method_option :subtitle, :desc => "Eventual subtitle to place below the title"
-      method_option :hostname, :aliases => '-h', :default => `hostname -f`, :desc => "Hostname"
-      method_option :support,  :aliases => '-s', :default => "#{ENV['GIT_AUTHOR_EMAIL']}", :desc => "Support/Contact mail"
-      method_option :desc,     :aliases => '-d', :desc => "Short Description of the host"
-      method_option :nodemodel,:aliases => '-n', :desc => "Node Model"
-      #......................................
-      desc "motd PATH [options]", "Initiate a 'motd' file - message of the day"
-      def motd(path = '.')
-        FalkorLib::Bootstrap.motd(path, options)
-      end # motd
 
       ###### readme ######
       method_option :make, :default => true,
-                    :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
+                           :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :rake,
                     :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
       method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Describe a LaTeX project"

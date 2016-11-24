@@ -1,19 +1,71 @@
 language: ruby
-cache: bundler
+sudo: false
+cache:
+  - bundler
+  - apt
 bundler_args: "--without=release doc"
+addons:
+  apt:
+    packages:
+    - build-essential
+    - texlive-base
+    - texlive-binaries
+    - texlive-latex-base
+    - texlive-latex-extra
+    - texlive-bibtex-extra
+    - lmodern
+    - texlive-fonts-recommended
+    - texlive-latex-recommended
+    - texlive-science
+    - latex-beamer
+    - pgf
+    - pandoc
+    - unzip
+    - git
+    - git-flow
+  hosts:
+    - travis.dev
 before_install:
   - gem install bundler
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq git-flow git-core
 rvm:
  - 2.0.0
  - 2.1
  - 2.2
+env:
+  global:
+  - TRAVIS_CI_RUN=true
+  - GIT_SSH='ssh -o StrictHostKeyChecking=no'
+  - GIT_AUTHOR_NAME='Travis CI'
+  - GIT_AUTHOR_EMAIL='travis@example.com'
+  - TEXMFLOCAL=/tmp/texmf/
+# installing a couple of LaTeX packages from CTAN manually as the
+# tlmgr command is mising on ubuntu/precise
+before_install:
+  - mkdir -p $TEXMFLOCAL/tex/latex/
+  - wget -N -q http://mirrors.ctan.org/install/macros/latex/contrib/tcolorbox.tds.zip
+  - wget -N -q http://mirrors.ctan.org/install/macros/latex/contrib/acronym.tds.zip
+  - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/floatflt.zip
+  - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/todonotes.zip
+  - unzip -qq tcolorbox.tds.zip -d $TEXMFLOCAL
+  - unzip -qq acronym.tds.zip   -d  $TEXMFLOCAL
+  - unzip -qq floatflt.zip
+  - unzip -qq todonotes.zip
+  - cd ./floatflt/ && latex floatflt.ins && cd -
+  - cd ./todonotes/ && latex todonotes.ins && cd -
+  - cp ./floatflt/floatflt.sty $TEXMFLOCAL/tex/latex/
+  - cp ./todonotes/todonotes.sty $TEXMFLOCAL/tex/latex/
+  - texhash
 notifications:
+  email:
+    on_success: never
   hipchat:
     rooms:
       secure: E0V9xQtCyPSB+SZ5n+ztdM5tzJ7d1eR+XR1gIBfAwe0JYnRb735B1v0Z3CVBmosKpv16KEoKUDjum1vHGk8fnOOcxoHx+TtTCF1TVpuBtKzXqG6t4YZAYjkGSIBUM1Zd7kXLlsdmdwRToGmKRqblQHutnm0LkyII/CAwaO+UeY8=
+# slack:
+# secure: NBN4QhHuaXpwZIxUOzZi29Z4iW0EK/d2ID7zZqz+1RDO/9BD7QqX5unM/SFP46oTbhEqNH/vMLLMFQ9i9l7Z1i6Z6nCNRiLRIjgPSL+3GMamPQm1Pj4JaLkwLHogxHdRvozfU3tdSG9uGmK++Aak/NLC/i5TASGrBMgKrmXLXEk=
+  slack:
+    secure: BKYRevAa4+qThbhsYbsgBxA8bzuNx0lUFTDnIkS1Vw+lwnM0I4o38X7/ZtJccL1YXqEbCBIaz21mNx4UWxMQEcPNyJENHXYLX9zjHxPPuW83KNnrgVLtel0keGwgxl0Ah4eRhPvYzdA5FonfAurw9GuxW4au2XcUNFNy/iKEpX0=
 # addons:
 #   code_climate:
-#     repo_token: 
+#     repo_token:
 #       secure: "ZBtaK84ZnjyT4X7mGSYDx31HgD94nZccxAzKA2SBjakW/hfsx9sBGOusxYN7EuC6JydjwLFN3MwLfEGMgjC1zxNwvLO9PGQbh52QawKBue09qouitJbOODwUfQgzNHj/Z0x3dMv3X1Qz31gbfDaC6DJsnTtG2q7R7Kni8hq4/FU="
