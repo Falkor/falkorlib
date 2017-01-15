@@ -1,0 +1,50 @@
+
+This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %>](<%= config[:project_page] %>).
+
+<% if (config[:forge] == :gitlab) %>
+* Git interactions with this repository (push, pull etc.) are performed over SSH using the port 8022
+<% end %>
+* To clone this repository, proceed as follows (adapt accordingly):
+
+        $> mkdir -p ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
+        $> cd ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
+        $> git clone <%= config[:origin] %>
+
+<% if config[:type].include?( :rvm ) %>
+Now ensure [RVM](https://rvm.io/) is correctly configured for this repository:
+
+     $> rvm current
+
+Configure the dependencies detailed in the [`Gemfile`](Gemfile) through the [Bundler](http://bundler.io/):
+
+     $> gem install bundler
+     $> bundle install
+     $> rake -T     # should work ;)
+<% end %>
+
+**`/!\ IMPORTANT`**: Once cloned, initiate your local copy of the repository by running:
+
+    $> cd <%= name.downcase %>
+<% if options[:make] %>
+    $> make setup
+<% else %>
+    $> rake setup
+<% end %>
+
+This will initiate the [Git submodules of this repository](.gitmodules) and setup the [git flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) layout for this repository.
+
+Later on, you can upgrade the [Git submodules](.gitmodules) to the latest version by running:
+
+<% if options[:make] %>
+    $> make upgrade
+<% else %>
+    $> rake git:submodules:upgrade
+<% end %>
+
+If upon pulling the repository, you end in a state where another collaborator have upgraded the Git submodules for this repository, you'll end in a dirty state (as reported by modifications within the `.submodules/` directory). In that case, just after the pull, you **have to run** the following to ensure consistency with regards the Git submodules:
+
+<% if options[:make] %>
+    $> make update
+<% else %>
+    $> rake git:submodules:update
+<% end %>

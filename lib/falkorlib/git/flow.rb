@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 16:15 svarrette>
+# Time-stamp: <Sun 2017-01-15 22:54 svarrette>
 ################################################################################
 # Management of Git Flow operations
 
@@ -184,6 +184,26 @@ module FalkorLib
       FalkorLib::Git.config("gitflow.branch.#{type}", dir)
       #confs[type.to_sym]
     end # master_branch
+
+    ###### guess_gitflow_config ######
+    # Guess the gitflow configuration
+    ##
+    def guess_gitflow_config(dir = Dir.pwd, options = {})
+      path = normalized_path(dir)
+      use_git = FalkorLib::Git.init?(path)
+      return {} if (!use_git or !FalkorLib::GitFlow.init?(path))
+      rootdir = FalkorLib::Git.rootdir(path)
+      local_config = FalkorLib::Config.get(rootdir, :local)
+      return local_config[:gitflow] if local_config[:gitflow]
+      config = FalkorLib::Config::GitFlow::DEFAULTS.clone
+      [ :master, :develop ].each do |br|
+        config[:branches][br.to_sym] = FalkorLib::Git.config("gitflow.branch.#{br}", rootdir)
+      end
+      [ :feature, :release, :hotfix, :support, :versiontag ].each do |p|
+        config[:prefix][p.to_sym] = FalkorLib::Git.config("gitflow.prefix.#{p}", rootdir)
+      end
+      config
+    end # guess_gitflow_config
 
 
   end # module FalkorLib::GitFlow
