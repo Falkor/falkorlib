@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2017-01-15 23:04 svarrette>
+# Time-stamp: <Sun 2017-01-15 23:22 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -38,7 +38,11 @@ module FalkorLib
       init_from_template(templatedir, rootdir, config,
                          :no_interaction => true,
                          :no_commit => true)
-
+      Dir.chdir( File.join(rootdir, 'docs')) do
+        run %(ln -s README.md index.md )
+        run %(ln -s README.md contributing/index.md )
+        run %(ln -s README.md setup/index.md )
+      end
       #exit_status.to_i
     end # mkdocs
 
