@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Mon 2016-11-14 15:24 svarrette>
+# Time-stamp: <Sun 2017-01-15 23:15 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -43,6 +43,7 @@ _falkor()
         'init:Bootstrap a Git Repository the falkor way'
         'link:Initialize a special symlink (.root, .makefile.d etc.)'
         'motd:bootstrap a Message of the Day (motd) file'
+        'mkdocs:Initialize mkdocs for the current project'
         'new:Initialize the directory PATH with one of Falkors template(s)'
         'version:Prints the FalkorLib version information'
     )
@@ -71,11 +72,13 @@ _falkor()
                 (config)
                     __falkor_config && ret=0 ;;
                 (init)
-                    __falkor_init && ret=0   ;;
+                    __falkor_init   && ret=0   ;;
                 (link)
                     __falkor_link   && ret=0 ;;
+                (mkdocs)
+                    __falkor_mkdocs && ret=0   ;;
                 (motd)
-                    __falkor_motd && ret=0   ;;
+                    __falkor_motd   && ret=0   ;;
                 (new)
                     __falkor_new    && ret=0 ;;
                 (version|*)
@@ -225,6 +228,17 @@ __falkor_init() {
                '--make[Use a Makefile to pilot the repository actions (default)]' \
                '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
                '*:directory:_directories'
+}
+
+
+##################
+__falkor_mkdocs() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               {--force,-f}'[Force generation]'
+               '*:directory:_files -/'
 }
 
 
