@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 09:21 svarrette>
+# Time-stamp: <Sun 2017-01-15 22:52 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -177,7 +177,7 @@ module FalkorLib
         puts "  ... not overwriting the #{file} file which already exists"
       else
         FalkorLib::Versioning.set_version(version, path, :type => 'file',
-                                                         :source => { :filename => file })
+                                          :source => { :filename => file })
         Dir.chdir( path ) do
           run %( git tag #{options[:tag]} ) if options[:tag]
         end
@@ -298,7 +298,7 @@ module FalkorLib
         #next unless [ :name, :summary, :description ].include?(k.to_sym)
         default_answer = case k
                          when :author
-                           (config[:by] == 'ULHPC') ? 'UL HPC Management Team' : config[:author]
+                           (config[:by] == 'ULHPC') ? 'UL HPC Team' : config[:author]
                          when :mail
                            (config[:by] == 'ULHPC') ? 'hpc-sysadmins@uni.lu'   : config[:mail]
                          when :description
@@ -382,6 +382,54 @@ module FalkorLib
                   (idx.nil?) ? 1 : idx + 1)
       #licence
     end # select_licence
+
+    ###### guess_project_config ######
+    # Guess the project configuration
+    ##
+    def guess_project_config(dir = Dir.pwd, options = {})
+      path = normalized_path(dir)
+      use_git = FalkorLib::Git.init?(path)
+      rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
+      local_config = FalkorLib::Config.get(rootdir, :local)
+      return local_config[:project] if local_config[:project]
+      # Otherwise, guess the rest of the configuration
+      config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
+      # Apply options (if provided)
+      [ :name, :forge ].each do |k|
+        config[k.to_sym] = options[k.to_sym] if options[k.to_sym]
+      end
+      config[:name] = ask("\tProject name: ", get_project_name(dir)) if config[:name].empty?
+      if (use_git)
+        config[:origin] = FalkorLib::Git.config('remote.origin.url')
+        if config[:origin] =~ /((gforge|gitlab|github)[\.\w_-]+)[:\d\/]+(\w*)/
+          config[:forge] = Regexp.last_match(2).to_sym
+          config[:by]    = Regexp.last_match(3)
+        elsif config[:forge].empty?
+          config[:forge] = select_forge(config[:forge]).to_sym
+        end
+      end
+      forges = FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ]
+      default_source = case config[:forge]
+                       when :gforge
+                         'https://' + forges[:url] + "/projects/" + config[:name].downcase
+                       when :github, :gitlab
+                         'https://' + forges[:url] + "/" + config[:by] + "/" + config[:name].downcase
+                       else
+                         ""
+                       end
+      config[:source] = config[:project_page] = default_source
+      config[:issues_url] =  "#{config[:project_page]}/issues"
+      config[:license] = select_licence if config[:license].empty?
+      [ :summary  ].each do |k|
+        config[k.to_sym] = ask( "\t" + Kernel.format("Project %-20s", k.to_s))
+      end
+      config[:description] = config[:summary]
+      config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
+      config[:make] = File.exists?(File.join(rootdir, 'Makefile'))
+      config[:rake] = File.exists?(File.join(rootdir, 'Rakefile'))
+      config
+    end # guess_project_config
+
 
     ###### get_badge ######
     # Return a Markdown-formatted string for a badge to display, typically in a README.

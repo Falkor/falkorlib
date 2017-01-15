@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2016-11-07 22:42 svarrette>
+# Time-stamp: <Sun 2017-01-15 23:13 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -109,6 +109,16 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
       ###### link <subcommand>  ######
       desc "link <TYPE> [<path>]", "Initialize a special symlink in <path> (the current directory by default)"
       subcommand "link", FalkorLib::CLI::Link
+
+      ###### mkdocs ######
+      method_option :force, :aliases => '-f', :default => false, :type => :boolean,
+                    :desc => "Force generation (might overwrite files)"
+      #......................................
+      desc "mkdocs [options]", "Initialize mkdocs for the current project"
+      def mkdocs(path = '.')
+        FalkorLib::Bootstrap.mkdocs(path, options)
+      end # mkdocs
+
 
 
       ###### motd ######

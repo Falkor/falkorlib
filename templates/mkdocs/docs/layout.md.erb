@@ -1,0 +1,17 @@
+
+This repository is organized as follows:
+
+~~~bash
+.
+├── LICENSE.txt     # Licence of this project
+<% unless options[:rake] %>
+├── Rakefile        # Ruby Rake configuration
+<% else %>
+├── Makefile        # GNU Make configuration
+<% end %>
+├── README.md       # Project README
+├── VERSION         # /!\ DO NOT EDIT. Current repository version
+├── docs/           # [MkDocs](mkdocs.org) main directory
+├── mkdocs.yml      # [MkDocs](mkdocs.org) configuration
+└── src/            # Source Code
+~~~

@@ -1,0 +1,18 @@
+<% unless (config[:license].empty? or config[:license] == "none") %>
+This project is released under the terms of the [<%= config[:license] %>](LICENSE) licence.
+
+[![Licence](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:logo]  %>)](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
+<% end %>
+You are more than welcome to contribute to the development of this project as follows (assuming you belong to the project on <%= config[:forge].capitalize %>):
+
+1. Create your own feature branch, eventually prefixed with your login on <%= config[:forge].capitalize %>:
+
+        $> git checkout -b mylogin/my-new-feature   # ADAPT mylogin accordingly
+
+2. Commit your changes (`git commit -am 'Added some feature'`)
+3. Push to the branch (`git push origin mylogin/my-new-feature`)
+4. Create a new [Merge Request](https://gitlab.uni.lu/help/user/project/merge_requests.md) to submit your changes to me.
+
+This assumes that you have understood the [directory tree structure](../layout.md) of this repository.
+
+Finally, you shall be aware of the way the [semantic versioning](versioning.md) procedure of this project is handled.
