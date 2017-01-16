@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 14:01 svarrette>
+# Time-stamp: <Mon 2017-01-16 23:25 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -401,9 +401,9 @@ module FalkorLib
                 options = {
                   :filename     => 'LICENSE'
                 })
-      return if (license.empty? or license == :none or license =~ /^CC/)
+      return if ((license.empty?) or (license == 'none') or (license =~ /^CC/))
       return unless FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.include?( license )
-      info "Generate the licence file"
+      info "Generate the #{license} licence file"
       path = normalized_path(dir)
       use_git = FalkorLib::Git.init?(path)
       rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
