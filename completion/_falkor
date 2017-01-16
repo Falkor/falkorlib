@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Mon 2017-01-16 23:21 svarrette>
+# Time-stamp: <Mon 2017-01-16 23:55 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -38,12 +38,13 @@ _falkor()
 {
     local -a _falkor_cmds
     _falkor_cmds=(
+        'commands:Lists all available commands'
         'config:Print the current configuration of FalkorLib'
         'help:Describe available commands or one specific command'
         'init:Bootstrap a Git Repository the falkor way'
         'link:Initialize a special symlink (.root, .makefile.d etc.)'
-        'motd:bootstrap a Message of the Day (motd) file'
         'mkdocs:Initialize mkdocs for the current project'
+        'motd:bootstrap a Message of the Day (motd) file'
         'new:Initialize the directory PATH with one of Falkors template(s)'
         'version:Prints the FalkorLib version information'
     )
@@ -255,8 +256,8 @@ __falkor_mkdocs() {
     declare -A opt_args
 
     _arguments -C \
-               {--force,-f}'[Force generation]'
-               '*:directory:_files -/'
+               {--force,-f}'[Force generation]' \
+               '*:directory:_directories'
 }
 
 

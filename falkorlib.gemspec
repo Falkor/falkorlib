@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version      = FalkorLib::Version.to_s #$version
   s.date         = Time.now.strftime('%Y-%m-%d')
   s.summary      = "Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap} tasks"
-  s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several element of my daily workflow (new git repository, new beamer slides etc.).\nThis is also my first gem so any comments on the code/organization are welcome, I'm a newbie in this domain. \nNote that I used [Noe](https://github.com/blambeau/noe) to bootstrap this project and get a fully documented environment."
+  s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several element of my daily workflow (new git repository, new beamer slides etc.).\n"
 
   s.homepage     = "https://github.com/Falkor/falkorlib"
   s.licenses     = 'MIT'
