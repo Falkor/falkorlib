@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2017-01-15 22:52 svarrette>
+# Time-stamp: <Mon 2017-01-16 12:07 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -82,7 +82,7 @@ module FalkorLib #:nodoc:
               :url  => "http://www.linfo.org/bsdlicense.html",
               :logo => "http://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/License_icon-bsd.svg/200px-License_icon-bsd.svg.png"
             },
-            "CC by-nc-sa" => {
+            "CC-by-nc-sa" => {
               :name => "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
               :url  => "http://creativecommons.org/licenses/by-nc-sa/4.0",
               :logo => "https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"
@@ -235,6 +235,8 @@ module FalkorLib
     # Supported options:
     #  * :no_interaction [boolean]: do not interact
     #  * :force          [boolean] force overwritting
+    #  * :license     [string]  License to use
+    #  * :licensefile [string]  License filename (default: LICENSE)
     #  * :latex          [boolean] describe a LaTeX project
     #  * :octopress      [boolean] octopress site
     ##
@@ -253,6 +255,7 @@ module FalkorLib
         options[:make] = false
         options[:rvm]  = true
       end
+      config[:license] = options[:license] if options[:license]
       config[:type] << :rvm if options[:rake]
       # Type of project
       config[:type] << :latex if options[:latex]
@@ -264,7 +267,7 @@ module FalkorLib
         config[:type] << :python if t == :pyenv
       end
       config[:type].uniq!
-      ap config
+      #ap config
       config[:type] = config[:type].uniq.flatten
       # Apply options (if provided)
       [ :name, :forge ].each do |k|
@@ -327,6 +330,7 @@ module FalkorLib
       erbfiles << "readme_git.erb"     if FalkorLib::Git.init?(dir)
       erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
       erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)
+      erbfiles << "readme_mkdocs.erb"  if options[:mkdocs]
       erbfiles << "footer_readme.erb"
 
       content = ""
@@ -336,9 +340,9 @@ module FalkorLib
       end
       show_diff_and_write(content, config[:filename], options)
 
-      # Eventually save/upgrade local config
+      # Force save/upgrade local config
       info "=> saving customization of the FalkorLib configuration in #{FalkorLib.config[:config_files][:local]}"
-      really_continue?
+      # really_continue?
       FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].keys.each do |k|
         local_config[:project] = {} unless local_config[:project]
         local_config[:project][k.to_sym] = config[k.to_sym]
@@ -375,13 +379,40 @@ module FalkorLib
     ##
     def select_licence(default_licence = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:license],
                        _options = {})
-      list_license = FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys
+      list_license = FalkorLib::Bootstrap::DEFAULTS[:licenses].keys
       idx = list_license.index(default_licence) unless default_licence.nil?
       select_from(list_license,
                   'Select the license index for this project:',
                   (idx.nil?) ? 1 : idx + 1)
       #licence
     end # select_licence
+
+    ###### license ######
+    # Generate the licence file
+    #
+    # Supported options:
+    #  * :force    [boolean] force action
+    #  * :filename [string]  License file name
+    #  * :organization [string]  Organization
+    ##
+    def license(dir = Dir.pwd,
+                license = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:license],
+                authors = '',
+                options = {
+                  :filename     => 'LICENSE'
+                })
+      return if (license.empty? or license == :none or license =~ /^CC/)
+      return unless FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.include?( license )
+      info "Generate the licence file"
+      path = normalized_path(dir)
+      use_git = FalkorLib::Git.init?(path)
+      rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
+      Dir.chdir( rootdir ) do
+        run %( licgen #{license.downcase} #{authors} )
+        run %( mv LICENSE #{options[:filename]} ) if( options[:filename] and options[:filename] != 'LICENSE')
+      end
+    end # license
+
 
     ###### guess_project_config ######
     # Guess the project configuration

@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2017-01-15 23:22 svarrette>
+# Time-stamp: <Mon 2017-01-16 10:13 svarrette>
 ################################################################################
-# Interface for the main Bootstrapping operations
+# Interface for Bootstrapping MkDocs
 #
 
 require "falkorlib"

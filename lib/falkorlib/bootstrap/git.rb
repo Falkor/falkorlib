@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 15:05 svarrette>
+# Time-stamp: <Mon 2017-01-16 11:52 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -26,17 +26,20 @@ module FalkorLib
     # Supported options:
     # * :no_interaction [boolean]: do not interact
     # * :gitflow     [boolean]: bootstrap with git-flow
+    # * :license     [string]  License to use
+    # * :licensefile [string]  License filename (default: LICENSE)
     # * :interactive [boolean] Confirm Gitflow branch names
     # * :master      [string]  Branch name for production releases
     # * :develop     [string]  Branch name for development commits
     # * :make        [boolean] Use a Makefile to pilot the repository actions
     # * :rake        [boolean] Use a Rakefile (and FalkorLib) to pilot the repository action
     # * :remote_sync [boolean] Operate a git remote synchronization
-    # * :latex       [boolean] Initiate a LaTeX project
-    # * :gem         [boolean] Initiate a Ruby gem project
+    # * :latex       [boolean] Initiate a LaTeX project              **NOT YET IMPLEMENTED**
+    # * :gem         [boolean] Initiate a Ruby gem project           **NOT YET IMPLEMENTED**
+    # * :mkdocs      [boolean] Initiate MkDocs within your project
     # * :rvm         [boolean] Initiate a RVM-based Ruby project
-    # * :pyenv       [boolean] Initiate a pyenv-based Python project
-    # * :octopress   [boolean] Initiate an Octopress web site
+    # * :pyenv       [boolean] Initiate a pyenv-based Python project **NOT YET IMPLEMENTED**
+    # * :octopress   [boolean] Initiate an Octopress web site        **NOT YET IMPLEMENTED**
     ##
     def repo(name, options = {})
       ap options if options[:debug]
@@ -109,13 +112,26 @@ module FalkorLib
       end
 
       # === VERSION file ===
-      FalkorLib::Bootstrap.versionfile(path, :tag => 'v0.0.0')
+      FalkorLib::Bootstrap.versionfile(path, :tag => 'v0.0.0') unless options[:gem]
 
       # === RVM ====
       FalkorLib::Bootstrap.rvm(path, options) if options[:rvm]
 
       # === README ===
-      FalkorLib::Bootstrap.readme(path, options)
+      FalkorLib::Bootstrap.readme(path, options) # This should also save the project configuration
+      # collect the set options
+      local_config = FalkorLib::Config.get(path)
+
+      # === MkDocs ===
+      FalkorLib::Bootstrap.mkdocs(path, options) if options[:mkdocs]
+
+      # === Licence ===
+      if (local_config[:project] and local_config[:project][:license])
+        author  = local_config[:project][:author] ? local_config[:project][:author] : FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:author]
+        FalkorLib::Bootstrap.licence(path, local_config[:project][:license], author,  options)
+      end
+      #
+
 
       #===== remote synchro ========
       if options[:remote_sync]

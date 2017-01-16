@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Sun 2017-01-15 23:15 svarrette>
+# Time-stamp: <Mon 2017-01-16 12:24 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -101,6 +101,7 @@ __falkor_new()
         'trash:Add a Trash directory for your LaTeX project'
         'rvm:Initialize RVM'
         'versionfile:initiate a VERSION file'
+        'license:Generate an Open-Source License for your project'
         'motd:Initiate a ''motd'' file - message of the day'
         'readme:Initiate a README file in the PATH directory (''./'' by default)'
         'help:Describe subcommands or one specific subcommand'
@@ -128,11 +129,19 @@ __falkor_new()
                                '(-n --name)'{-n,--name}'[Name of the LaTeX project]' \
                                '(-d --dir)'{-d,--dir}':Project directory (relative to the git root directory):_directories' && ret=0
                     ;;
+                (license)
+                    _arguments -C \
+                               '(-l --license)'{-l,--licence}'[Open Source License to use within your project]:lic:(none Apache-2.0 BSD CC-by-nc-sa GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 MIT)' \
+                               '(-f --licensefile)'{-f,--licensefile}'[License Filename]:filename:(LICENSE)' && ret=0
+                               ;;
                 (repo)
                     _arguments -C \
                                '(--no-git-flow)--git-flow[Bootstrap the repository with Git-flow]' \
                                '--make[Use a Makefile to pilot the repository actions]' \
                                '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
+                               '--mkdocs[Initiate MkDocs within your project]' \
+                               '--license[Open Source License to use within your project]:lic:(none Apache-2.0 BSD CC-by-nc-sa GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 MIT)' \
+                               '--licensefile[License Filename]:filename:(LICENSE)' \
                                '(-i --interactive)'{-i,--interactive}'[Interactive mode, in particular to confirm Gitflow branch names]' \
                                '(-r --remote-sync)'{-r,--remote-sync}'[Operate a git remote synchronization with remote. By default, all commits stay local]' \
                                '--master[Master Branch name for production releases]' \
