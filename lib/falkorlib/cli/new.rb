@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 14:17 svarrette>
+# Time-stamp: <Mon 2017-01-16 23:17 svarrette>
 ################################################################################
 
 require 'thor'
@@ -72,6 +72,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       method_option :dir,   :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
       method_option :ieee,  :type => :boolean, :default => :false, :desc => 'Use the IEEEtran style for IEEE conference'
       method_option :llncs, :type => :boolean, :default => :false, :desc => 'Use the Springer LNCS style', :aliases => '--lncs'
+      method_option :acm,   :type => :boolean, :default => :false, :desc => 'Use the ACM style'
       # ......................................
       desc "article [options]", "Bootstrap a LaTeX Article"
       #___________________
