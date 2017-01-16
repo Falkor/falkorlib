@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2017-01-15 22:57 svarrette>
+# Time-stamp: <Mon 2017-01-16 16:49 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -23,19 +23,21 @@ module FalkorLib
 
     ###### latex ######
     # Bootstrap a LaTeX sub-project of type <type> within a given repository <dir>.
-    #  * :beamer    LaTeX Beamer Slides
-    #  * :article   LaTeX article
-    #  * :ieee      LaTeX IEEE conference article
-    #  * :ieee_jnl  LaTeX IEEE journal
-    #  * :acm       LaTeX ACM conference article
-    #  * :letter    LaTeX Letter
+    #  * :beamer      LaTeX Beamer Slides
+    #  * :article     LaTeX article
+    #  * :letter      LaTeX Letter
+    #  * :bookchapter LaTeX Book chapter
     # Supported options:
     #  * :force [boolean] force action
     #  * :no_interaction [boolean]: do not interact
+    #  * :ieee      LaTeX IEEE conference article
+    #  * :ieee_jnl  LaTeX IEEE journal                     **NOT YET IMPLEMENTED**
+    #  * :llncs     LaTeX Springer LNCS conference article
+    #  * :acm       LaTeX ACM conference article
     ##
     def latex(dir = Dir.pwd, type = :beamer, options = {})
       ap options if options[:debug]
-      error "Unsupported type" unless [ :beamer, :article, :ieee, :letter ].include?( type )
+      error "Unsupported type" unless [ :beamer, :article, :letter, :bookchapter ].include?( type )
       path   = normalized_path(dir)
       config = FalkorLib::Config::Bootstrap::DEFAULTS[:latex].clone
       if type == :letter
@@ -54,12 +56,12 @@ module FalkorLib
       info "Initiate a LaTeX #{type} project from the Git root directory: '#{rootdir}'"
       really_continue? unless options[:no_interaction]
       relative_path_to_root = (Pathname.new( FalkorLib::Git.rootdir(dir) ).relative_path_from Pathname.new( File.realpath(path))).to_s
-      config[:name] = (options[:name]) ? options[:name] : ask("\tEnter the name of the #{type} LaTeX project: ", File.basename(path))
+      config[:name] = (options[:name]) ? options[:name] : ask("\tEnter the name of the LaTeX project (which will serve as basename for the main LaTeX file): ", File.basename(path))
       raise FalkorLib::ExecError "Empty project name" if config[:name].empty?
       default_project_dir = (Pathname.new( File.realpath(path) ).relative_path_from Pathname.new( FalkorLib::Git.rootdir(dir))).to_s
       if relative_path_to_root == '.'
         default_project_dir = case type
-                              when :article, :ieee
+                              when :article
                                 "articles/#{Time.now.year}/#{config[:name]}"
                               when :beamer
                                 "slides/#{Time.now.year}/#{config[:name]}"
@@ -86,12 +88,10 @@ module FalkorLib
       # === prepare Git submodules ===
       info " ==> prepare the relevant Git submodules"
       submodules = {}
-      if [ :article, :beamer, :bookchapter].include?(type)
-        submodules['Makefiles'] = { :url => 'https://github.com/Falkor/Makefiles.git',
-                                    :branch => 'devel' }
-      end
+      submodules['Makefiles'] = { :url => 'https://github.com/Falkor/Makefiles.git', :branch => 'devel' }
       submodules['beamerthemeFalkor'] = { :url => 'https://github.com/Falkor/beamerthemeFalkor' } if type == :beamer
       FalkorLib::Git.submodule_init(rootdir, submodules)
+
       info "bootstrapping the #{type} project sources in '#{src_project_dir}'"
       # Create the project directory
       Dir.chdir( rootdir ) do
@@ -117,10 +117,10 @@ module FalkorLib
       # Bootstrap the directory
       src_templatedir = File.join( FalkorLib.templates, 'latex')
       unless File.exist?( File.join(srcdir, "#{config[:name]}.tex"))
-        info "gathering information for the LaTeX templates"
+        info "gathering information for the LaTeX templates (type #{type})"
         prefix = case type
-                 when :article, :ieee, :acm
-                   'Article '
+                 when :article
+                      'Article '
                  when :ieee_journal
                    'IEEE Journal '
                  when :beamer
@@ -129,21 +129,22 @@ module FalkorLib
                    'Book Chapter '
                  when :letter
                    'Letter '
-                 else
-                   ''
                  end
+        prefix.prepend("LLNCS ")        if options[:llncs]
+        prefix.prepend("IEEE ")         if options[:ieee]
+        prefix.prepend("ACM ")          if options[:acm]
+        prefix.prepend("IEEE Journal ") if options[:ieee_journal]
         config.each do |k, v|
           next if k == :name
+          next if (type == :article and [ :image, :logo, :url].include?(k) )
           config[k.to_sym] = ask( "\t" + Kernel.format("%-20s", "#{prefix}#{k.capitalize}"), v) unless options[:no_interaction]
         end
         templates = [ File.join(src_templatedir, type.to_s) ]
-        if [ :ieee, :ieee_journal, :acm].include?( type )
-          templates << File.join(src_templatedir, 'article')
-          templates << File.join(src_templatedir, "article-#{type}")
-        end
-        if type == :article
-          templates << File.join(src_templatedir, 'ieee')
-          templates << File.join(src_templatedir, 'article-ieee')
+        if (type == :article)
+          style = :ieee  # default style
+          [ :llncs, :acm ].each { |s| style = s if options[ s.to_sym ]  }
+          templates << File.join(src_templatedir, "article-#{style}")
+          templates << File.join(src_templatedir, "#{style}")
         end
         templates.each do |templatedir|
           info "**** using templatedir = #{templatedir}"
@@ -173,12 +174,7 @@ module FalkorLib
       # Prepare the src/ directory
       FalkorLib::Bootstrap::Link.makefile(File.join(rootdir, project_dir), :src => true, :no_interaction => true )
 
-
-      # default_project_dir = case type
-      #               when :beamer
-      #                   "slides/#{Time.new.yea}"
-      #               end
-    end # project
+    end # latex
 
 
 
