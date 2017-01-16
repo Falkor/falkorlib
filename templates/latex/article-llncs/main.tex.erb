@@ -1,0 +1,137 @@
+% =============================================================================
+% File:  <%= config[:name] %>.tex --
+% Author(s): <%= config[:author] %> (<%= config[:mail] %>)
+% Time-stamp: <Mon 2017-01-16 16:09 svarrette>
+%
+% Copyright (c) <%= Time.now.year %> <%= config[:author] %><Sebastien.Varrette@uni.lu>
+%
+% For more information:
+% - LaTeX: http://www.latex-project.org/
+% - Beamer: https://bitbucket.org/rivanvx/beamer/
+% - LaTeX symbol list:
+% http://www.ctan.org/tex-archive/info/symbols/comprehensive/symbols-a4.pdf
+% =============================================================================
+% /!\ WARNING: inspired from llncs.dem demonstration file of the LaTeX macro
+% package from Springer-Verlag for Lecture Notes in Computer Science, version 2.4
+% for LaTeX2e as of 16. April 2010
+% See http://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines
+
+\documentclass[conference]{llncs}
+%\documentclass[conference,runningheads]{llncs}
+
+%\newcommand{\blind}[1]{\textit{\textcolor{blue}{[removed for blind review purposes]}}}
+\newcommand{\blind}[1]{#1}
+
+\usepackage{_style}
+
+% correct bad hyphenation here
+\hyphenation{}
+
+
+% =============================================================================
+\title{%
+  <%= config[:title] %> -- <%= config[:subtitle] %>
+}
+
+% author names and affiliations
+\author{\blind{%
+    <%= config[:author] %>$^{\ast}$,
+    Name2$^{\dagger}$, Name3$^{\ddagger}$ and Pascal Bouvry$^{\ast}$
+  }
+}
+\institute{\blind{%
+    \email{Firstname.Lastname@uni.lu}\\
+    $^{\ast}$Computer Science and Communications (CSC) Research Unit\\
+    $^{\dagger}$Interdisciplinary Centre for Security Reliability and Trust\\
+    $^{\ddagger}$Research Unit in Engineering Science\\
+    University of Luxembourg\\
+    6, rue Richard Coudenhove-Kalergi\\
+    L-1359 Luxembourg, Luxembourg\\
+  }
+}
+
+%\authorrunning{ <%= config[:author] %>, Name2, Name3 and Pascal Bouvry}
+%\titlerunning{<%= config[:title] %>\ldots}
+% =============================================================================
+
+\begin{document}
+
+% make the title area
+\maketitle
+
+%_______________
+\begin{abstract}
+  \input{_abstract}
+\end{abstract}
+
+\acresetall
+
+%_______________
+\begin{keywords}
+  High Performance Computing,
+  Fault Tolerance,
+  Security
+\end{keywords}
+
+% ===================================
+\section{Introduction}
+\label{sec:introduction}
+\input{_introduction}
+
+% ========================================
+\section{Context \& Motivations}
+\label{sec:context}
+\input{_context}
+
+% ========================================
+\section{Implementation and Experimental Setup}
+\label{sec:implem}\label{sec:experimental_setup}
+\input{_implem}
+
+% ====================================================================
+\section{Validation and Experimental Results}
+\label{sec:experiments}
+\input{_experiments}
+
+% ====================================================================
+\section{Related Work}
+\label{sec:related_works}
+\input{_related_works}
+
+% ====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+\input{_conclusion}
+
+
+
+~\\
+{\noindent \textbf{Acknowledgments:}}
+% \\
+The experiments presented in this paper were carried out
+using the HPC facilities of the University of Luxembourg~\cite{VBCG_HPCS14}
+{\small -- see \url{http://hpc.uni.lu}}.
+
+\bibliographystyle{splncs03}
+% comma separated list of bibtex files, **without** .bib extension
+\bibliography{biblio}
+
+
+\appendix
+
+% \section{Acronyms used}
+\input{_acronyms}
+
+% that's all folks
+\end{document}
+
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% eof
+%
+% Local Variables:
+% mode: latex
+% mode: flyspell
+% mode: visual-line
+% fill-column: 80
+% TeX-master: "<%= config[:name] %>.tex"
+% End:

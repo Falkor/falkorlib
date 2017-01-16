@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 11:52 svarrette>
+# Time-stamp: <Mon 2017-01-16 14:16 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -128,7 +128,7 @@ module FalkorLib
       # === Licence ===
       if (local_config[:project] and local_config[:project][:license])
         author  = local_config[:project][:author] ? local_config[:project][:author] : FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:author]
-        FalkorLib::Bootstrap.licence(path, local_config[:project][:license], author,  options)
+        FalkorLib::Bootstrap.license(path, local_config[:project][:license], author,  options)
       end
       #
 
