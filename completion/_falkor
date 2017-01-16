@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Mon 2017-01-16 12:24 svarrette>
+# Time-stamp: <Mon 2017-01-16 23:21 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -96,6 +96,7 @@ __falkor_new()
     local -a _falkor_new_cmds
     _falkor_new_cmds=(
         'repo:Bootstrap a Git Repository with my favorite git-flow layout'
+        'article:Bootstrap a LaTeX Article'
         'letter:LaTeX-based letter'
         'slides:Bootstrap LaTeX Beamer slides'
         'trash:Add a Trash directory for your LaTeX project'
@@ -124,7 +125,15 @@ __falkor_new()
                     _arguments \
                         ":Falkor new commands:($(falkor new commands))" && ret=0
                     ;;
-                (letter)
+                (article)
+                    _arguments -C \
+                               '(-n --name)'{-n,--name}'[Name of the LaTeX project]' \
+                               '(-d --dir)'{-d,--dir}':Project directory (relative to the git root directory):_directories' \
+                               '--ieee[Use the IEEEtran style for IEEE conference]' \
+                               '--llncs[Use the Springer LNCS style]' \
+                               '--acm[Use the ACM style]' && ret=0
+                    ;;
+                 (letter)
                     _arguments -C \
                                '(-n --name)'{-n,--name}'[Name of the LaTeX project]' \
                                '(-d --dir)'{-d,--dir}':Project directory (relative to the git root directory):_directories' && ret=0
