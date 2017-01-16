@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 15:05 svarrette>
+# Time-stamp: <Mon 2017-01-16 10:24 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -32,11 +32,12 @@ module FalkorLib
     # * :make        [boolean] Use a Makefile to pilot the repository actions
     # * :rake        [boolean] Use a Rakefile (and FalkorLib) to pilot the repository action
     # * :remote_sync [boolean] Operate a git remote synchronization
-    # * :latex       [boolean] Initiate a LaTeX project
-    # * :gem         [boolean] Initiate a Ruby gem project
+    # * :latex       [boolean] Initiate a LaTeX project              **NOT YET IMPLEMENTED**
+    # * :gem         [boolean] Initiate a Ruby gem project           **NOT YET IMPLEMENTED**
+    # * :mkdocs      [boolean] Initiate MkDocs within your project
     # * :rvm         [boolean] Initiate a RVM-based Ruby project
-    # * :pyenv       [boolean] Initiate a pyenv-based Python project
-    # * :octopress   [boolean] Initiate an Octopress web site
+    # * :pyenv       [boolean] Initiate a pyenv-based Python project **NOT YET IMPLEMENTED**
+    # * :octopress   [boolean] Initiate an Octopress web site        **NOT YET IMPLEMENTED**
     ##
     def repo(name, options = {})
       ap options if options[:debug]
@@ -109,13 +110,20 @@ module FalkorLib
       end
 
       # === VERSION file ===
-      FalkorLib::Bootstrap.versionfile(path, :tag => 'v0.0.0')
+      FalkorLib::Bootstrap.versionfile(path, :tag => 'v0.0.0') unless options[:gem]
 
       # === RVM ====
       FalkorLib::Bootstrap.rvm(path, options) if options[:rvm]
 
       # === README ===
+      # This should also save the project configuration
       FalkorLib::Bootstrap.readme(path, options)
+
+      # === MkDocs ===
+      FalkorLib::Bootstrap.mkdocs(path, options) if options[:mkdocs]
+
+      # === Licence ===
+
 
       #===== remote synchro ========
       if options[:remote_sync]
