@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 10:24 svarrette>
+# Time-stamp: <Mon 2017-01-16 11:52 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -26,6 +26,8 @@ module FalkorLib
     # Supported options:
     # * :no_interaction [boolean]: do not interact
     # * :gitflow     [boolean]: bootstrap with git-flow
+    # * :license     [string]  License to use
+    # * :licensefile [string]  License filename (default: LICENSE)
     # * :interactive [boolean] Confirm Gitflow branch names
     # * :master      [string]  Branch name for production releases
     # * :develop     [string]  Branch name for development commits
@@ -116,13 +118,19 @@ module FalkorLib
       FalkorLib::Bootstrap.rvm(path, options) if options[:rvm]
 
       # === README ===
-      # This should also save the project configuration
-      FalkorLib::Bootstrap.readme(path, options)
+      FalkorLib::Bootstrap.readme(path, options) # This should also save the project configuration
+      # collect the set options
+      local_config = FalkorLib::Config.get(path)
 
       # === MkDocs ===
       FalkorLib::Bootstrap.mkdocs(path, options) if options[:mkdocs]
 
       # === Licence ===
+      if (local_config[:project] and local_config[:project][:license])
+        author  = local_config[:project][:author] ? local_config[:project][:author] : FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:author]
+        FalkorLib::Bootstrap.licence(path, local_config[:project][:license], author,  options)
+      end
+      #
 
 
       #===== remote synchro ========

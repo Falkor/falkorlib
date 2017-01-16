@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 11:24 svarrette>
+# Time-stamp: <Mon 2017-01-16 12:07 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -235,6 +235,8 @@ module FalkorLib
     # Supported options:
     #  * :no_interaction [boolean]: do not interact
     #  * :force          [boolean] force overwritting
+    #  * :license     [string]  License to use
+    #  * :licensefile [string]  License filename (default: LICENSE)
     #  * :latex          [boolean] describe a LaTeX project
     #  * :octopress      [boolean] octopress site
     ##
@@ -253,6 +255,7 @@ module FalkorLib
         options[:make] = false
         options[:rvm]  = true
       end
+      config[:license] = options[:license] if options[:license]
       config[:type] << :rvm if options[:rake]
       # Type of project
       config[:type] << :latex if options[:latex]
@@ -327,6 +330,7 @@ module FalkorLib
       erbfiles << "readme_git.erb"     if FalkorLib::Git.init?(dir)
       erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
       erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)
+      erbfiles << "readme_mkdocs.erb"  if options[:mkdocs]
       erbfiles << "footer_readme.erb"
 
       content = ""
@@ -397,7 +401,7 @@ module FalkorLib
                 options = {
                   :filename     => 'LICENSE'
                 })
-      return if (license.empty? or license == :none)
+      return if (license.empty? or license == :none or license =~ /^CC/)
       return unless FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.include?( license )
       info "Generate the licence file"
       path = normalized_path(dir)
