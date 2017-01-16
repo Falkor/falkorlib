@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 12:07 svarrette>
+# Time-stamp: <Mon 2017-01-16 14:01 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -379,7 +379,7 @@ module FalkorLib
     ##
     def select_licence(default_licence = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata][:license],
                        _options = {})
-      list_license = FalkorLib::Bootstrap::DEFAULTS[:licenses].keys
+      list_license = FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys
       idx = list_license.index(default_licence) unless default_licence.nil?
       select_from(list_license,
                   'Select the license index for this project:',
