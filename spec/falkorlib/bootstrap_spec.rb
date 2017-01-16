@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 20:17 svarrette>
+# Time-stamp: <Mon 2017-01-16 11:30 svarrette>
 #
 # @description Check the basic Bootstrapping operations
 #
@@ -37,7 +37,7 @@ describe FalkorLib::Bootstrap do
   end
 
   [ :without_git, :with_git ].each do |ctx|
-  #[ :with_git ].each do |ctx|
+#  [ :with_git ].each do |ctx|
     dir = dirs[ctx]
     #############################################################
     context "bootstrap/base (#{ctx}) within temporary directory '#{dir}'" do
@@ -126,6 +126,26 @@ describe FalkorLib::Bootstrap do
           end
         end
       end
+
+      ### LICENSE file generation
+      it "#license -- don't generate LICENSE by default" do
+        license = File.join(dir, 'LICENSE')
+        FalkorLib::Bootstrap.license(dir)
+        expect(File).not_to exist( license )
+      end
+
+
+      it "#licence -- Generate LICENSE files for all supported licenses" do
+        FalkorLib::Config::Bootstrap::DEFAULTS[:licenses].keys.each do |lic|
+          # drop for some special cases
+          next if [ 'none', 'BSD', 'CC-by-nc-sa'].include?(lic)
+          authors = "Dummy Author"
+          license = File.join(dir, "LICENSE.#{lic.downcase}")
+          FalkorLib::Bootstrap.license(dir, lic, authors, { :filename => license })
+          expect(File).to exist( license )
+        end
+      end
+
 
     end # context "bootstrap/base"
   end # each

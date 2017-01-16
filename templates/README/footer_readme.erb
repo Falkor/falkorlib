@@ -1,7 +1,7 @@
 <% unless (config[:license].empty? or config[:license] == "none") %>
 ## Licence
 
-This project is released under the terms of the [<%= config[:license] %>](LICENCE) licence. 
+This project is released under the terms of the [<%= config[:license] %>](<%= options[:licensefile] %>) licence.
 
 [![Licence](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:logo]  %>)](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
 <% end %>
