@@ -242,6 +242,29 @@ module FalkorLib #:nodoc:
       raw_l[Integer(answer)]
     end # select_from
 
+    ## Display a indexed list to select multiple indexes
+    def select_multiple_from(list, text = 'Select the index', default_idx = 1, raw_list = list)
+      error "list and raw_list differs in size" if list.size != raw_list.size
+      l     = list
+      raw_l = raw_list
+      if list.is_a?(Array)
+        l = raw_l = { 0 => 'Exit', 1 => 'End of selection' }
+        list.each_with_index do |e, idx|
+          l[idx + 2] = e
+          raw_l[idx + 2] = raw_list[idx]
+        end
+      end
+      puts l.to_yaml
+      choices = Array.new
+      answer  = 0
+      begin
+        choices.push(raw_l[Integer(answer)]) if Integer(answer) > 1
+        answer = ask("=> #{text}", default_idx.to_s)
+        raise SystemExit, 'exiting selection' if answer == '0'
+        raise RangeError, 'Undefined index'   if Integer(answer) >= l.length
+      end while Integer(answer) != 1
+    choices
+    end # select_multiple_from
 
     ###############################
     ### YAML File loading/store ###
