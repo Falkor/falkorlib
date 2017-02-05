@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    falkorlib (0.7.4)
+    falkorlib (0.7.5)
       activesupport (~> 4.0)
       artii (>= 2.1)
       awesome_print (~> 1.2)
@@ -45,7 +45,7 @@ GEM
     docile (1.1.5)
     ethon (0.9.1)
       ffi (>= 1.3.0)
-    facter (2.4.6)
+    facter (2.4.6-universal-darwin)
       CFPropertyList (~> 2.2.6)
     faraday (0.10.0)
       multipart-post (>= 1.2, < 3)
@@ -162,4 +162,4 @@ DEPENDENCIES
   yard (~> 0.8)
 
 BUNDLED WITH
-   1.13.6
+   1.14.3
