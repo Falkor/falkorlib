@@ -129,7 +129,7 @@ namespace :version do
     expected_branch = FalkorLib.config[:gitflow][:prefix][:release] + version
     error "You are not in the '#{expected_branch}' branch but in the '#{branch}' one. May be you forgot to run 'rake version:bump:{patch,minor,major}' first" if branch != expected_branch
     info "=> Finalize the release of the version '#{version}' into the '#{FalkorLib.config[:gitflow][:branches][:master]}' branch/environment"
-    o = FalkorLib::GitFlow.finish('release', version, Dir.pwd, '-s')
+    o = FalkorLib::GitFlow.finish('release', version, Dir.pwd) #, '-s')
     error "Git flow release process failed" unless o.zero?
     if FalkorLib::Git.remotes?
       info("=> about to update remote tracked branches")
