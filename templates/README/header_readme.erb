@@ -5,7 +5,7 @@
 <% end %>
 ![By <%= config[:by] %>](https://img.shields.io/badge/by-<%= config[:by] %>-blue.svg) [![<%= config[:forge] %>](https://img.shields.io/badge/git-<%= config[:forge] %>-lightgray.svg)](<%= config[:source] %>) [![Issues](https://img.shields.io/badge/issues-<%= config[:forge] %>-green.svg)](<%= config[:issues_url] %>)
 
-       Time-stamp: <Mon 2016-02-22 22:04 svarrette>
+       Time-stamp: <Tue 2017-04-04 12:01 svarrette>
 
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
@@ -18,7 +18,8 @@
 
 ## Installation / Repository Setup
 
-This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %>](<%= config[:project_page] %>). 
+<% unless (config[:forge].nil? or config[:forge].empty?) %>
+This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %>](<%= config[:project_page] %>).
 
 <% if (config[:forge] == :gitlab) %>
 * Git interactions with this repository (push, pull etc.) are performed over SSH using the port 8022
@@ -29,6 +30,7 @@ This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
         $> cd ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
         $> git clone <%= config[:origin] %>
 
+<% end %>
 <% if config[:type].include?( :rvm ) %>
 Now ensure [RVM](https://rvm.io/) is correctly configured for this repository:
 
@@ -41,7 +43,7 @@ Configure the dependencies detailed in the [`Gemfile`](Gemfile) through the [Bun
      $> rake -T     # should work ;)
 <% end %>
 
-**`/!\ IMPORTANT`**: Once cloned, initiate your local copy of the repository by running: 
+**`/!\ IMPORTANT`**: Once cloned, initiate your local copy of the repository by running:
 
     $> cd <%= name.downcase %>
 <% if options[:make] %>
@@ -67,6 +69,3 @@ If upon pulling the repository, you end in a state where another collaborator ha
 <% else %>
     $> rake git:submodules:update
 <% end %>
-
-
-

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-10-15 18:28 svarrette>
+# Time-stamp: <Tue 2017-04-04 11:00 svarrette>
 ################################################################################
 
 require 'thor'
@@ -41,6 +41,7 @@ module FalkorLib
                                :desc => "Makefile to convert Markdown files to HTML"
       method_option :images, :type => :boolean, :aliases => [ '-i', '--img' ],
                              :desc => "Makefile to optimize images"
+      method_option :servers, :type => :boolean, :desc => "Makefile to fetch server files"
       method_option :refdir, :default => "#{FalkorLib.config[:git][:submodulesdir]}/Makefiles",
                              :aliases => '-d', :desc => "Path to Falkor's Makefile repository (Relative to Git root dir)"
       method_option :src, :type => :boolean, :aliases => [ '--src', '-s' ],

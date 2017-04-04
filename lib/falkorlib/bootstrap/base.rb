@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 23:25 svarrette>
+# Time-stamp: <Tue 2017-04-04 12:00 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -334,6 +334,8 @@ module FalkorLib
       erbfiles << "footer_readme.erb"
 
       content = ""
+      ap options
+      ap config
       erbfiles.each do |f|
         erbfile = File.join(templatedir, f)
         content += ERB.new(File.read(erbfile.to_s), nil, '<>').result(binding)
