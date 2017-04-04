@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Mon 2017-01-16 23:55 svarrette>
+# Time-stamp: <Tue 2017-04-04 11:43 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -205,6 +205,7 @@ __falkor_link()
                                {--latex,-l}'[Makefile to compile LaTeX documents]' \
                                {--gnuplot,--plot,-p}'[Makefile to compile GnuPlot scripts]' \
                                {--generic,-g}'[Generic Makefile for sub directory]' \
+                               '--server:Makefile for fetching key server files' \
                                {--markdown,-m}'[Makefile to convert Markdown files to HTML]' \
                                {--images,-i,--img}'[Makefile to optimize images]' \
                                {--refdir,-d}'[Path to Falkor''s Makefile repository (Relative to Git root dir)]' \

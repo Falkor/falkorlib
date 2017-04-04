@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2016-11-13 06:44 svarrette>
+# Time-stamp: <Tue 2017-04-04 11:42 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -29,6 +29,7 @@ module FalkorLib
       #  * :latex    [boolean] Makefile to compile LaTeX documents
       #  * :gnuplot  [boolean] Makefile to compile GnuPlot scripts
       #  * :markdown [boolean] Makefile to convert Markdown files to HTML
+      #  * :servers  [boolean] Makefile to fetch key files from remote servers
       #  * :refdir   [string]  Path to Falkor's Makefile repository
       #  * :src      [boolean] Path to latex_src
       #  * :no_interaction [boolean] do not interact
@@ -66,7 +67,7 @@ module FalkorLib
         makefile = 'Makefile'
         type     = 'latex'
         # recall to place the default option (--latex) at the last position
-        [ :gnuplot, :images, :generic, :markdown, :repo] .each do |e|
+        [ :gnuplot, :images, :generic, :markdown, :repo, :servers] .each do |e|
           if options[e.to_sym]
             type = e.to_s
             break
