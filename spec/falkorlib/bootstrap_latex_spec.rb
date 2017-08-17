@@ -3,7 +3,7 @@
 #########################################
 # bootstrap_latex_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2016-11-13 21:37 svarrette>
+# Time-stamp: <Thu 2017-08-17 22:28 svarrette>
 #
 # @description Check the Bootstrapping operations for LaTeX-based projects
 #

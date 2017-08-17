@@ -70,7 +70,7 @@ begin
     #t.pattern = "spec/**/common_*.rb"
     #t.pattern = "spec/**/versioning_*spec.rb"
     #t.pattern = "spec/**/puppet*spec.rb"
-    #t.pattern = "spec/**/bootstrap_spec.rb"
+    #t.pattern = "spec/**/bootstrap_*spec.rb"
     #t.pattern = "spec/**/git*spec.rb"
     #t.pattern = "spec/**/error*spec.rb"
     #t.pattern = "spec/**/config*spec.rb"

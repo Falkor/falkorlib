@@ -1,10 +1,10 @@
 % =============================================================================
-% File:  <%= config[:name] %>.tex -- 
+% File:  <%= config[:name] %>.tex --
 % Author(s): <%= config[:author] %> (<%= config[:mail] %>)
-% Time-stamp: <Tue 2015-06-16 09:22 svarrette>
-% 
+% Time-stamp: <Thu 2017-08-17 22:22 svarrette>
+%
 % Copyright (c) <%= Time.now.year %> <%= config[:author] %><Sebastien.Varrette@uni.lu>
-% 
+%
 % For more information:
 % - LaTeX: http://www.latex-project.org/
 % - Beamer: https://bitbucket.org/rivanvx/beamer/
@@ -36,7 +36,9 @@
 \title{<%= config[:title] %>}
 \subtitle{<%= config[:subtitle] %>}
 
-\author{<%= config[:author] %>}
+\author[<%= config[:author] %> \& al.]{
+  \underline{<%= config[:author] %>}
+}
 \institute[PCOG Research unit]{
   Parallel Computing and Optimization Group (\href{http://pcog.uni.lu}{PCOG}),
   University of Luxembourg (\href{http://www.uni.lu}{UL}), Luxembourg
@@ -64,9 +66,9 @@
   }
 }
 
-% ======================== 
+% ========================
 \input{_content.md} % Markdown content
-% ======================== 
+% ========================
 
 % ======================== END =========================
 \section*{Thank you for your attention...}
@@ -78,12 +80,11 @@
     % \emph{Contact}\\
     {\tiny
       \emph{<%= config[:author] %>}\\
+      ~~~~ \structure{University of Luxembourg, Belval Campus}:\\
+      ~~~~ Maison du Nombre, 4th floor\\
+      ~~~~ 2, avenue de l'Universit\'e\\
+      ~~~~ L-4365 Esch-sur-Alzette\\
       ~~~~ \textit{mail:} \href{mailto:<%= config[:mail] %>}{<%= config[:mail] %>}\\
-      ~~~~ Office E-007\\
-      ~~~~ Campus Kirchberg\\
-      ~~~~ 6, rue Coudenhove-Kalergi\\
-      ~~~~ L-1359 Luxembourg
-
     }
     \column{0.5\textwidth}
     % \scalebox{8}{\emph{?}}
@@ -114,7 +115,7 @@
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % eof
-% 
+%
 % Local Variables:
 % mode: latex
 % mode: flyspell

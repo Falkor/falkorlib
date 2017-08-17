@@ -4,7 +4,7 @@
 # License::   <%= config[:license].capitalize %>
 #
 # ------------------------------------------------------------------------------
-# = Defines: <%= config[:shortname] %>::mydef
+# == Defines: <%= config[:shortname] %>::mydef
 #
 # <%= config[:summary] %>
 #
@@ -43,9 +43,7 @@
 # == Warnings
 #
 # /!\ Always respect the style guide available
-# here[http://docs.puppetlabs.com/guides/style_guide]
-#
-# [Remember: No empty lines between comments and class definition]
+# here[https://docs.puppet.com/puppet/latest/style_guide.html]
 #
 define <%= config[:shortname] %>::mydef(
     $ensure         = 'present',
@@ -53,6 +51,15 @@ define <%= config[:shortname] %>::mydef(
     $source         = ''
 )
 {
+  validate_re($ensure, '^present$|^absent$')
+  #validate_string($mode)
+  #validate_hash($hash)
+  #validate_absolute_path($path)
+  #if ! (is_string($owner) or is_integer($owner)) {
+  #  fail("\$owner must be a string or integer, got ${owner}")
+  #}
+  #validate_bool($replace)
+
     include <%= config[:shortname] %>::params
 
     # $name is provided at define invocation
@@ -106,6 +113,3 @@ define <%= config[:shortname] %>::mydef(
     # }
 
 }
-
-
-

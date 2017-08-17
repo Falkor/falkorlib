@@ -30,27 +30,20 @@ class <%= config[:shortname] %>::params {
     ###########################################
 
     # ensure the presence (or absence) of <%= config[:shortname] %>
-    $ensure = $::<%= config[:shortname] %>_ensure ? {
-        ''      => 'present',
-        default => $::<%= config[:shortname] %>_ensure
-    }
+    $ensure = 'present'
 
     # The Protocol used. Used by monitor and firewall class. Default is 'tcp'
-    $protocol = $::<%= config[:shortname] %>_protocol ? {
-        ''      => 'tcp',
-        default => $::<%= config[:shortname] %>_protocol},
-    }
-    # The port number. Used by monitor and firewall class. The default is 22.
-    $port = $::<%= config[:shortname] %>_port ? {
-        ''      => 22,
-        default => $::<%= config[:shortname] %>_port,
-    }
-    # example of an array variable
-    $array_variable = $::<%= config[:shortname] %>_array_variable ? {
-        ''      => [],
-        default => $::<%= config[:shortname] %>_array_variable,
-    }
+    $protocol = 'tcp'
 
+    # The port number. Used by monitor and firewall class. The default is 22.
+    $port = 22
+
+    # example of an array/hash variable
+    $array_variable = []
+    $hash_variable  = {}
+
+    # undef variable
+    $undefvar = undef
 
     #### MODULE INTERNAL VARIABLES  #########
     # (Modify to adapt to unsupported OSes)
@@ -148,4 +141,3 @@ class <%= config[:shortname] %>::params {
 
 
 }
-
