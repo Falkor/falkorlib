@@ -14,7 +14,7 @@ _Note_: These examples are translated from the example of Romain Vimont
 * item 2 in a block
     - sub item 1
 
-### More on Blocks 
+### More on Blocks
 
 \blockbegin{A First Block}
 
@@ -93,8 +93,6 @@ This is from [*Mitch Resnick*](https://en.wikipedia.org/wiki/Mitchel_Resnick).
 > If you learn to read, you can then read to learn.\
 > If you learn to code, you can then code to learn.[^ted]
 
-[^ted]: \tiny<http://www.ted.com/talks/mitch_resnick_let_s_teach_kids_to_code.html>
-
 Now a step-by-step appearance:
 
 > - first
@@ -114,15 +112,15 @@ Then another.
 Now some formatting:
 
 | There exists 2 types of persons:
-|   those who understand recursivity and 
+|   those who understand recursivity and
 |   those who don't understand that there exists 2 types of persons:
-|      those who understand recursivity and 
+|      those who understand recursivity and
 |      those who don't understand that there exists 2 types of persons:
 |         ...
 
 
 
-### \LaTeX /Beamer Special 
+### \LaTeX /Beamer Special
 
 Some elements __do not__ exist in Pandoc Markdown.
 In this case, you shall simply use \LaTeX.
@@ -135,7 +133,7 @@ That's an alertblock
 That's an exampleblock
 \end{exampleblock}
 
-### Maths \& Tables 
+### Maths \& Tables
 
 With some Formulaes:
 
@@ -211,7 +209,7 @@ Text on the right column
 Inside a column environment:
 
 * the `block` environment raise an error
-* instead, use the following commands: 
+* instead, use the following commands:
 
 ~~~latex
 \blockbegin{Title}
@@ -222,7 +220,7 @@ Inside a column environment:
 \columnsend
 
 * This allows to use the Markdown syntax **in** the block.
-    - only required with the `\columnsbegin ... \columnsend` construction 
+    - only required with the `\columnsbegin ... \columnsend` construction
 
 
 ### Links
@@ -243,5 +241,3 @@ In french
 See [UL HPC website].
 
 [UL HPC website]: http://hpc.uni.lu
-
-
