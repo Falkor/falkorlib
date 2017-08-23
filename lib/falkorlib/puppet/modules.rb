@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 12:18 svarrette>
+# Time-stamp: <Wed 2017-08-23 15:33 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -132,7 +132,7 @@ module FalkorLib #:nodoc:
         config[:platforms] = [ 'debian' ]
         config[:dependencies] = [{
           "name" => "puppetlabs-stdlib",
-          "version_requirement" => ">=4.2.2 <5.0.0"
+          "version_requirement" => ">=4.19.0 <5.0.0"
         }]
         config[:params] = %w(ensure protocol port packagename)
         #ap config
@@ -173,7 +173,7 @@ module FalkorLib #:nodoc:
           [ 'metadata.json',
             'docs/', 'mkdocs.yml', 'LICENSE', '.gitignore', '.pmtignore',
             '.ruby-version', '.ruby-gemset', 'Gemfile',
-            '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
+            'tests/vagrant/', 'Rakefile', 'Vagrantfile' ].each do |f|
             FalkorLib::Git.add(File.join(moduledir, f))
           end
         end
