@@ -1,143 +1,150 @@
+################################################################################
+# Time-stamp: <Wed 2017-08-23 15:15 svarrette>
+#
 # File::      <tt>params.pp</tt>
 # Author::    <%= config[:author] %> (<%= config[:mail] %>)
 # Copyright:: Copyright (c) <%= Time.now.year %> <%= config[:author] %>
 # License::   <%= config[:license].capitalize %>
 #
 # ------------------------------------------------------------------------------
-# = Class: <%= config[:shortname] %>::params
+# == Class: <%= config[:shortname] %>::params
 #
 # In this class are defined as variables values that are used in other
-# <%= config[:shortname] %> classes.
+# <%= config[:shortname] %> classes and definitions.
 # This class should be included, where necessary, and eventually be enhanced
-# with support for more OS
+# with support for more Operating Systems.
 #
 # == Warnings
 #
 # /!\ Always respect the style guide available
 # here[http://docs.puppetlabs.com/guides/style_guide]
 #
-# The usage of a dedicated param classe is advised to better deal with
-# parametrized classes, see
-# http://docs.puppetlabs.com/guides/parameterized_classes.html
-#
 # [Remember: No empty lines between comments and class definition]
 #
 class <%= config[:shortname] %>::params {
 
-    ######## DEFAULTS FOR VARIABLES USERS CAN SET ##########################
-    # (Here are set the defaults, provide your custom variables externally)
-    # (The default used is in the line with '')
-    ###########################################
+  #### MODULE INTERNAL VARIABLES  #########
+  # (Modify to adapt to unsupported OSes)
+  #########################################
 
-    # ensure the presence (or absence) of <%= config[:shortname] %>
-    $ensure = 'present'
+  # ensure the presence (or absence) of <%= config[:shortname] %>
+  $ensure = 'present'
 
-    # The Protocol used. Used by monitor and firewall class. Default is 'tcp'
-    $protocol = 'tcp'
+  # The Protocol used. Used by monitor and firewall class. Default is 'tcp'
+  $protocol = 'tcp'
 
-    # The port number. Used by monitor and firewall class. The default is 22.
-    $port = 22
+  # The port number. Used by monitor and firewall class. The default is 22.
+  $port = 22
 
-    # example of an array/hash variable
-    $array_variable = []
-    $hash_variable  = {}
+  # example of an array/hash variable
+  $array_variable = []
+  $hash_variable  = {}
 
-    # undef variable
-    $undefvar = undef
+  # undef variable
+  $undefvar = undef
 
-    #### MODULE INTERNAL VARIABLES  #########
-    # (Modify to adapt to unsupported OSes)
-    #######################################
-    # <%= config[:shortname] %> packages
-    $packagename = $::operatingsystem ? {
-        default => '<%= config[:shortname] %>',
-    }
-    # $extra_packages = $::operatingsystem ? {
-    #     /(?i-mx:ubuntu|debian)/        => [],
-    #     /(?i-mx:centos|fedora|redhat)/ => [],
-    #     default => []
-    # }
+  ###########################################
+  # <%= config[:shortname] %> system configs
+  ###########################################
+  # <%= config[:shortname] %> user / group identifiers
+  $username = '<%= config[:shortname] %>'
+  $uid      = 14144
+  $group    = $username
+  $gid      = $uid
+  $home     = "/var/lib/${username}"
+  $comment  = '<%= config[:shortname].capitalize %> User'
+  $shell    = '/sbin/nologin' # or '/bin/bash'
 
-    # Log directory
-    $logdir = $::operatingsystem ? {
-        default => '/var/log/<%= config[:shortname] %>'
-    }
-    $logdir_mode = $::operatingsystem ? {
-        default => '750',
-    }
-    $logdir_owner = $::operatingsystem ? {
-        default => 'root',
-    }
-    $logdir_group = $::operatingsystem ? {
-        default => 'adm',
-    }
+  # <%= config[:shortname] %> packages
+  $packagename = $::operatingsystem ? {
+    default => '<%= config[:shortname] %>',
+  }
+  $extra_packages = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/        => [],
+    /(?i-mx:centos|fedora|redhat)/ => [],
+    default => []
+  }
 
-    # PID for daemons
-    # $piddir = $::operatingsystem ? {
-    #     default => "/var/run/<%= config[:shortname] %>",
-    # }
-    # $piddir_mode = $::operatingsystem ? {
-    #     default => '750',
-    # }
-    # $piddir_owner = $::operatingsystem ? {
-    #     default => '<%= config[:shortname] %>',
-    # }
-    # $piddir_group = $::operatingsystem ? {
-    #     default => 'adm',
-    # }
-    # $pidfile = $::operatingsystem ? {
-    #     default => '/var/run/<%= config[:shortname] %>/<%= config[:shortname] %>.pid'
-    # }
+  # Log directory
+  $logdir = $::operatingsystem ? {
+    default => '/var/log/<%= config[:shortname] %>'
+  }
+  $logdir_mode = $::operatingsystem ? {
+    default => '750',
+  }
+  $logdir_owner = $::operatingsystem ? {
+    default => 'root',
+  }
+  $logdir_group = $::operatingsystem ? {
+    default => 'adm',
+  }
 
-    # <%= config[:shortname] %> associated services
-    $servicename = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/ => '<%= config[:shortname] %>',
-        default                 => '<%= config[:shortname] %>'
-    }
-    # used for pattern in a service ressource
-    $processname = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/ => '<%= config[:shortname] %>',
-        default                 => '<%= config[:shortname] %>'
-    }
-    $hasstatus = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/        => false,
-        /(?i-mx:centos|fedora|redhat)/ => true,
-        default => true,
-    }
-    $hasrestart = $::operatingsystem ? {
-        default => true,
-    }
+  # PID for daemons
+  $piddir = $::operatingsystem ? {
+    default => "/var/run/<%= config[:shortname] %>",
+  }
+  $piddir_mode = $::operatingsystem ? {
+    default => '750',
+  }
+  $piddir_owner = $::operatingsystem ? {
+    default => '<%= config[:shortname] %>',
+  }
+  $piddir_group = $::operatingsystem ? {
+    default => 'adm',
+  }
+  $pidfile = $::operatingsystem ? {
+    default => '/var/run/<%= config[:shortname] %>/<%= config[:shortname] %>.pid'
+  }
 
-    # Configuration directory & file
-    # $configdir = $::operatingsystem ? {
-    #     default => "/etc/<%= config[:shortname] %>",
-    # }
-    # $configdir_mode = $::operatingsystem ? {
-    #     default => '0755',
-    # }
-    # $configdir_owner = $::operatingsystem ? {
-    #     default => 'root',
-    # }
-    # $configdir_group = $::operatingsystem ? {
-    #     default => 'root',
-    # }
+  # <%= config[:shortname] %> associated services
+  $servicename = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/ => '<%= config[:shortname] %>',
+    default                 => '<%= config[:shortname] %>'
+  }
+  # used for pattern in a service ressource
+  $processname = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/ => '<%= config[:shortname] %>',
+    default                 => '<%= config[:shortname] %>'
+  }
+  $hasstatus = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/        => false,
+    /(?i-mx:centos|fedora|redhat)/ => true,
+    default => true,
+  }
+  $hasrestart = $::operatingsystem ? {
+    default => true,
+  }
 
-    $configfile = $::operatingsystem ? {
-        default => '/etc/<%= config[:shortname] %>.conf',
-    }
-    $configfile_init = $::operatingsystem ? {
-        /(?i-mx:ubuntu|debian)/ => '/etc/default/<%= config[:shortname] %>',
-        default                 => '/etc/sysconfig/<%= config[:shortname] %>'
-    }
-    $configfile_mode = $::operatingsystem ? {
-        default => '0600',
-    }
-    $configfile_owner = $::operatingsystem ? {
-        default => 'root',
-    }
-    $configfile_group = $::operatingsystem ? {
-        default => 'root',
-    }
+  # Configuration directory & file
+  $configdir = $::operatingsystem ? {
+    default => "/etc/<%= config[:shortname] %>",
+  }
+  $configdir_mode = $::operatingsystem ? {
+    default => '0755',
+  }
+  $configdir_owner = $::operatingsystem ? {
+    default => 'root',
+  }
+  $configdir_group = $::operatingsystem ? {
+    default => 'root',
+  }
 
+  $configfile = $::operatingsystem ? {
+    default => '/etc/<%= config[:shortname] %>.conf',
+  }
+  $configfile_mode = $::operatingsystem ? {
+    default => '0600',
+  }
+  $configfile_owner = $::operatingsystem ? {
+    default => 'root',
+  }
+  $configfile_group = $::operatingsystem ? {
+    default => 'root',
+  }
+
+  $default_sysconfig = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/ => '/etc/default/<%= config[:shortname] %>',
+    default                 => '/etc/sysconfig/<%= config[:shortname] %>'
+  }
 
 }
