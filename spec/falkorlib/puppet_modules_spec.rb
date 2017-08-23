@@ -2,7 +2,7 @@
 #########################################
 # puppet_modules_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2016-11-10 02:01 svarrette>
+# Time-stamp: <Wed 2017-08-23 15:39 svarrette>
 #
 # @description Check the Puppet Modules operations
 #
@@ -156,7 +156,7 @@ describe FalkorLib::Puppet::Modules do
     #                      ])
     # end
 
-    upgraded_files_default = 1
+    upgraded_files_default = 5
     it "#upgrade" do
       d = FalkorLib::Puppet::Modules.upgrade(moduledir, {
                                                :no_interaction => true

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 12:18 svarrette>
+# Time-stamp: <Wed 2017-08-23 15:36 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -132,7 +132,7 @@ module FalkorLib #:nodoc:
         config[:platforms] = [ 'debian' ]
         config[:dependencies] = [{
           "name" => "puppetlabs-stdlib",
-          "version_requirement" => ">=4.2.2 <5.0.0"
+          "version_requirement" => ">=4.19.0 <5.0.0"
         }]
         config[:params] = %w(ensure protocol port packagename)
         #ap config
@@ -173,7 +173,7 @@ module FalkorLib #:nodoc:
           [ 'metadata.json',
             'docs/', 'mkdocs.yml', 'LICENSE', '.gitignore', '.pmtignore',
             '.ruby-version', '.ruby-gemset', 'Gemfile',
-            '.vagrant_init.rb', 'Rakefile', 'Vagrantfile' ].each do |f|
+            'tests/vagrant/', 'Rakefile', 'Vagrantfile' ].each do |f|
             FalkorLib::Git.add(File.join(moduledir, f))
           end
         end
@@ -306,7 +306,7 @@ module FalkorLib #:nodoc:
           'docs/contributing/index.md', 'docs/contributing/layout.md', 'docs/contributing/setup.md', 'docs/contributing/versioning.md',
           'docs/index.md', 'docs/rtfd.md', 'docs/vagrant.md'
         ]
-        (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
+        (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', 'tests/vagrant/bootstrap.sh', 'tests/vagrant/config.yaml', 'tests/vagrant/puppet_modules_setup.rb' ]).each do |f|
           next unless options[:exclude].nil? || !options[:exclude].include?( f )
           next unless options[:only].nil?    || options[:only].include?(f)
           info "Upgrade the content of #{f}"

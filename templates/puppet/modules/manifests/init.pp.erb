@@ -1,63 +1,66 @@
+################################################################################
+# Time-stamp: <Wed 2017-08-23 14:49 svarrette>
+#
 # File::      <tt>init.pp</tt>
 # Author::    <%= config[:author] %> (<%= config[:mail] %>)
 # Copyright:: Copyright (c) <%= Time.now.year %> <%= config[:author] %>
 # License::   <%= config[:license].capitalize %>
 #
 # ------------------------------------------------------------------------------
-# = Class: <%= config[:shortname] %>
+# == Class: <%= config[:shortname] %>
 #
 # <%= config[:summary] %>
 #
-# == Parameters:
 #
-# $ensure:: *Default*: 'present'. Ensure the presence (or absence) of <%= config[:shortname] %>
+# @param ensure [String] Default: 'present'.
+#          Ensure the presence (or absence) of <%= config[:shortname] %>
 #
-# == Actions:
-#
-# Install and configure <%= config[:shortname] %>
-#
-# == Requires:
+# === Requires
 #
 # n/a
 #
-# == Sample Usage:
+# @example Basic instanciation
 #
-#     include '<%= config[:shortname] %>'
+#     include '::<%= config[:shortname] %>'
 #
 # You can then specialize the various aspects of the configuration,
 # for instance:
 #
-#         class { '<%= config[:shortname] %>':
+#         class { '::<%= config[:shortname] %>':
 #             ensure => 'present'
 #         }
 #
-# == Warnings
+# === Authors
 #
-# /!\ Always respect the style guide available
-# here[http://docs.puppetlabs.com/guides/style_guide]
+# The UL HPC Team <hpc-sysadmins@uni.lu> of the University of Luxembourg, in
+# particular
+# * Sebastien Varrette <Sebastien.Varrette@uni.lu>
+# * Valentin Plugaru   <Valentin.Plugaru@uni.lu>
+# * Sarah Peter        <Sarah.Peter@uni.lu>
+# * Hyacinthe Cartiaux <Hyacinthe.Cartiaux@uni.lu>
+# * Clement Parisot    <Clement.Parisot@uni.lu>
+# See AUTHORS for more details
 #
+# === Warnings
+#
+# /!\ Always respect the style guide available here[http://docs.puppetlabs.com/guides/style_guide]
 #
 # [Remember: No empty lines between comments and class definition]
 #
 class <%= config[:shortname] %>(
-    $ensure = $<%= config[:shortname] %>::params::ensure
+    String $ensure = $<%= config[:shortname] %>::params::ensure
 )
 inherits <%= config[:shortname] %>::params
 {
+    validate_legacy('String', 'validate_re', $ensure, ['^present', '^absent'])
+
     info ("Configuring <%= config[:shortname] %> (with ensure = ${ensure})")
 
-    if ! ($ensure in [ 'present', 'absent' ]) {
-        fail("<%= config[:shortname] %> 'ensure' parameter must be set to either 'absent' or 'present'")
-    }
-
     case $::operatingsystem {
-        debian, ubuntu:         { include <%= config[:shortname] %>::common::debian }
-        redhat, fedora, centos: { include <%= config[:shortname] %>::common::redhat }
+        /(?i-mx:ubuntu|debian)/:        { include ::<%= config[:shortname] %>::common::debian }
+        /(?i-mx:centos|fedora|redhat)/: { include ::<%= config[:shortname] %>::common::redhat }
         default: {
-            fail("Module $module_name is not supported on $operatingsystem")
+            fail("Module ${module_name} is not supported on ${::operatingsystem}")
         }
     }
 }
-
-
-
