@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2017-08-23 15:33 svarrette>
+# Time-stamp: <Wed 2017-08-23 15:36 svarrette>
 ################################################################################
 # Interface for the main Puppet Module operations
 #
@@ -306,7 +306,7 @@ module FalkorLib #:nodoc:
           'docs/contributing/index.md', 'docs/contributing/layout.md', 'docs/contributing/setup.md', 'docs/contributing/versioning.md',
           'docs/index.md', 'docs/rtfd.md', 'docs/vagrant.md'
         ]
-        (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', '.vagrant_init.rb' ]).each do |f|
+        (update_from_erb + [ 'Gemfile', 'Rakefile', 'Vagrantfile', 'tests/vagrant/bootstrap.sh', 'tests/vagrant/config.yaml', 'tests/vagrant/puppet_modules_setup.rb' ]).each do |f|
           next unless options[:exclude].nil? || !options[:exclude].include?( f )
           next unless options[:only].nil?    || options[:only].include?(f)
           info "Upgrade the content of #{f}"
