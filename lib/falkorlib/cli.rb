@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2017-01-15 23:13 svarrette>
+# Time-stamp: <Fri 2018-04-27 13:39 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -143,6 +143,14 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
       desc "new <type> [<path>]", "Initialize the directory PATH with one of FalkorLib's template(s)"
       subcommand "new", FalkorLib::CLI::New
 
+      ###### vagrant ######
+      method_option :force, :aliases => '-f', :default => false, :type => :boolean,
+                    :desc => "Force generation (might overwrite files)"
+      #......................................
+      desc "vagrant [options]", "Initialize vagrant for the current project"
+      def vagrant(path = '.')
+        FalkorLib::Bootstrap.vagrant(path, options)
+      end # vagrant
 
       ###### version ######
       desc "--version, -V", "Print the version number"

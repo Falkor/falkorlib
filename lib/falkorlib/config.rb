@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 14:21 svarrette>
+# Time-stamp: <Fri 2018-04-27 13:52 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -55,8 +55,8 @@ module FalkorLib #:nodoc:
       },
       #:custom_cfg   => '.falkorlib.yaml',
       :rvm => {
-        :rubies      => [ '2.3.1', '2.2.5', '2.1.10', '2.0.0', '1.9.3' ],
-        :version     => '2.1.10',
+        :rubies      => [ '2.4.1', '2.3.4', '2.2.7', '2.1.10', '2.0.0', '1.9.3' ],
+        :version     => '2.3.4',
         :versionfile => '.ruby-version',
         :gemsetfile  => '.ruby-gemset'
       },
@@ -65,7 +65,7 @@ module FalkorLib #:nodoc:
         :puppet   => {}
       },
       :tokens  => { :code_climate => '' },
-      :project => {}
+      :project => {},
     }
 
     module_function

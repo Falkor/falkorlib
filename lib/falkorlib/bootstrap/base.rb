@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2017-04-04 12:00 svarrette>
+# Time-stamp: <Fri 2018-04-27 13:51 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -114,6 +114,18 @@ module FalkorLib #:nodoc:
             :gforge => { :url => 'gforge.uni.lu', :name => 'GForge @ Uni.lu' },
             :github => { :url => 'github.com',    :name => 'Github', :login => (`whoami`.chomp.capitalize).to_s },
             :gitlab => { :url => 'gitlab.uni.lu', :name => 'Gitlab @ Uni.lu', :login => (`whoami`.chomp.capitalize).to_s }
+          },
+          :vagrant => {
+            :os     => :centos7,
+            :ram    => 1024,
+            :vcpus  => 4,
+            :domain => 'vagrant.dev',
+            :range  => '10.10.1.0/24',
+            :boxes => {
+              :centos7  => 'centos/7',
+              :debian8  => 'debian/contrib-jessie64',
+              :ubuntu14 => 'ubuntu/trusty64'
+            },
           }
         }
 
