@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    falkorlib (0.7.14)
+    falkorlib (0.7.15)
       activesupport (~> 4.0)
       artii (>= 2.1)
       awesome_print (~> 1.2)
