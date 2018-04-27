@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 13:51 svarrette>
+# Time-stamp: <Fri 2018-04-27 16:58 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -118,7 +118,7 @@ module FalkorLib #:nodoc:
           :vagrant => {
             :os     => :centos7,
             :ram    => 1024,
-            :vcpus  => 4,
+            :vcpus  => 2,
             :domain => 'vagrant.dev',
             :range  => '10.10.1.0/24',
             :boxes => {

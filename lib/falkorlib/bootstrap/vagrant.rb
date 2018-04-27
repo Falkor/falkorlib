@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 16:34 svarrette>
+# Time-stamp: <Fri 2018-04-27 16:56 svarrette>
 ################################################################################
 # Interface for Bootstrapping MkDocs
 #
@@ -47,13 +47,18 @@ module FalkorLib
       init_from_template(templatedir, rootdir, config,
                          :no_interaction => true,
                          :no_commit => true)
+      [ 'bootstrap.sh', 'config.yaml.sample' ].each do |f|
+        FalkorLib::Git.add(File.join(rootdir, 'vagrant', "#{f}")) if use_git
+      end
       Dir.chdir( rootdir ) do
         run %(git ignore '.vagrant/' )
         #   run %(ln -s README.md index.md )
       #   run %(ln -s README.md contributing/index.md )
       #   run %(ln -s README.md setup/index.md )
       end
-      exit_status.to_i
+      FalkorLib::Git.add(File.join(rootdir, '.gitignore')) if use_git
+
+      #exit_status.to_i
     end # vagrant
 
   end # module Bootstrap
