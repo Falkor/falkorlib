@@ -1,6 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-# Time-stamp: <Fri 2018-04-27 15:16 svarrette>
+# Time-stamp: <Fri 2018-04-27 15:36 svarrette>
 ###########################################################################################
 #             __     __                          _    __ _ _
 #             \ \   / /_ _  __ _ _ __ __ _ _ __ | |_ / _(_) | ___
@@ -132,12 +132,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # network settings
   ipaddr   = IPAddr.new network[:range]
   ip_range = ipaddr.to_range.to_a
-  ip_index = {
-    :frontend     => 2,
-    :controller   => 11,
-    :node         => 101,
-    :easybuild    => 1,
-  }
+  ip_index = 2
 
   # cosmetics for the post-up message
   __table = {
@@ -159,9 +154,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     abort "Non-existing box OS '#{os}' for the VM '#{name}'" if  settings[:boxes][os.to_sym].nil?
     abort "Empty IP address range" if ip_range.empty?
-    abort "Unknown role '#{role}' for the VM '#{name}'" unless ip_index[role.to_sym]
-    ip = ip_range[ ip_index[role.to_sym].to_i ].to_s
-    ip_index[role.to_sym] += 1   # increment index for the next VM of this type
+    ip = ip_range[ ip_index.to_i ].to_s
+    ip_index += 1   # increment index for the next VM of this type
 
     config.vm.define "#{name}" do |c|
       c.vm.box      = settings[:boxes][os.to_sym]
