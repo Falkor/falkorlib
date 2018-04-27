@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 13:57 svarrette>
+# Time-stamp: <Fri 2018-04-27 16:34 svarrette>
 ################################################################################
 # Interface for Bootstrapping MkDocs
 #
@@ -47,12 +47,13 @@ module FalkorLib
       init_from_template(templatedir, rootdir, config,
                          :no_interaction => true,
                          :no_commit => true)
-      # Dir.chdir( File.join(rootdir, 'docs')) do
-      #   run %(ln -s README.md index.md )
+      Dir.chdir( rootdir ) do
+        run %(git ignore '.vagrant/' )
+        #   run %(ln -s README.md index.md )
       #   run %(ln -s README.md contributing/index.md )
       #   run %(ln -s README.md setup/index.md )
-      # end
-      #exit_status.to_i
+      end
+      exit_status.to_i
     end # vagrant
 
   end # module Bootstrap
