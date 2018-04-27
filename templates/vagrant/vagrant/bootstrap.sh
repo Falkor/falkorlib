@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Time-stamp: <Fri 2018-04-27 11:57 svarrette>
+# Time-stamp: <Fri 2018-04-27 15:53 svarrette>
 ###########################################################################################
 # __     __                          _     ____              _       _
 # \ \   / /_ _  __ _ _ __ __ _ _ __ | |_  | __ )  ___   ___ | |_ ___| |_ _ __ __ _ _ __
@@ -202,57 +202,6 @@ EOF
 EOF
 }
 
-setup_easybuild() {
-    cat <<EOF > /etc/profile.d/easybuild.sh
-export EASYBUILD_PREFIX=\$HOME/.local/easybuild
-export GLOBAL_EASYBUILD_PREFIX=/opt/apps/
-export EASYBUILD_MODULES_TOOL=Lmod
-export EASYBUILD_MODULE_NAMING_SCHEME=CategorizedModuleNamingScheme
-# Use the below variable to run:
-#    module use $LOCAL_MODULES
-#    module load tools/EasyBuild
-export LOCAL_MODULES=\$EASYBUILD_PREFIX/modules/all
-export GLOBAL_MODULES=\$GLOBAL_EASYBUILD_PREFIX/modules/all
-
-alias ma="module avail"
-alias ml="module list"
-function mu(){
-    module use \$GLOBAL_MODULES
-    module use \$LOCAL_MODULES
-    module load tools/EasyBuild
-}
-
-# Prepend directories holding eb file for this turorial to the robot path
-# See http://easybuild.readthedocs.io/en/latest/Using_the_EasyBuild_command_line.html?highlight=EASYBUILD_ROBOT#prepending-and-or-appending-to-the-default-robot-search-path
-# export EASYBUILD_ROBOT_PATHS=\$(find /vagrant/resources/ -name *.eb | xargs dirname | sort | uniq | xargs echo | tr ' ' ':'):
-
-alias global_eb='eb --installpath=\$GLOBAL_EASYBUILD_PREFIX'
-
-EOF
-    pip install --upgrade pip
-    pip install functools32
-    if [ ! -f "${EB_INSTALL_SCRIPT}" ]; then
-        curl -o ${EB_INSTALL_SCRIPT} ${EB_INSTALL_SCRIPT_URL}
-    fi
-
-    info 'Installing Easybuild'
-    sudo -u vagrant EASYBUILD_MODULE_NAMING_SCHEME=CategorizedModuleNamingScheme python ${EB_INSTALL_SCRIPT} ~vagrant/.local/easybuild
-}
-
-setup_pyenv() {
-    cat <<EOF > /etc/profile.d/pyenv.sh
-if [ -d "\$HOME/.pyenv" ]; then
-    export PATH="\$HOME/.pyenv/bin:\$PATH"
-    eval "\$(pyenv init -)"
-    eval "\$(pyenv virtualenv-init -)"
-fi
-EOF
-    if [ ! -h "/home/vagrant/.config/direnv" ]; then
-        sudo -u vagrant mkdir -p /home/vagrant/.config
-        sudo -u vagrant ln -sf /vagrant/config/direnv /home/vagrant/.config/direnv
-    fi
-}
-
 
 ######################################################################################
 [ $UID -gt 0 ] && error "You must be root to execute this script (current uid: $UID)"
@@ -284,5 +233,3 @@ esac
 
 setup_dotfiles
 setup_motd
-setup_easybuild
-setup_pyenv
