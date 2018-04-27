@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Tue 2017-04-04 11:43 svarrette>
+# Time-stamp: <Fri 2018-04-27 15:36 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -46,6 +46,7 @@ _falkor()
         'mkdocs:Initialize mkdocs for the current project'
         'motd:bootstrap a Message of the Day (motd) file'
         'new:Initialize the directory PATH with one of Falkors template(s)'
+        'vagrant:Initialize vagrant in the current project'
         'version:Prints the FalkorLib version information'
     )
 
@@ -82,6 +83,8 @@ _falkor()
                     __falkor_motd   && ret=0   ;;
                 (new)
                     __falkor_new    && ret=0 ;;
+                (vagrant)
+                    __falkor_vagrant   && ret=0   ;;
                 (version|*)
                     _nothing
                     ;;
@@ -279,6 +282,15 @@ __falkor_motd() {
                '*:directory:_files -/'
 }
 
+##################
+__falkor_vagrant() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               {--force,-f}'[Force generation]' \
+               '*:directory:_directories'
+}
 
 
 
