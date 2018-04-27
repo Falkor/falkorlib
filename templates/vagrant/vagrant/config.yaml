@@ -1,0 +1,16 @@
+# -*- mode: yaml; -*-
+# Time-stamp: <Fri 2018-04-27 15:14 svarrette>
+################################################################################
+# Complementary configuration for Vagrant
+# You can overwrite here the default settings defined in ../Vagrantfile and
+# rework the vagrantconfiguration
+# See the sample file or the DEFAULT_SETTING variable in ../Vagrantfile for an
+# overview of the available configs
+#
+# /!\ a deep merge approach is used to bring the below modifications to the
+# initial DEFAULT_SETTING hash. In particular, **nested hashes** are merged
+# too, not replaced (might impact the :partitions: settings).
+###
+
+# :defaults:
+#   :ram:   4096

@@ -29,10 +29,10 @@ class <%= config[:shortname] %>::common {
   # Prepare the user and group
   group { '<%= config[:shortname] %>':
     ensure => $<%= config[:shortname] %>::ensure,
-    name   => <%= config[:shortname] %>::params::group,
-    gid    => <%= config[:shortname] %>::params::gid,
+    name   => $<%= config[:shortname] %>::params::group,
+    gid    => $<%= config[:shortname] %>::params::gid,
   }
-  user { 'munge':
+  user { '<%= config[:shortname] %>':
     ensure     => $<%= config[:shortname] %>::ensure,
     name       => $<%= config[:shortname] %>::params::username,
     uid        => $<%= config[:shortname] %>::params::gid,
@@ -45,8 +45,8 @@ class <%= config[:shortname] %>::common {
   }
 
   package { '<%= config[:shortname] %>':
-    name    => "${<%= config[:shortname] %>::params::packagename}",
-    ensure  => "${<%= config[:shortname] %>::ensure}",
+    name    => $<%= config[:shortname] %>::params::packagename,
+    ensure  => $<%= config[:shortname] %>::ensure}",
   }
   package { $<%= config[:shortname] %>::params::extra_packages:
     ensure => 'present'
