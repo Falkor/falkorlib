@@ -1,6 +1,6 @@
 ################################################################################
 # gitflow.rake - Special tasks for the management of Git [Flow] operations
-# Time-stamp: <Fri 2016-11-11 15:43 svarrette>
+# Time-stamp: <Wed 2018-10-03 16:00 svarrette>
 #
 # Copyright (c) 2014 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #               http://varrette.gforge.uni.lu
@@ -27,6 +27,25 @@ namespace :git do
       info t.comment
       FalkorLib::GitFlow.init(git_root_dir)
     end # task init
+
+    ###########   git:flow:up   ###########
+    desc "Update your gitflow local branches"
+    task :up do |t|
+      info "#{t.comment}"
+      FalkorLib::Git.fetch
+      branches = FalkorLib::Git.list_branch
+      #puts branches.to_yaml
+      unless FalkorLib::Git.dirty?
+        FalkorLib.config.gitflow[:branches].each do |t, br|
+          info "updating Git Flow #{t} branch '#{br}' with the 'origin' remote"
+          run %{ git checkout #{br} && git merge origin/#{br} }
+        end
+        run %{ git checkout #{branches[0]} }  # Go back to the initial branch
+      else
+        warning "Unable to update -- your local repository copy is dirty"
+      end
+    end
+
   end # namespace git::flow
 
   #.....................
@@ -103,8 +122,8 @@ namespace :version do
         if (current_branch == expected_branch)
           FalkorLib::Versioning.set_version(release_version)
           if (!FalkorLib.config[:versioning].nil?) &&
-             FalkorLib.config[:versioning][:type] == 'gem' &&
-             File.exist?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
+              FalkorLib.config[:versioning][:type] == 'gem' &&
+              File.exist?(File.join(FalkorLib::Git.rootdir, 'Gemfile'))
             info "Updating Gemfile information"
             run %(
                            # Update cache info
@@ -144,7 +163,7 @@ namespace :version do
     end
     #info "Update the changelog"
     if (!FalkorLib.config[:versioning].nil?) &&
-       FalkorLib.config[:versioning][:type] == 'gem'
+        FalkorLib.config[:versioning][:type] == 'gem'
       warn "About to push the released new gem (version #{version}) to the gem server (rybygems.org)"
       really_continue?
       Rake::Task['gem:release'].invoke
