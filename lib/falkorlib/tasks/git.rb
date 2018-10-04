@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 14:29 svarrette>
+# Time-stamp: <Wed 2018-10-03 21:57 svarrette>
 ################################################################################
 #
 # FalkorLib rake tasks to pilot Git [flow] operations
@@ -48,25 +48,15 @@ else
         FalkorLib::GitFlow.init
       end
     end # namespace git:flow
-
-    if   FalkorLib::GitFlow.init?
-      ###########  git:up   ###########
-      desc "Update your local branches"
-      task :up do |t|
-        info "#{t.comment}"
-        FalkorLib::Git.fetch
-        branches = FalkorLib::Git.list_branch
-        #puts branches.to_yaml
-        unless FalkorLib::Git.dirty?
-          FalkorLib.config.gitflow[:branches].each do |t, br|
-            info "updating Git Flow #{t} branch '#{br}' with the 'origin' remote"
-            run %{ git checkout #{br} && git merge origin/#{br} }
-          end
-          run %{ git checkout #{branches[0]} }  # Go back to the initial branch
-        else
-          warning "Unable to update -- your local repository copy is dirty"
-        end
-      end # task git:up
-    end
   end # namespace git
 end
+
+###########   up   ###########
+desc "upgrade your local branche(s)"
+task :up do |t|
+  if   FalkorLib::GitFlow.init?
+    Rake::Task['git:flow:up'].invoke
+  else
+    Rake::Task['git:up'].invoke
+  end
+end # task up
