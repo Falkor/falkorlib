@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 12:27 svarrette>
+# Time-stamp: <Thu 2018-10-04 08:07 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -156,7 +156,7 @@ module FalkorLib #:nodoc:
       if (options[:list] || (key.is_a? Regexp) || (key =~ /\*/))
         cg  = MiniGit::Capturing.new(dir)
         res = (cg.config :list => true).split("\n")
-        res.select! { |e| e.match(key) } unless key == '*'
+        res.select! { |e| e.match(/^#{key}/) } unless key == '*'
         #res = res.map { |e| e.split('=') }.to_h if options[:hash]
         res = Hash[ res.map { |e| e.split('=') } ] if options[:hash]
       else

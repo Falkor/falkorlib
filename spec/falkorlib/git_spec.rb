@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sat 2016-11-12 12:30 svarrette>
+# Time-stamp: <Thu 2018-10-04 08:05 svarrette>
 #
 # @description Check the Git operations
 #
@@ -228,11 +228,11 @@ describe FalkorLib::Git do
         end
 
         it "#config -- check pattern 2" do
-            c = FalkorLib::Git.config(/.*name=/, dir)
+            c = FalkorLib::Git.config(/user.*name*=/, dir)
             expect(c).not_to be_empty
             t = c.is_a? Array
             expect(t).to be true
-            expect(c.length).to eq(1)
+            expect(c.length).to eq(1), lambda { "expected array of size 1, got #{c.inspect}" }
         end
 
         it "#config -- return hash" do
