@@ -55,6 +55,7 @@ begin
           desc "Run all specs in #{name} spec suite"
           RSpec::Core::RakeTask.new(name.to_sym) do |t|
             t.pattern = "spec/**/#{name}_*spec.rb"
+            #t.pattern = "spec/**/git_*spec.rb"
             t.verbose = false
             t.rspec_opts = rspec_opts
           end # task #{name}
