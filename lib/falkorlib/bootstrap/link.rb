@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2017-04-04 11:42 svarrette>
+# Time-stamp: <Thu 2018-11-08 23:17 svarrette>
 ################################################################################
 # Interface for Bootstrapping various symlinks within your project
 #
@@ -13,7 +13,6 @@ require 'artii'
 require 'facter'
 
 include FalkorLib::Common
-
 
 module FalkorLib
   module Bootstrap

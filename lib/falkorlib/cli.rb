@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-08 17:28 svarrette>
+# Time-stamp: <Thu 2018-11-08 23:16 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -133,6 +133,9 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
         FalkorLib::Bootstrap.mkdocs(path, options)
       end # mkdocs
 
+      ###### make <subcommand> ######
+      desc "make <type> [<path>]", "Initialize one of Falkor's Makefile, typically bring as a symlink"
+      subcommand "make", FalkorLib::CLI::Make
 
 
       ###### motd ######
