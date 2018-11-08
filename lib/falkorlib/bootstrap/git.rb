@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-08 18:16 svarrette>
+# Time-stamp: <Thu 2018-11-08 18:27 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -199,6 +199,11 @@ module FalkorLib
       gpgkeys = []
       gpgkeys = config[:ulhpc] if options[:ulhpc]
       gpgkeys = options[:keys] if options[:keys]
+      unless gpgkeys.empty?
+        warning "About to allow the following GPG IDs to unlock the git-crypt vault"
+        puts gpgkeys.to_yaml
+        really_continue?
+      end
       gpgkeys.each do |k|
         Dir.chdir( rootdir ) do
           info "allow GPG ID '#{k}' to unlock the git-crypt vault"
