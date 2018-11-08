@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 16:58 svarrette>
+# Time-stamp: <Thu 2018-11-08 17:47 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -22,6 +22,22 @@ module FalkorLib #:nodoc:
 
       DEFAULTS =
         {
+          :gitcrypt => {
+            :owner    => `git config user.signingKey`.chomp,
+            :subkeys  => [],
+            :hooksdir => 'config/hooks',
+            :hook     => 'pre-commit.git-crypt.sh',
+            :ulhpc    => [
+              #'Ox5D08BCDD4F156AD7',  # S. Varrette
+              '0x3F3242C5B34D98C2',   # V. Plugaru
+              '0x6429C2514EBC4737',   # S. Peter
+              '0x07FEA8BA69203C2D',   # C. Parisot
+              '0x37183CEF550DF40B',   # H. Cartiaux
+            ],
+            # :hooks    => {
+            #   :precommit => 'https://gist.github.com/848c82daa63710b6c132bb42029b30ef.git',
+            # },
+          },
           :motd => {
             :file     => 'motd',
             :hostname => `hostname -f`.chomp,
