@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Thu 2018-11-08 23:37 svarrette>
+# Time-stamp: <Thu 2018-11-08 23:50 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -143,7 +143,7 @@ __falkor_new()
                                '--llncs[Use the Springer LNCS style]' \
                                '--acm[Use the ACM style]' && ret=0
                     ;;
-                 (letter)
+                (letter)
                     _arguments -C \
                                '(-n --name)'{-n,--name}'[Name of the LaTeX project]' \
                                '(-d --dir)'{-d,--dir}':Project directory (relative to the git root directory):_directories' && ret=0
@@ -152,7 +152,24 @@ __falkor_new()
                     _arguments -C \
                                '(-l --license)'{-l,--licence}'[Open Source License to use within your project]:lic:(none Apache-2.0 BSD CC-by-nc-sa GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 MIT)' \
                                '(-f --licensefile)'{-f,--licensefile}'[License Filename]:filename:(LICENSE)' && ret=0
-                               ;;
+                    ;;
+                (make)
+                    _arguments -C \
+                               {--latex,-l}'[Makefile to compile LaTeX documents]' \
+                               {--gnuplot,--plot,-p}'[Makefile to compile GnuPlot scripts]' \
+                               {--generic,-g}'[Generic Makefile for sub directory]' \
+                               {--images,-i,--img}'[Makefile to optimize images]' \
+                               {--src,-s}'[Path to Falkor''s Makefile for latex_src]' && ret=0
+                    ;;
+                (readme)
+                    _arguments -C \
+                               '--make[Use a Makefile to pilot the repository actions]' \
+                               '--rake[Use a Rakefile (and FalkorLib) to pilot the repository actions]' \
+                               {--latex,-l}'[Describe a LaTeX project]' \
+                               '--gem[Describe a Ruby gem project]' \
+                               '--rvm[Describe a RVM-based Ruby project]' \
+                               '-pyenv[Describe a pyenv-based Python project]' && ret=0
+                    ;;
                 (repo)
                     _arguments -C \
                                '(--no-git-flow)--git-flow[Bootstrap the repository with Git-flow]' \
@@ -168,6 +185,28 @@ __falkor_new()
                                '(-l --latex)'{-l,--latex}'[Initiate a LaTeX project]' \
                                '--rvm[Initiate a RVM-based Ruby project]' \
                                '--ruby[Ruby version to configure for RVM]' \
+                               '*: :->path' && ret=0
+                    case "$state" in
+                        (path)
+                            _directories ;;
+                    esac
+                    ;;
+                (rvm)
+                    _arguments -C \
+                               '--ruby[Ruby version to configure]:version' \
+                               '--gemset[RVM gemset to configure for this directory]:gemset' \
+                               '*: :->path' && ret=0
+                    case "$state" in
+                        (path)
+                            _directories ;;
+                    esac
+                    ;;
+                (slides)
+                    _arguments -C \
+                               {--name,-n}'[Name of the LaTeX project]:name' && ret=0
+                    ;;
+                (trash)
+                    _arguments -C \
                                '*: :->path' && ret=0
                     case "$state" in
                         (path)
