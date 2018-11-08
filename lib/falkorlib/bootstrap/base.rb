@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 16:58 svarrette>
+# Time-stamp: <Thu 2018-11-08 17:47 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -22,6 +22,22 @@ module FalkorLib #:nodoc:
 
       DEFAULTS =
         {
+          :gitcrypt => {
+            :owner    => `git config user.signingKey`.chomp,
+            :subkeys  => [],
+            :hooksdir => 'config/hooks',
+            :hook     => 'pre-commit.git-crypt.sh',
+            :ulhpc    => [
+              #'Ox5D08BCDD4F156AD7',  # S. Varrette
+              '0x3F3242C5B34D98C2',   # V. Plugaru
+              '0x6429C2514EBC4737',   # S. Peter
+              '0x07FEA8BA69203C2D',   # C. Parisot
+              '0x37183CEF550DF40B',   # H. Cartiaux
+            ],
+            # :hooks    => {
+            #   :precommit => 'https://gist.github.com/848c82daa63710b6c132bb42029b30ef.git',
+            # },
+          },
           :motd => {
             :file     => 'motd',
             :hostname => `hostname -f`.chomp,
@@ -139,6 +155,55 @@ module FalkorLib
   module Bootstrap #:nodoc:
 
     module_function
+
+    ###### makefile ######
+    # Supported options:
+    # * :master  [string] git flow master/production branch
+    # * :develop [string] git flow development branch
+    # * :force   [boolean] for overwritting
+    #......................................
+    def makefile(dir = Dir.pwd, options = {})
+      path = normalized_path(dir)
+      path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+      info "=> Setup a root repository makefile in '#{dir}'"
+      # Preparing submodule
+      submodules = {}
+      submodules['Makefiles'] = {
+        :url    => 'https://github.com/Falkor/Makefiles.git',
+        :branch => 'devel'
+      }
+      FalkorLib::Git.submodule_init(path, submodules)
+      makefile = File.join(path, "Makefile")
+      if File.exist?( makefile )
+        puts "  ... not overwriting the root Makefile which already exists"
+      else
+        src_makefile = File.join(path, FalkorLib.config.git[:submodulesdir],
+                                 'Makefiles', 'repo', 'Makefile')
+        FileUtils.cp src_makefile, makefile
+        gitflow_branches = FalkorLib::Config::GitFlow::DEFAULTS[:branches]
+        if FalkorLib::GitFlow.init?(path)
+          [ :master, :develop ].each do |b|
+            gitflow_branches[t.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
+          end
+        end
+        unless options.nil?
+          [ :master, :develop ].each do |b|
+            gitflow_branches[b.to_sym] = options[b.to_sym] if options[b.to_sym]
+          end
+        end
+        info "adapting Makefile to the gitflow branches"
+        Dir.chdir( path ) do
+          run %(
+   sed -i '' \
+        -e \"s/^GITFLOW_BR_MASTER=production/GITFLOW_BR_MASTER=#{gitflow_branches[:master]}/\" \
+        -e \"s/^GITFLOW_BR_DEVELOP=devel/GITFLOW_BR_DEVELOP=#{gitflow_branches[:develop]}/\" \
+        Makefile
+                        )
+        end
+        FalkorLib::Git.add(makefile, 'Initialize root Makefile for the repo')
+      end
+    end # makefile
+
 
     ###
     # Initialize a trash directory in path
