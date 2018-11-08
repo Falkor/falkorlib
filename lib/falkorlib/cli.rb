@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 13:39 svarrette>
+# Time-stamp: <Thu 2018-11-08 17:28 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -66,6 +66,19 @@ CONFIG_LONG_DESC
       end # config
 
       #map %w[--help -h] => :help
+
+      ###### gitcrypt ######
+      method_option :owner, :aliases => '-o',
+                    :desc => "Email or (better) GPG ID of the owner of the git-crypt (root) vault"
+      method_option :ulhpc, :aliases => '-u', :type => :boolean,
+                    :desc => "Bootstrap git-crypt for the UL HPC team"
+      method_option :keys, :type => :array, :aliases => [ '--gpgkeys', '-k' ],
+                    :desc => "(space separated) List of GPG IDs allowed to unlock the repository"
+      #......................................
+      desc "gitcrypt <PATH> [options]", "Initialize git-crypt for the current repository"
+      def gitcrypt(path = '.')
+        FalkorLib::Bootstrap.gitcrypt(path, options)
+      end # gitcrypt
 
       ###### init ######
       desc "init <PATH> [options]", "Bootstrap a Git Repository"
