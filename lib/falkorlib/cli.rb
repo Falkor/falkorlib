@@ -14,6 +14,7 @@ require 'falkorlib'
 
 require 'falkorlib/cli/new'
 require 'falkorlib/cli/link'
+require 'falkorlib/cli/make'
 
 
 
