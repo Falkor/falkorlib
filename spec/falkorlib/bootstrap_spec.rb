@@ -49,7 +49,15 @@ describe FalkorLib::Bootstrap do
           t = FalkorLib::Git.init?(dir)
           expect(t).to be true
         end
+
+        #### root Makefile creation  #########
+        it "#makefile -- bootstrap root makefile" do
+          c = FalkorLib::Bootstrap.makefile(dir)
+          t = File.exists?( File.join(dir, 'Makefile'))
+        end
+
       end
+
 
       #### Trash creation  #########
       it "#trash" do
