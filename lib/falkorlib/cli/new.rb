@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 23:52 svarrette>
+# Time-stamp: <Thu 2018-11-08 17:01 svarrette>
 ################################################################################
 
 require 'thor'
@@ -100,6 +100,31 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
         license = options[:license] ?  options[:license] : FalkorLib::Bootstrap.select_licence('none')
         FalkorLib::Bootstrap.license(path, license, '', options)
       end # license
+
+      ##### make ######
+      method_option :repo, :type => :boolean, :aliases => '-r',
+                            :desc => "Create a root Makefile piloting repository operations"
+      method_option :latex, :type => :boolean, :aliases => '-l',
+                            :desc => "Makefile to compile LaTeX documents"
+      method_option :gnuplot, :type => :boolean, :aliases => ['--plot', '-p'],
+                              :desc => "Makefile to compile GnuPlot scripts"
+      method_option :generic, :type => :boolean, :aliases => '-g',
+                              :desc => "Generic Makefile for sub directory"
+      method_option :images, :type => :boolean, :aliases => [ '-i', '--img' ],
+                             :desc => "Makefile to optimize images"
+      method_option :src, :type => :boolean, :aliases => [ '--src', '-s' ],
+                          :desc => "Path to Falkor's Makefile for latex_src"
+      #......................................
+      desc "make [options]", "Initiate one of Falkor's Makefile"
+      def make(dir = Dir.pwd)
+        if options[:repo]
+          FalkorLib::Bootstrap.makefile(dir)
+        elsif (options[:latex] or options[:gnuplot] or options[:generic] or options[:images] or options[:src])
+          FalkorLib::Bootstrap::Link.makefile(dir, options)
+        else
+          FalkorLib::Common.error 'Kindly precize the type of Makefile you which to create'
+        end
+      end # make
 
 
       ###### slides ######

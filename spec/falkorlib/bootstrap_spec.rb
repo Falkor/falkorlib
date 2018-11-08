@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mon 2017-01-16 11:30 svarrette>
+# Time-stamp: <Thu 2018-11-08 16:26 svarrette>
 #
 # @description Check the basic Bootstrapping operations
 #
@@ -37,7 +37,7 @@ describe FalkorLib::Bootstrap do
   end
 
   [ :without_git, :with_git ].each do |ctx|
-#  [ :with_git ].each do |ctx|
+  # [ :with_git ].each do |ctx|
     dir = dirs[ctx]
     #############################################################
     context "bootstrap/base (#{ctx}) within temporary directory '#{dir}'" do
@@ -49,7 +49,15 @@ describe FalkorLib::Bootstrap do
           t = FalkorLib::Git.init?(dir)
           expect(t).to be true
         end
+
+        #### root Makefile creation  #########
+        it "#makefile -- bootstrap root makefile" do
+          c = FalkorLib::Bootstrap.makefile(dir)
+          t = File.exists?( File.join(dir, 'Makefile'))
+        end
+
       end
+
 
       #### Trash creation  #########
       it "#trash" do
@@ -144,6 +152,36 @@ describe FalkorLib::Bootstrap do
           FalkorLib::Bootstrap.license(dir, lic, authors, { :filename => license })
           expect(File).to exist( license )
         end
+      end
+
+      if ctx == :without_git
+        it "#repo -- bootstrap a new repository" do
+          c = FalkorLib::Bootstrap.repo(dir, { :no_interaction => true, :make => true, :git_flow => false })
+          [ 'Makefile', 'VERSION', 'README.md' ].each do |f|
+            expect(File).to exist( File.join(dir, f))
+          end
+        end
+      end
+
+      if ctx == :with_git
+        it "#gitcrypt -- owner is empty" do
+          c = FalkorLib::Bootstrap.gitcrypt(dir, { :owner => '', :no_interaction => true })
+          [ '.git-crypt' ].each do |d|
+            expect(File.directory?(File.join(dir, d))).to be false
+          end
+          expect(File).to exist( File.join(dir, '.gitattributes'))
+          expect(File).to exist( File.join(dir, '.git', 'git-crypt', 'keys', 'default'))
+          expect(File).to exist( File.join(dir, FalkorLib::Config::Bootstrap::DEFAULTS[:gitcrypt][:hooksdir], FalkorLib::Config::Bootstrap::DEFAULTS[:gitcrypt][:hook]))
+          expect(File).to exist( File.join(dir, '.git','hooks','pre-commit'))
+        end
+        # it "#gitcrypt -- owner" do
+        #   c = FalkorLib::Bootstrap.gitcrypt(dir, { :no_interaction => true })
+        #   [ '.git-crypt' ].each do |d|
+        #     expect(File.directory?(File.join(dir, d))).to be true
+        #   end
+        #   #expect(File).to exist( File.join(dir, '.git-crypt', 'keys', 'default', '0', '*.gpg'))
+        #   # TODO check gpg file
+        # end
       end
 
 
