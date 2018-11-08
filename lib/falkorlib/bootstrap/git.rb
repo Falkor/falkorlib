@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 14:16 svarrette>
+# Time-stamp: <Thu 2018-11-08 18:16 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -66,39 +66,14 @@ module FalkorLib
         FalkorLib::Git.init(path, options)
       end
       # === prepare Git submodules ===
-      info " ==> prepare the relevant Git submodules"
       submodules = {}
       #'gitstats' => { :url => 'https://github.com/hoxu/gitstats.git' }
-      #             }
-      if options[:make]
-        submodules['Makefiles'] = {
-          :url    => 'https://github.com/Falkor/Makefiles.git',
-          :branch => 'devel'
-        }
+      unless submodules.empty?
+        info " ==> prepare the relevant Git submodules"
+        FalkorLib::Git.submodule_init(path, submodules)
       end
-      FalkorLib::Git.submodule_init(path, submodules)
       # === Prepare root [M|R]akefile ===
-      if options[:make]
-        info " ==> prepare Root Makefile"
-        makefile = File.join(path, "Makefile")
-        if File.exist?( makefile )
-          puts "  ... not overwriting the root Makefile which already exists"
-        else
-          src_makefile = File.join(path, FalkorLib.config.git[:submodulesdir],
-                                   'Makefiles', 'repo', 'Makefile')
-          FileUtils.cp src_makefile, makefile
-          info "adapting Makefile to the gitflow branches"
-          Dir.chdir( path ) do
-            run %(
-   sed -i '' \
-        -e \"s/^GITFLOW_BR_MASTER=production/GITFLOW_BR_MASTER=#{gitflow_branches[:master]}/\" \
-        -e \"s/^GITFLOW_BR_DEVELOP=devel/GITFLOW_BR_DEVELOP=#{gitflow_branches[:develop]}/\" \
-        Makefile
-                        )
-          end
-          FalkorLib::Git.add(makefile, 'Initialize root Makefile for the repo')
-        end
-      end
+      FalkorLib::Bootstrap.makefile(path, gitflow_branches) if options[:make]
       if options[:rake]
         info " ==> prepare Root Rakefile"
         rakefile = File.join(path, "Rakefile")

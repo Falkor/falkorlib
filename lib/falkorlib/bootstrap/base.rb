@@ -156,6 +156,55 @@ module FalkorLib
 
     module_function
 
+    ###### makefile ######
+    # Supported options:
+    # * :master  [string] git flow master/production branch
+    # * :develop [string] git flow development branch
+    # * :force   [boolean] for overwritting
+    #......................................
+    def makefile(dir = Dir.pwd, options = {})
+      path = normalized_path(dir)
+      path = FalkorLib::Git.rootdir(path) if FalkorLib::Git.init?(path)
+      info "=> Setup a root repository makefile in '#{dir}'"
+      # Preparing submodule
+      submodules = {}
+      submodules['Makefiles'] = {
+        :url    => 'https://github.com/Falkor/Makefiles.git',
+        :branch => 'devel'
+      }
+      FalkorLib::Git.submodule_init(path, submodules)
+      makefile = File.join(path, "Makefile")
+      if File.exist?( makefile )
+        puts "  ... not overwriting the root Makefile which already exists"
+      else
+        src_makefile = File.join(path, FalkorLib.config.git[:submodulesdir],
+                                 'Makefiles', 'repo', 'Makefile')
+        FileUtils.cp src_makefile, makefile
+        gitflow_branches = FalkorLib::Config::GitFlow::DEFAULTS[:branches]
+        if FalkorLib::GitFlow.init?(path)
+          [ :master, :develop ].each do |b|
+            gitflow_branches[t.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
+          end
+        end
+        unless options.nil?
+          [ :master, :develop ].each do |b|
+            gitflow_branches[b.to_sym] = options[b.to_sym] if options[b.to_sym]
+          end
+        end
+        info "adapting Makefile to the gitflow branches"
+        Dir.chdir( path ) do
+          run %(
+   sed -i '' \
+        -e \"s/^GITFLOW_BR_MASTER=production/GITFLOW_BR_MASTER=#{gitflow_branches[:master]}/\" \
+        -e \"s/^GITFLOW_BR_DEVELOP=devel/GITFLOW_BR_DEVELOP=#{gitflow_branches[:develop]}/\" \
+        Makefile
+                        )
+        end
+        FalkorLib::Git.add(makefile, 'Initialize root Makefile for the repo')
+      end
+    end # makefile
+
+
     ###
     # Initialize a trash directory in path
     ##
