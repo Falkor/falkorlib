@@ -1,0 +1,10 @@
+# -*- mode: conf -*-
+#
+# specify which files to encrypt using [git-crypt](https://www.agwa.name/projects/git-crypt/)
+#
+
+# Certificate private keys
+# *.key               filter=git-crypt diff=git-crypt
+# Private document/folders
+# *PRIVATE*           filter=git-crypt diff=git-crypt
+# subfolder/**/*      filter=git-crypt diff=git-crypt
