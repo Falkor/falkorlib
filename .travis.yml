@@ -23,7 +23,7 @@ addons:
     - unzip
     - git
     - git-flow
-    - git-crypt
+    # - git-crypt
   hosts:
     - travis.dev
 before_install:

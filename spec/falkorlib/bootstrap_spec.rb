@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2018-11-08 16:26 svarrette>
+# Time-stamp: <Fri 2018-11-09 09:43 svarrette>
 #
 # @description Check the basic Bootstrapping operations
 #
@@ -163,7 +163,7 @@ describe FalkorLib::Bootstrap do
         end
       end
 
-      if ctx == :with_git
+      if (ctx == :with_git and !ENV['TRAVIS_CI_RUN'])
         it "#gitcrypt -- owner is empty" do
           c = FalkorLib::Bootstrap.gitcrypt(dir, { :owner => '', :no_interaction => true })
           [ '.git-crypt' ].each do |d|
