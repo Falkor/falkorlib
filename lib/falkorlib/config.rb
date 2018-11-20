@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2018-04-27 13:52 svarrette>
+# Time-stamp: <Mon 2018-11-12 07:15 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -59,6 +59,14 @@ module FalkorLib #:nodoc:
         :version     => '2.3.4',
         :versionfile => '.ruby-version',
         :gemsetfile  => '.ruby-gemset'
+      },
+      :pyenv => {
+        :versions       => ['2.7.14', '2.7.15', '3.6.4', '3.7.1' ],
+        :version        => '2.7.14',
+        :versionfile    => '.python-version',
+        :virtualenvfile => '.python-virtualenv',
+        :direnvfile     => '.envrc',
+        :direnvrc       => File.join( ENV['HOME'], '.config', 'direnv', 'direnvrc')
       },
       :templates => {
         :trashdir => '.Trash',
