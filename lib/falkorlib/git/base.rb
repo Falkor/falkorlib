@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-10-04 08:07 svarrette>
+# Time-stamp: <Wed 2018-11-21 13:31 svarrette>
 ################################################################################
 # Interface for the main Git operations
 #
@@ -398,7 +398,7 @@ module FalkorLib #:nodoc:
           remotes = FalkorLib::Git.remotes
           unless remotes.include?( remote )
             info "Initialize Git remote '#{remote}' from URL '#{url}'"
-            exit_status = execute "git remote add -f #{remote} #{url}"
+            exit_status = execute "git remote add --no-tags -f #{remote} #{url}"
           end
           unless File.directory?( File.join(git_root_dir, dir) )
             info "initialize Git subtree '#{dir}'"
