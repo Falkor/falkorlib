@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_ruby_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sat 2016-11-12 02:28 svarrette>
+# Time-stamp: <Wed 2018-11-21 08:48 svarrette>
 #
 # @description Check the Bootstrapping operations for ruby-based projects
 #
@@ -38,8 +38,8 @@ describe FalkorLib::Bootstrap do
     FalkorLib.config[:no_interaction] = false
   end
 
-  #[ :without_git, :with_git ].each do |ctx|
-    [ :without_git ].each do |ctx|
+  [ :without_git, :with_git ].each do |ctx|
+    # [ :without_git ].each do |ctx|
     # [ :with_git ].each do |ctx|
     dir = dirs[ctx]
     ########################################################################

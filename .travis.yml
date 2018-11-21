@@ -23,15 +23,18 @@ addons:
     - unzip
     - git
     - git-flow
-    - git-crypt
+    # - git-crypt
   hosts:
     - travis.dev
 before_install:
   - gem install bundler
 rvm:
- - 2.0.0
+# - 2.0.0
  - 2.1
  - 2.2
+ - 2.3
+ - 2.4
+ - 2.5
 env:
   global:
   - TRAVIS_CI_RUN=true
