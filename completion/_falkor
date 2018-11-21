@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Thu 2018-11-08 23:50 svarrette>
+# Time-stamp: <Wed 2018-11-21 11:53 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -105,16 +105,17 @@ __falkor_new()
 {
     local -a _falkor_new_cmds
     _falkor_new_cmds=(
-        'repo:Bootstrap a Git Repository with my favorite git-flow layout'
         'article:Bootstrap a LaTeX Article'
         'letter:LaTeX-based letter'
+        'license:Generate an Open-Source License for your project'
+        'make:Initiate one of Falkor Makefile'
+        'pyenv:Initialize pyenv/direnv'
+        'readme:Initiate a README file in the PATH directory (''./'' by default)'
+        'repo:Bootstrap a Git Repository with my favorite git-flow layout'
+        'rvm:Initialize RVM'
         'slides:Bootstrap LaTeX Beamer slides'
         'trash:Add a Trash directory for your LaTeX project'
-        'rvm:Initialize RVM'
         'versionfile:initiate a VERSION file'
-        'license:Generate an Open-Source License for your project'
-        'motd:Initiate a ''motd'' file - message of the day'
-        'readme:Initiate a README file in the PATH directory (''./'' by default)'
         'help:Describe subcommands or one specific subcommand'
     )
 
@@ -160,6 +161,16 @@ __falkor_new()
                                {--generic,-g}'[Generic Makefile for sub directory]' \
                                {--images,-i,--img}'[Makefile to optimize images]' \
                                {--src,-s}'[Path to Falkor''s Makefile for latex_src]' && ret=0
+                    ;;
+                (pyenv)
+                    _arguments -C \
+                               '--python[Python version to configure]:version' \
+                               '--virtualenv[Virtualenv to configure for this directory]:env' \
+                               '*: :->path' && ret=0
+                    case "$state" in
+                        (path)
+                            _directories ;;
+                    esac
                     ;;
                 (readme)
                     _arguments -C \

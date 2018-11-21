@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sat 2016-11-12 02:32 svarrette>
+# Time-stamp: <Sun 2018-11-11 18:03 svarrette>
 ################################################################################
-# Interface for the main Bootstrapping operations
+# Interface for the bootstrapping RVM/ruby operations
 #
 
 require "falkorlib"
