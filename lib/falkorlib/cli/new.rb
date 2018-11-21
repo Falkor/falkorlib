@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-08 17:01 svarrette>
+# Time-stamp: <Wed 2018-11-21 11:45 svarrette>
 ################################################################################
 
 require 'thor'
@@ -43,12 +43,12 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       method_option :make, :default => true,     :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :rake, :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
       method_option :interactive, :aliases => '-i', :default => true,
-                                  :type => :boolean, :desc => "Interactive mode, in particular to confirm Gitflow branch names"
+                    :type => :boolean, :desc => "Interactive mode, in particular to confirm Gitflow branch names"
       method_option :remote_sync, :aliases => '-r',
-                                  :type => :boolean, :desc => "Operate a git remote synchronization with remote. By default, all commits stay local"
+                    :type => :boolean, :desc => "Operate a git remote synchronization with remote. By default, all commits stay local"
       method_option :master, :default => 'production', :banner => 'BRANCH', :desc => "Master Branch name for production releases"
       method_option :develop, :aliases => [ '-b', '--branch', '--devel'],
-                              :default => 'devel', :banner => 'BRANCH', :desc => "Branch name for development commits"
+                    :default => 'devel', :banner => 'BRANCH', :desc => "Branch name for development commits"
       #method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Initiate a LaTeX project"
       #method_option :gem,   :type => :boolean, :desc => "Initiate a Ruby gem project"
       method_option :ruby, :default => '2.1.10', :desc => "Ruby version to configure for RVM"
@@ -77,7 +77,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       desc "article [options]", "Bootstrap a LaTeX Article"
       #___________________
       def article(path = Dir.pwd)
-          FalkorLib::Bootstrap.latex(path, :article, options)
+        FalkorLib::Bootstrap.latex(path, :article, options)
       end # article
 
 
@@ -103,17 +103,17 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
 
       ##### make ######
       method_option :repo, :type => :boolean, :aliases => '-r',
-                            :desc => "Create a root Makefile piloting repository operations"
+                    :desc => "Create a root Makefile piloting repository operations"
       method_option :latex, :type => :boolean, :aliases => '-l',
-                            :desc => "Makefile to compile LaTeX documents"
+                    :desc => "Makefile to compile LaTeX documents"
       method_option :gnuplot, :type => :boolean, :aliases => ['--plot', '-p'],
-                              :desc => "Makefile to compile GnuPlot scripts"
+                    :desc => "Makefile to compile GnuPlot scripts"
       method_option :generic, :type => :boolean, :aliases => '-g',
-                              :desc => "Generic Makefile for sub directory"
+                    :desc => "Generic Makefile for sub directory"
       method_option :images, :type => :boolean, :aliases => [ '-i', '--img' ],
-                             :desc => "Makefile to optimize images"
+                    :desc => "Makefile to optimize images"
       method_option :src, :type => :boolean, :aliases => [ '--src', '-s' ],
-                          :desc => "Path to Falkor's Makefile for latex_src"
+                    :desc => "Path to Falkor's Makefile for latex_src"
       #......................................
       desc "make [options]", "Initiate one of Falkor's Makefile"
       def make(dir = Dir.pwd)
@@ -125,6 +125,39 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
           FalkorLib::Common.error 'Kindly precize the type of Makefile you which to create'
         end
       end # make
+
+
+      ###### pyenv ######
+      desc "pyenv PATH [options]", "Initialize pyenv/direnv"
+      long_desc <<-PYENV_LONG_DESC
+Initialize  pyenv/direnv for the current directory (or at the root directory of the Git repository)
+according to the configuration suggested on https://varrette.gforge.uni.lu/tutorials/pyenv.html
+
+It consists of the following files:
+\x5 * `.python-version`:    Project file hosting a single line for the expected python version
+\x5 * `.python-virtualenv`: Virtualenv file hosting a single line for the virtualenv to use for this project
+\x5 * `.envrc` (symlink to `setup.sh`): Direnv configuration meant to automatically activate the configured virtualenv when entering the directory (and deactivate when quitting).
+
+These files will be committed in Git to ensure a consistent environment for the project.
+
+Eventually (with the --global option enabled by default), the global direnvrc file will be setup for you (in `~/.config/direnv/direnvrc`)
+PYENV_LONG_DESC
+      method_option :force, :aliases => '-f',
+                    :type => :boolean, :desc => 'Force overwritting the  pyenv/direnv config'
+      method_option :python, :banner => 'VERSION', :aliases => [ '--pyenv', '-p' ],
+                    :desc => 'Python version to configure / install for pyenv'
+      method_option :versionfile, :banner => 'FILE',
+                    :default => FalkorLib.config[:pyenv][:versionfile], :desc => 'Python Version file'
+      method_option :virtualenv, :aliases => [ '--env', '-e' ],
+                    :desc => 'Python virtualenv name to configure for this directory'
+      method_option :virtualenvfile, :banner => 'FILE',
+                    :default => FalkorLib.config[:pyenv][:gemsetfile], :desc => ' Python virtualenv filename'
+      method_option :global, :aliases => '-g', :type => :boolean,
+                    :default => true, :desc => 'Force overwritting the  pyenv/direnv config'
+      #____________________
+      def pyenv(path = '.')
+        FalkorLib::Bootstrap.pyenv(path, options)
+      end # pyenv
 
 
       ###### slides ######
@@ -155,14 +188,14 @@ It consists of two files:
 These files will be committed in Git to ensure a consistent environment for the project.
 RVM_LONG_DESC
       method_option :force, :aliases => '-f',
-                            :type => :boolean, :desc => 'Force overwritting the RVM config'
+                    :type => :boolean, :desc => 'Force overwritting the RVM config'
       method_option :ruby, :banner => 'VERSION',
-                           :desc => 'Ruby version to configure / install for RVM'
+                    :desc => 'Ruby version to configure / install for RVM'
       method_option :versionfile, :banner => 'FILE',
-                                  :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
+                    :default => FalkorLib.config[:rvm][:versionfile], :desc => 'RVM ruby version file'
       method_option :gemset, :desc => 'RVM gemset to configure for this directory'
       method_option :gemsetfile, :banner => 'FILE',
-                                 :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
+                    :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
       #____________________
       def rvm(path = '.')
         FalkorLib::Bootstrap.rvm(path, options)
@@ -171,11 +204,11 @@ RVM_LONG_DESC
       ###### versionfile ######
       desc "versionfile PATH [options]", "initiate a VERSION file"
       method_option :file, :aliases => '-f',
-                           :desc => "Set the VERSION filename"
+                    :desc => "Set the VERSION filename"
       method_option :tag,  :aliases => '-t',
-                           :desc => "Git tag to use"
+                    :desc => "Git tag to use"
       method_option :version, :aliases => '-v',
-                              :desc => "Set the version to initialize in the version file"
+                    :desc => "Set the version to initialize in the version file"
       #_______________
       def versionfile(path = '.')
         FalkorLib::Bootstrap.versionfile(path, options)
@@ -184,7 +217,7 @@ RVM_LONG_DESC
 
       ###### readme ######
       method_option :make, :default => true,
-                           :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
+                    :type => :boolean, :desc => 'Use a Makefile to pilot the repository actions'
       method_option :rake,
                     :type => :boolean, :desc => 'Use a Rakefile (and FalkorLib) to pilot the repository actions'
       method_option :latex, :aliases => '-l', :type => :boolean, :desc => "Describe a LaTeX project"

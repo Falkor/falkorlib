@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2018-11-20 14:53 svarrette>
+# Time-stamp: <Wed 2018-11-21 11:46 svarrette>
 ################################################################################
 # Interface for the main python Bootstrapping operations
 #
@@ -36,7 +36,7 @@ module FalkorLib
     #  .                           in ~/.config/direnv
     ##
     def pyenv(dir = Dir.pwd, options = {})
-      info "Initialize Pyenv-virtualenv and direnv setup"
+      info "Initialize Pyenv-virtualenv and direnv setup in '#{dir}'"
       ap options if options[:debug]
       path = normalized_path(dir)
       unless File.directory?(path)
