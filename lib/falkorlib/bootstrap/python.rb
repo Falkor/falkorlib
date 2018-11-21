@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2018-11-20 14:35 svarrette>
+# Time-stamp: <Tue 2018-11-20 14:53 svarrette>
 ################################################################################
 # Interface for the main python Bootstrapping operations
 #
@@ -32,6 +32,8 @@ module FalkorLib
     #  * :virtualenvfile [string]  Python virtualenv file (specifying its name)
     #  * :direnvfile     [string]  Direnv configuration file
     #  * :commit         [boolean] Commit the changes NOT YET USED
+    #  * :global         [boolean] Also configure the global direnv configuration
+    #  .                           in ~/.config/direnv
     ##
     def pyenv(dir = Dir.pwd, options = {})
       info "Initialize Pyenv-virtualenv and direnv setup"
@@ -93,21 +95,23 @@ module FalkorLib
         FalkorLib::Git.add(File.join(rootdir, files[:virtualenvfile])) if use_git
       end
       # ==== Global direnvrc ====
-      direnvrc     = config[:direnvrc]
-      direnvrc_dir = File.dirname( direnvrc )
-      unless File.directory?( direnvrc_dir )
-        warning "The directory '#{direnvrc_dir}' meant for hosting the globa direnv settings does not exist"
-        warning "About to create this directory"
-        really_continue?
-        run %(mkdir -p #{direnvrc_dir})
-      end
-      if (!File.exists?(direnvrc) or options[:force])
-        templatedir = File.join( FalkorLib.templates, 'direnv')
-        info " ==> configuring Global direnvrc #{files[:direnvrc]}"
-        init_from_template(templatedir, direnvrc_dir, config,
-                           :no_interaction => true,
-                           :no_commit      => true,
-                          )
+      if options and options[:global]
+        direnvrc     = config[:direnvrc]
+        direnvrc_dir = File.dirname( direnvrc )
+        unless File.directory?( direnvrc_dir )
+          warning "The directory '#{direnvrc_dir}' meant for hosting the globa direnv settings does not exist"
+          warning "About to create this directory"
+          really_continue?
+          run %(mkdir -p #{direnvrc_dir})
+        end
+        if (!File.exists?(direnvrc) or options[:force])
+          templatedir = File.join( FalkorLib.templates, 'direnv')
+          info " ==> configuring Global direnvrc #{files[:direnvrc]}"
+          init_from_template(templatedir, direnvrc_dir, config,
+                             :no_interaction => true,
+                             :no_commit      => true,
+                            )
+        end
       end
       # ==== Local Direnv setup and .envrc ===
       if files[:direnvfile]
