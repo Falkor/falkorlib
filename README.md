@@ -46,7 +46,7 @@ Or install it yourself as:
 This library features two aspects
 
 * a binary `falkor` I use daily to bootstrap and operate with the projects I'm
-  working one
+  working one -- see below for an brief overview of the provided commands
 
 * A set of toolbox functions / components I'm using everywhere in my Ruby
   developments, more specifically a set of modules:
@@ -98,7 +98,7 @@ This library features two aspects
 
 		require "falkorlib/tasks/<object>" # OR require "falkorlib/<object>_tasks"
 
-### `FalkorLib` Ruby Modules / Classes Documentation
+## `FalkorLib` Ruby Modules / Classes Documentation
 
 [Online documentation](https://rubygems.org/gems/falkorlib) is a available.
 Yet to get the latest version, you might want to run
@@ -111,7 +111,65 @@ Statistics on the documentation generation (in particular *non*-documented compo
 
 	$> rake yard:stats
 
-### Overview of the implemented Rake tasks
+## Overview of the `falkor` CLI
+
+This library comes with a CLI `falkor`, providing the following [sub] commands.
+
+__Base commands__
+
+| Command                            | Description                                                       |
+|------------------------------------|-------------------------------------------------------------------|
+| `falkor --version, -V`             | Print the version number of Falkor[Lib]                           |
+| `falkor help [COMMAND]`            | Describe available commands or one specific command               |
+| `falkor gitcrypt <PATH> [options]` | Initialize git-crypt for the current repository                   |
+| `falkor init <PATH> [options]`     | Bootstrap a Git[flow] Repository                                  |
+| `falkor mkdocs [options]`          | Initialize mkdocs for the current project                         |
+| `falkor motd <PATH> [options]`     | Initiate a 'motd' file - message of the day                       |
+| `falkor vagrant [options]`         | Initialize vagrant for the current project                        |
+
+__`falkor link <type> [path]`__
+
+Initialize a special symlink in `<path>` (the current directory by default)
+
+| Command                         | Description                                                                                               |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------|
+| `falkor link help [COMMAND]`    | Get help on the corresponding sub command                                                                 |
+| `falkor link make [options]`    | Create a symlink to one of [Falkor's Makefile](https://github.com/Falkor/Makefiles), set as Git submodule |
+| `falkor link rootdir [options]` | Create a symlink `.root` which targets the root of the repository                                         |
+
+__`falkor new <stuff> [path]`__
+
+Initialize the directory `<path>` (the current directory by default) with one of FalkorLib's template(s)
+
+| Command                                 | Description                                                    |
+|-----------------------------------------|----------------------------------------------------------------|
+| `falkor new help [COMMAND]`             | Describe subcommands or one specific subcommand                |
+| `falkor new article [options]`          | Bootstrap a LaTeX Article                                      |
+| `falkor new letter [options]`           | LaTeX-based letter                                             |
+| `falkor new license [options]`          | Generate an Open-Source License for your project               |
+| `falkor new make [options]`             | Initiate one of Falkor's Makefile                              |
+| `falkor new pyenv PATH [options]`       | Initialize pyenv/direnv                                        |
+| `falkor new readme PATH [options]`      | Initiate a README file in the PATH directory ('./' by default) |
+| `falkor new repo NAME [options]`        | Bootstrap a Git Repository                                     |
+| `falkor new rvm PATH [options]`         | Initialize RVM                                                 |
+| `falkor new slides [options]`           | Bootstrap LaTeX Beamer slides                                  |
+| `falkor new trash PATH`                 | Add a Trash directory                                          |
+| `falkor new versionfile PATH [options]` | initiate a VERSION file                                        |
+
+__`falkor make <type> [path]`__
+
+| Command                     | Description                                           |
+|-----------------------------|-------------------------------------------------------|
+| `falkor new help [COMMAND]` | Describe subcommands or one specific subcommand       |
+| `falkor make generic`       | Symlink to Generic Makefile for sub directory         |
+| `falkor make gnuplot`       | Symlink to a Makefile to compile GnuPlot scripts      |
+| `falkor make latex`         | Symlink to a Makefile to compile LaTeX documents      |
+| `falkor make repo`          | Create a root Makefile piloting repository operations |
+
+
+A ZSH completion files is also maintained for this command, you'll find it in [`completion/_falkor`](completion/_falkor)
+
+## Overview of the implemented Rake tasks
 
 You can find the list of implemented Rake tasks (detailed below) in the
 `lib/falkorlib/*_tasks.rb` files
