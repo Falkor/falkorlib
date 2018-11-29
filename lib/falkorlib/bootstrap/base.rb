@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-08 17:47 svarrette>
+# Time-stamp: <Thu 2018-11-29 11:39 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -183,7 +183,7 @@ module FalkorLib
         gitflow_branches = FalkorLib::Config::GitFlow::DEFAULTS[:branches]
         if FalkorLib::GitFlow.init?(path)
           [ :master, :develop ].each do |b|
-            gitflow_branches[t.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
+            gitflow_branches[b.to_sym] = FalkorLib::GitFlow.branches(b.to_sym)
           end
         end
         unless options.nil?
