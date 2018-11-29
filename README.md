@@ -3,8 +3,7 @@
 [![Version     ](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib)
 [![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib)
 [![Code Climate](https://codeclimate.com/github/Falkor/falkorlib.png)](https://codeclimate.com/github/Falkor/falkorlib) [![Test Coverage](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/test_coverage)](https://codeclimate.com/github/Falkor/falkorlib/test_coverage)
-[![Inline docs ](http://inch-ci.org/github/Falkor/falkorlib.svg)](http://inch-ci.org/github/Falkor/falkorlib)
-[![Gittip](http://img.shields.io/gittip/Falkor.svg)](http://gittip.com/Falkor)
+[![Inline docs ](http://inch-ci.org/github/Falkor/falkorlib.svg)](http://inch-ci.org/github/Falkor/falkorlib)[![Liberapay receiving](https://img.shields.io/liberapay/receives/Falkor.svg)](https://liberapay.com/Falkor/donate)
 
                     _____     _ _              _     _ _
                    |  ___|_ _| | | _____  _ __| |   (_) |__
@@ -13,7 +12,7 @@
                    |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
 
 
-        Copyright (c) 2012-2017 Sebastien Varrette <Sebastien.Varrette@uni.lu>
+        Copyright (c) 2012-2018 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code, `{rake,cap}`
 tasks and project templates
