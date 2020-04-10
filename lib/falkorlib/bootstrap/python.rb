@@ -87,49 +87,53 @@ module FalkorLib
         default_virtualenv = File.basename(rootdir)
         default_virtualenv = `cat #{file}`.chomp if File.exist?( file )
         g = (options[:virtualenv]) ? options[:virtualenv] : ask("Enter virtualenv name for this directory", default_virtualenv)
-        info " ==>  configuring virtualenv file '#{files[:virtualenvfile]}' with content '#{g}'"
-        File.open( File.join(rootdir, files[:virtualenvfile]), 'w') do |f|
-          f.puts g
+        if (g != default_virtualenv)
+          info " ==>  configuring virtualenv file '#{files[:virtualenvfile]}' with content '#{g}'"
+          File.open( File.join(rootdir, files[:virtualenvfile]), 'w') do |f|
+            f.puts g
+          end
+          exit_status = (File.exist?(file) && (`cat #{file}`.chomp == g)) ? 0 : 1
+          FalkorLib::Git.add(File.join(rootdir, files[:virtualenvfile])) if use_git
         end
-        exit_status = (File.exist?(file) && (`cat #{file}`.chomp == g)) ? 0 : 1
-        FalkorLib::Git.add(File.join(rootdir, files[:virtualenvfile])) if use_git
       end
       # ==== Global direnvrc ====
       if options and options[:global]
         direnvrc     = config[:direnvrc]
         direnvrc_dir = File.dirname( direnvrc )
         unless File.directory?( direnvrc_dir )
-          warning "The directory '#{direnvrc_dir}' meant for hosting the globa direnv settings does not exist"
+          warning "The directory '#{direnvrc_dir}' meant for hosting the global direnv settings does not exist"
           warning "About to create this directory"
           really_continue?
           run %(mkdir -p #{direnvrc_dir})
         end
         if (!File.exists?(direnvrc) or options[:force])
-          templatedir = File.join( FalkorLib.templates, 'direnv')
-          info " ==> configuring Global direnvrc #{files[:direnvrc]}"
-          init_from_template(templatedir, direnvrc_dir, config,
-                             :no_interaction => true,
-                             :no_commit      => true,
-                            )
+          # templatedir = File.join( FalkorLib.templates, 'direnv')
+          # info " ==> configuring Global direnvrc #{files[:direnvrc]}"
+          # init_from_template(templatedir, direnvrc_dir, config,
+          #                   :no_interaction => true,
+          #                   :no_commit      => true,
+          #                  )
+          run %(curl -o #{direnvrc} https://raw.githubusercontent.com/Falkor/dotfiles/master/direnv/direnvrc)
         end
       end
       # ==== Local Direnv setup and .envrc ===
       if files[:direnvfile]
         envrc = File.join(rootdir, files[:direnvfile])
-        setup = File.join(rootdir, 'setup.sh')
-        if (!File.exists?(setup) or options[:force])
-          templatedir = File.join( FalkorLib.templates, 'python')
-          info " ==> configuring local direnv setup and #{files[:direnvfile]}"
-          init_from_template(templatedir, rootdir, config,
-                             :no_interaction => true,
-                             :no_commit => true,
-                            )
-        end
+        # setup = File.join(rootdir, 'setup.sh')
+        # if (!File.exists?(setup) or options[:force])
+        #   templatedir = File.join( FalkorLib.templates, 'python')
+        #   info " ==> configuring local direnv setup and #{files[:direnvfile]}"
+        #   init_from_template(templatedir, rootdir, config,
+        #                      :no_interaction => true,
+        #                      :no_commit => true,
+        #                     )
+        # end
         if (!File.exists?(envrc) or options[:force])
-          run %(ln -s setup.sh #{envrc})
+          run %(curl -o #{envrc} https://raw.githubusercontent.com/Falkor/dotfiles/master/direnv/envrc)
+          # run %(ln -s setup.sh #{envrc})
         end
         FalkorLib::Git.add( envrc ) if use_git
-        FalkorLib::Git.add( setup ) if use_git
+        # FalkorLib::Git.add( setup ) if use_git
       end
       # Last motd
       warning <<-MOTD

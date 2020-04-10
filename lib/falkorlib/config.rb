@@ -61,8 +61,8 @@ module FalkorLib #:nodoc:
         :gemsetfile  => '.ruby-gemset'
       },
       :pyenv => {
-        :versions       => ['2.7.14', '2.7.15', '3.6.4', '3.7.1' ],
-        :version        => '2.7.14',
+        :versions       => ['2.7.16', '3.7.4' ],
+        :version        => '3.7.4',
         :versionfile    => '.python-version',
         :virtualenvfile => '.python-virtualenv',
         :direnvfile     => '.envrc',
