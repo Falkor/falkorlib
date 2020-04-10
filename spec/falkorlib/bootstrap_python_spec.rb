@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_python_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2018-11-21 11:23 svarrette>
+# Time-stamp: <Fri 2020-04-10 23:52 svarrette>
 #
 # @description Check the Bootstrapping operations for python-based projects
 #
@@ -59,14 +59,14 @@ describe FalkorLib::Bootstrap do
         c = FalkorLib::Bootstrap.pyenv(dir)
         expect(c).to eq(0)
         content = {}
-        [:versionfile, :virtualenvfile, :direnvfile].each do |type|
+        [:versionfile, :direnvfile].each do |type|
           f = File.join(dir, FalkorLib.config[:pyenv][type.to_sym])
           t = File.exists?(f)
           expect(t).to be true
           content[type.to_sym] = `cat #{f}`.chomp
         end
         expect(content[:versionfile]).to eq(FalkorLib.config[:pyenv][:version])
-        expect(content[:virtualenvfile]).to  eq(File.basename(dir))
+        #expect(content[:virtualenvfile]).to  eq(File.basename(dir))
         File.read(File.realpath( File.join(dir, FalkorLib.config[:pyenv][:direnvfile]))) do |f|
           [
             'layout virtualenv ${pyversion} ${pvenv}',
@@ -83,7 +83,6 @@ describe FalkorLib::Bootstrap do
         c = capture(:stdout) { FalkorLib::Bootstrap.pyenv(dir, { :force => true }) }
         [
           "The python/pyenv file '.python-version' already exists",
-          "The python/pyenv file '.python-virtualenv' already exists",
           "The python/pyenv file '.envrc' already exists",
           "and it WILL BE overwritten"
         ].each do |pattern|
