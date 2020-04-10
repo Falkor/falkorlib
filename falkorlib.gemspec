@@ -68,7 +68,7 @@ Gem::Specification.new do |s|
   #   "~> 2.2.0"              (shortcut for ">= 2.2.0", "< 2.3.0")
   #
   #s.add_dependency("rake", ">= 10.1.0")
-  s.add_runtime_dependency 'rake', '~> 10.1', '>= 10.1.0'
+  s.add_runtime_dependency 'rake', '>= 12.3.3'
   s.add_runtime_dependency 'git_remote_branch', '~> 0'
   #s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
   s.add_runtime_dependency('minigit', '~> 0')
@@ -100,7 +100,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("bundler", "~> 1.0")
   s.add_development_dependency 'rspec', '~> 3.0' #, '>= 2.7.0'
   s.add_development_dependency("pry",    "~> 0.9")
-  s.add_development_dependency("yard",   "~> 0.9.11")
+  s.add_development_dependency("yard",   ">= 0.9.20")
   s.add_development_dependency('rubocop', '~> 0.49.0')
   s.add_development_dependency("rubygems-tasks", "~> 0.2")
   s.add_development_dependency("travis",        "~> 1.6")
