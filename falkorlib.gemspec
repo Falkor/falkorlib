@@ -84,6 +84,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("artii",  '>= 2.1')
   s.add_runtime_dependency("facter", '~> 2.4.1')
   s.add_runtime_dependency("activesupport", '~> 4.0')
+  #s.add_runtime_dependency("bundler-stats", '~> 2.0')
   #s.add_runtime_dependency("benchmark", '~> 4.0')
   #s.add_runtime_dependency("mercenary", '>= 0.3.5')
 
