@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Fri 2016-11-11 14:17 svarrette>
+# Time-stamp: <Sun 2020-04-12 10:54 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -374,6 +374,8 @@ module FalkorLib #:nodoc:
           really_continue? unless options[:no_interaction]
           next
         end
+        puts "e: #{config[:gitflow]}"
+        puts config.to_yaml
         content += ERB.new(File.read(erb.to_s), nil, '<>').result(binding)
       end
       # error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )

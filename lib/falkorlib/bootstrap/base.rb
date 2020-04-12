@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-29 11:39 svarrette>
+# Time-stamp: <Sun 2020-04-12 10:42 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -534,7 +534,9 @@ module FalkorLib
         config[k.to_sym] = ask( "\t" + Kernel.format("Project %-20s", k.to_s))
       end
       config[:description] = config[:summary]
-      config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
+      if FalkorLib::GitFlow.init?(rootdir)
+        config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
+      end
       config[:make] = File.exists?(File.join(rootdir, 'Makefile'))
       config[:rake] = File.exists?(File.join(rootdir, 'Rakefile'))
       config
