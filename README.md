@@ -1,6 +1,9 @@
-[![Version     ](https://badge.fury.io/rb/falkorlib.png)](http://badge.fury.io/rb/falkorlib)
-[![Build Status](https://travis-ci.org/Falkor/falkorlib.png)](https://travis-ci.org/Falkor/falkorlib)
-[![Code Climate](https://codeclimate.com/github/Falkor/falkorlib.png)](https://codeclimate.com/github/Falkor/falkorlib) [![Test Coverage](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/test_coverage)](https://codeclimate.com/github/Falkor/falkorlib/test_coverage)
+[![Gem Version](https://badge.fury.io/rb/falkorlib.svg)](https://badge.fury.io/rb/falkorlib)
+[![Build
+Status](https://travis-ci.org/Falkor/falkorlib.svg?branch=devel)](https://travis-ci.org/Falkor/falkorlib)
+[![Test
+Coverage](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/test_coverage)](https://codeclimate.com/github/Falkor/falkorlib/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/maintainability)](https://codeclimate.com/github/Falkor/falkorlib/maintainability)
 [![Inline docs ](http://inch-ci.org/github/Falkor/falkorlib.svg)](http://inch-ci.org/github/Falkor/falkorlib)[![Liberapay receiving](https://img.shields.io/liberapay/receives/Falkor.svg)](https://liberapay.com/Falkor/donate)
 
                     _____     _ _              _     _ _
