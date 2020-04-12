@@ -44,7 +44,7 @@ env:
 before_install:
   - mkdir -p $TEXMFLOCAL/tex/latex/
   - wget -N -q http://mirrors.ctan.org/install/macros/latex/contrib/tcolorbox.tds.zip
-  - wget -N -q http://mirrors.ctan.org/install/macros/latex/contrib/acronym.tds.zip
+  - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/acronym.zip
   - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/floatflt.zip
   - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/todonotes.zip
   - unzip -qq tcolorbox.tds.zip -d $TEXMFLOCAL
