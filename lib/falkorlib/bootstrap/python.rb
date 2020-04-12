@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2018-11-21 11:46 svarrette>
+# Time-stamp: <Sun 2020-04-12 09:04 svarrette>
 ################################################################################
 # Interface for the main python Bootstrapping operations
 #
@@ -149,6 +149,7 @@ Now you probably need to perform the following actions:
     direnv allow .
     # Eventually install the pyenv version
     pyenv install #{config[:version]}
+    cd ..; cd - # To reload the appropriate version
 
 You can then enjoy your newly configured sand-boxed environment
 
@@ -164,6 +165,8 @@ To freeze your environment to pass it around
     pip freeze -l > requirements.txt  # Dump it to a requirements file
     git add requirements.txt
     git commit -s -m 'Python package list' requirements.txt
+    # Later for collaborators upon clone
+    pip install -r requirements.txt
 
 MOTD
       exit_status.to_i
