@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_vagrant_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2020-04-12 14:22 svarrette>
+# Time-stamp: <Sun 2020-04-12 16:46 svarrette>
 #
 # @description Check the Bootstrapping operations for Vagrant
 #

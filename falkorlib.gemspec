@@ -105,8 +105,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency("rubygems-tasks", "~> 0.2")
   s.add_development_dependency("travis",        "~> 1.6")
   s.add_development_dependency("travis-lint",   "~> 1.8")
-  s.add_development_dependency('simplecov', '~> 0.12.0')
-  s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
+  s.add_development_dependency('simplecov', '<= 0.17.1')
+  #s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
+  #s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
   #s.add_development_dependency("thor-zsh_completion", '>= 0.1.5')
   #s.add_development_dependency("bluecloth",      "~> 2.2.0")
   #s.add_development_dependency("wlang",          "~> 0.10.2")

@@ -29,14 +29,11 @@ addons:
 before_install:
   - gem install bundler
 rvm:
-# - 2.0.0
- - 2.1
- - 2.2
- - 2.3
- - 2.4
  - 2.5
+ - 2.6
 env:
   global:
+  - CC_TEST_REPORTER_ID=183d6f12ac3b43cd608c9de4db4f4dca8b26c284a088331a8a9890d246dee104
   - TRAVIS_CI_RUN=true
   - GIT_SSH='ssh -o StrictHostKeyChecking=no'
   - GIT_AUTHOR_NAME='Travis CI'
@@ -44,14 +41,18 @@ env:
   - TEXMFLOCAL=/tmp/texmf/
 # installing a couple of LaTeX packages from CTAN manually as the
 # tlmgr command is mising on ubuntu/precise
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 before_install:
   - mkdir -p $TEXMFLOCAL/tex/latex/
   - wget -N -q http://mirrors.ctan.org/install/macros/latex/contrib/tcolorbox.tds.zip
-  - wget -N -q http://mirrors.ctan.org/install/macros/latex/contrib/acronym.tds.zip
+  - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/acronym.zip
   - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/floatflt.zip
   - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/todonotes.zip
   - unzip -qq tcolorbox.tds.zip -d $TEXMFLOCAL
-  - unzip -qq acronym.tds.zip   -d  $TEXMFLOCAL
+  - unzip -qq acronym.zip   -d  $TEXMFLOCAL
   - unzip -qq floatflt.zip
   - unzip -qq todonotes.zip
   - cd ./floatflt/ && latex floatflt.ins && cd -
@@ -59,6 +60,8 @@ before_install:
   - cp ./floatflt/floatflt.sty $TEXMFLOCAL/tex/latex/
   - cp ./todonotes/todonotes.sty $TEXMFLOCAL/tex/latex/
   - texhash
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 notifications:
   email:
     on_success: never
