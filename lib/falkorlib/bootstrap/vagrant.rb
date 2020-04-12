@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 16:15 svarrette>
+# Time-stamp: <Sun 2020-04-12 16:27 svarrette>
 ################################################################################
 # Interface for Bootstrapping MkDocs
 #
@@ -56,8 +56,9 @@ module FalkorLib
       #   run %(ln -s README.md contributing/index.md )
       #   run %(ln -s README.md setup/index.md )
       end
-      FalkorLib::Git.add(File.join(rootdir, '.gitignore')) if use_git
-
+      if File.exist?(File.join(rootdir, '.gitignore'))
+        FalkorLib::Git.add(File.join(rootdir, '.gitignore')) if use_git
+      end
       #exit_status.to_i
     end # vagrant
 
