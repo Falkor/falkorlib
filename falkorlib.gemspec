@@ -75,7 +75,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("term-ansicolor", "~> 1.3")
   s.add_runtime_dependency("configatron",    "~> 3.0")
   s.add_runtime_dependency("awesome_print", "~> 1.2")
-  s.add_runtime_dependency("json", "~> 1.8")
+  s.add_runtime_dependency("json", "~> 2.0")
   s.add_runtime_dependency("license-generator", '~> 0')
   s.add_runtime_dependency("deep_merge", '~> 1.0.1')
   s.add_runtime_dependency("diffy", '>= 3.0')
