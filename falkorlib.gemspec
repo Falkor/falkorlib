@@ -73,7 +73,7 @@ Gem::Specification.new do |s|
   #s.add_runtime_dependency 'git', '~> 1.2', '>= 1.2.5'
   s.add_runtime_dependency('minigit', '~> 0')
   s.add_runtime_dependency("term-ansicolor", "~> 1.3")
-  s.add_runtime_dependency("configatron",    "~> 4.0")
+  s.add_runtime_dependency("configatron",    "~> 3.0")
   s.add_runtime_dependency("awesome_print", "~> 1.2")
   s.add_runtime_dependency("json", "~> 1.8")
   s.add_runtime_dependency("license-generator", '~> 0')

@@ -8,7 +8,7 @@
 require 'thor'
 require 'thor/actions'
 require 'thor/group'
-require 'thor/zsh_completion'
+#require 'thor/zsh_completion'
 
 require 'falkorlib'
 
@@ -31,7 +31,7 @@ module FalkorLib
 
       include Thor::Actions
       include FalkorLib::Common
-      include ZshCompletion::Command
+      # include ZshCompletion::Command
 
       #default_command :info
 
