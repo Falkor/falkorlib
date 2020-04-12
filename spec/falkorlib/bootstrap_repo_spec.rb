@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_vagrant_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2020-04-12 15:03 svarrette>
+# Time-stamp: <Sun 2020-04-12 15:35 svarrette>
 #
 # @description Check the Bootstrapping operations for a new repo
 #
@@ -49,7 +49,8 @@ describe FalkorLib::Bootstrap do
                                       {
                                         :no_interaction => true,
                                         :make => (ctx == :with_make),
-                                        :rake => (ctx == :with_rake)
+                                        :rake => (ctx == :with_rake),
+                                        :git_flow => true
                                       })
         expect(c).to eq(0)
         files_to_check = (ctx == :with_make) ? [ 'Makefile' ] : [ 'Rakefile', 'Gemfile', '.ruby-version', '.ruby-gemset' ]

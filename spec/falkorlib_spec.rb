@@ -11,7 +11,7 @@ describe FalkorLib do
     end
   end
 
-  it "self.lib" do
+  it "#self.lib" do
     expect(FalkorLib.lib).to include 'lib'
   end
 
