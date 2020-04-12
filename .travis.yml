@@ -48,7 +48,7 @@ before_install:
   - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/floatflt.zip
   - wget -N -q http://mirrors.ctan.org/macros/latex/contrib/todonotes.zip
   - unzip -qq tcolorbox.tds.zip -d $TEXMFLOCAL
-  - unzip -qq acronym.tds.zip   -d  $TEXMFLOCAL
+  - unzip -qq acronym.zip   -d  $TEXMFLOCAL
   - unzip -qq floatflt.zip
   - unzip -qq todonotes.zip
   - cd ./floatflt/ && latex floatflt.ins && cd -
