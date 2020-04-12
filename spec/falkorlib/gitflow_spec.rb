@@ -2,7 +2,7 @@
 #########################################
 # gitflow_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Wed 2016-11-09 09:16 svarrette>
+# Time-stamp: <Sun 2020-04-12 15:15 svarrette>
 #
 # @description Check the Git Flow operations -- see https://github.com/nvie/gitflow
 #
@@ -77,6 +77,26 @@ describe FalkorLib::GitFlow do
           expect(br).to eq(FalkorLib.config[:gitflow][:branches][:develop])
         end
       end
+
+      it "#guess_gitflow_config" do
+        c = FalkorLib::GitFlow.guess_gitflow_config(dir)
+        {
+          :master  => 'production',
+          :develop => 'devel'
+        }.each do |type,v|
+          expect(c[:branches][type.to_sym]).to eq(v)
+        end
+        {
+          :feature    => 'feature/',
+          :release    => 'release/',
+          :hotfix     => 'hotfix/',
+          :support    => 'support/',
+          :versiontag => 'v'
+        }.each do |type,v|
+          expect(c[:prefix][type.to_sym]).to eq(v)
+        end
+      end
+
     end
 
   end

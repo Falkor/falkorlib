@@ -57,15 +57,17 @@ $> git config –-global user.name  "Firstname LastName"              # Adapt ac
 $> git config –-global user.email "Firstname.LastName@domain.org"   # Adapt with your mail
 ~~~
 
-Clone the [project repository](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %><%=config[:project_page] %> from a Terminal (Powershell as `administrator` under windows):
+<% unless config[:forge].empty? %>
+Clone the [project repository](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:name] %><%= config[:project_page] %> from a Terminal (Powershell as `administrator` under windows):
 
 ~~~bash
 $> mkdir -p ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
 $> cd ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
 $> git clone <%= config[:origin] %>
-<% if options[:make] %>
+<% if config[:make] %>
 $> make setup    # Under Mac OS / Linux
 <% else %>
 $> rake setup    # Under Mac OS / Linux
 <% end %>
 ~~~
+<% end %>

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-08 18:27 svarrette>
+# Time-stamp: <Sun 2020-04-12 14:35 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -120,6 +120,7 @@ module FalkorLib
           warning "no Git remote  'origin' found, thus no remote synchronization performed"
         end
       end
+      return 0
     end # repo
 
     ###### gitcrypt ######

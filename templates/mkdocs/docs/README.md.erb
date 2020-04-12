@@ -1,17 +1,12 @@
--*- mode: markdown; mode: visual-line; fill-column: 80 -*-
-
 <% unless (config[:license].empty? or config[:license] == "none") %>
 [![Licence](<%= FalkorLib::Bootstrap::get_badge("license", config[:license], 'blue') %>)](<%= FalkorLib::Config::Bootstrap::DEFAULTS[:licenses][ config[:license] ][:url] %>)
 <% end %>
 ![By <%= config[:by] %>](https://img.shields.io/badge/by-<%= config[:by] %>-blue.svg) [![<%= config[:forge] %>](https://img.shields.io/badge/git-<%= config[:forge] %>-lightgray.svg)](<%= config[:source] %>) [![Issues](https://img.shields.io/badge/issues-<%= config[:forge] %>-green.svg)](<%= config[:issues_url] %>)
 
-       Time-stamp: <Sun 2017-01-15 16:58 svarrette>
-
        <%= ::Artii::Base.new().asciify( config[:name] ).split("\n").join("\n       ") %>
        Copyright (c) <%= Time.now.year %> <%= config[:author] %> <<%= config[:mail] %>>
 
 <%= config[:description] %>
-
 
 This is the main page of the documentation for this repository, which relies on [MkDocs](http://www.mkdocs.org/) and the [Read the Docs](http://readthedocs.io) theme. It proposes to detail the following elements:
 

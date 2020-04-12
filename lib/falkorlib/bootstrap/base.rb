@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-29 11:39 svarrette>
+# Time-stamp: <Sun 2020-04-12 14:37 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -28,11 +28,12 @@ module FalkorLib #:nodoc:
             :hooksdir => 'config/hooks',
             :hook     => 'pre-commit.git-crypt.sh',
             :ulhpc    => [
-              #'Ox5D08BCDD4F156AD7',  # S. Varrette
-              '0x3F3242C5B34D98C2',   # V. Plugaru
+              #'0x5D08BCDD4F156AD7',  # S. Varrette
+              #'0x3F3242C5B34D98C2',   # V. Plugaru
               '0x6429C2514EBC4737',   # S. Peter
-              '0x07FEA8BA69203C2D',   # C. Parisot
+              #'0x07FEA8BA69203C2D',   # C. Parisot
               '0x37183CEF550DF40B',   # H. Cartiaux
+
             ],
             # :hooks    => {
             #   :precommit => 'https://gist.github.com/848c82daa63710b6c132bb42029b30ef.git',
@@ -534,7 +535,9 @@ module FalkorLib
         config[k.to_sym] = ask( "\t" + Kernel.format("Project %-20s", k.to_s))
       end
       config[:description] = config[:summary]
-      config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
+      if FalkorLib::GitFlow.init?(rootdir)
+        config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
+      end
       config[:make] = File.exists?(File.join(rootdir, 'Makefile'))
       config[:rake] = File.exists?(File.join(rootdir, 'Rakefile'))
       config
