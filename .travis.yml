@@ -31,7 +31,6 @@ before_install:
 rvm:
  - 2.5
  - 2.6
- - 2.7
 env:
   global:
   - CC_TEST_REPORTER_ID=183d6f12ac3b43cd608c9de4db4f4dca8b26c284a088331a8a9890d246dee104
