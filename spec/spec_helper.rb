@@ -1,5 +1,5 @@
-#require "codeclimate-test-reporter"
-#CodeClimate::TestReporter.start
+# require "codeclimate-test-reporter"    # DEPRECATED
+# CodeClimate::TestReporter.start
 
 # See https://github.com/colszowka/simplecov
 require 'simplecov'
