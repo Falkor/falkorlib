@@ -1,6 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-# Time-stamp: <Fri 2018-04-27 16:53 svarrette>
+# Time-stamp: <Sun 2020-04-19 18:52 svarrette>
 ###########################################################################################
 #             __     __                          _    __ _ _
 #             \ \   / /_ _  __ _ _ __ __ _ _ __ | |_ / _(_) | ___
@@ -11,7 +11,6 @@
 ###########################################################################################
 require 'yaml'
 require 'ipaddr'
-require 'deep_merge'
 require 'pp'
 require 'erb'
 
@@ -19,17 +18,19 @@ require 'erb'
 # For more information on the below plugins:
 # - https://github.com/oscar-stack/vagrant-hosts
 # - https://github.com/dotless-de/vagrant-vbguest
-# - https://github.com/emyl/vagrant-triggers
 # - https://github.com/fgrehm/vagrant-cachier
+# - https://github.com/vagrant-libvirt/vagrant-libvirt
 # Terminal-table is a nice ruby gem for automatically print tables with nice layout
 ###
 [ 'vagrant-hosts',
   'vagrant-vbguest',
-  'vagrant-triggers',
   'vagrant-cachier',
+  # 'vagrant-libvirt',
+  'deep_merge',
   'terminal-table' ].each do |plugin|
   abort "Install the  '#{plugin}' plugin with 'vagrant plugin install #{plugin}'" unless Vagrant.has_plugin?("#{plugin}")
 end
+require 'deep_merge'
 require 'terminal-table'
 
 ### Global variables ###
@@ -39,6 +40,8 @@ VAGRANTFILE_API_VERSION = "2"
 # Eventually a local YAML configuration for the deployment
 TOP_SRCDIR  = File.expand_path File.dirname(__FILE__)
 TOP_CONFDIR = File.join(TOP_SRCDIR, 'vagrant')
+TOP_PUPPETDIR = File.join(TOP_CONFDIR, 'puppet')
+TOP_PUPPET_MODULEDIR = File.join(TOP_PUPPETDIR, 'modules')
 config_file = File.join(TOP_CONFDIR, 'config.yaml')
 
 #SHARED_DIR  = File.join('vagrant', 'shared')
@@ -61,6 +64,7 @@ DEFAULT_SETTINGS = {
   },
   # Default Boxes
   :boxes => {
+    :centos8  => '<%= config[:boxes][:centos8] %>',
     :centos7  => '<%= config[:boxes][:centos7] %>',
     :debian8  => '<%= config[:boxes][:debian8] %>',
     :ubuntu14 => '<%= config[:boxes][:ubuntu14] %>'
@@ -72,7 +76,9 @@ DEFAULT_SETTINGS = {
   #   :os: <os>       # from the configured boxes
   #   :ram: <ram>
   #   :vcpus: <vcpus>
-  #   :role: <role>   # supported: [ 'XX', 'YY' ]
+  #   :role: <role>    # Puppet role
+  #   :puppet_modules => [ ... ]
+  #   :provider => <provider>  # if not virtualbox (Ex: 'libvirt')
   :vms => {
     # IF in single mode, below is the definition of the box to deploy
     'default' => {
@@ -84,7 +90,7 @@ DEFAULT_SETTINGS = {
 
 # List of default provisioning scripts
 DEFAULT_PROVISIONING_SCRIPTS = [
-  "vagrant/bootstrap.sh"
+  "vagrant/scripts/bootstrap.sh"
 ]
 
 # Load the settings (eventually overwritten using values from the yaml file 'config/vagrant.yaml')
@@ -96,13 +102,13 @@ if File.exist?(config_file)
 end
 #puts settings.to_yaml
 # abort 'end'
-#pp settings
 abort "Undefined settings" if settings.nil?
 
 ############################################################
 # Complete configuration of the boxes to deploy
-defaults = settings[:defaults]
-network  = settings[:network]
+defaults   = settings[:defaults]
+network    = settings[:network]
+puppet_dir = File.join('vagrant', 'puppet') # Relative path to Local puppet directory
 
 
 ############################################################
@@ -128,6 +134,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ## Uncomment the below part if you want and additional shared directory
   # config.vm.synced_folder "vagrant/shared", "/shared", mount_options: ['dmode=777','fmode=777'],
   #                         type: "virtualbox" # Shared directory for users
+  if Dir.exist?(File.join(TOP_PUPPETDIR, 'hieradata'))
+    config.vm.synced_folder "#{puppet_dir}/hieradata", "/tmp/vagrant-puppet/hieradata", type: "virtualbox"
+  end
 
   # network settings
   ipaddr   = IPAddr.new network[:range]
@@ -146,12 +155,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   settings[:vms].each do |name, node|
     hostname = node[:hostname] ? node[:hostname] : name
     domain   = network[:domain]
-    fqdn  =    "#{hostname}.#{domain}"
-    os    =    node[:os]       ? node[:os].to_sym : defaults[:os].to_sym
-    ram   =    node[:ram]      ? node[:ram]       : defaults[:ram]
-    vcpus =    node[:vcpus]    ? node[:vcpus]     : defaults[:vcpus]
-    role  =    node[:role]     ? node[:role]      : 'default'
-    desc  =    node[:desc]     ? node[:desc]      : 'n/a'
+    fqdn     = "#{hostname}.#{domain}"
+    boxname  = defaults[:os].to_s.downcase.gsub(/([^\d]+)(\d+)/, '\\1-\\2')
+    name     = boxname if name == 'default'
+    os       = node[:os]       ? node[:os].to_sym : defaults[:os].to_sym
+    ram      = node[:ram]      ? node[:ram]       : defaults[:ram]
+    vcpus    = node[:vcpus]    ? node[:vcpus]     : defaults[:vcpus]
+    role     = node[:role]     ? node[:role]      : 'default'
+    desc     = node[:desc]     ? node[:desc]      : 'n/a'
+    puppet_modules = node[:puppet_modules] ? node[:puppet_modules] : []
 
     abort "Non-existing box OS '#{os}' for the VM '#{name}'" if  settings[:boxes][os.to_sym].nil?
     abort "Empty IP address range" if ip_range.empty?
@@ -171,19 +183,52 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       # role specialization
-      if role == 'XX'
-        c.vm.provision "shell" do |s|
-          s.path = "scripts/XX_install.sh"
-          s.args = [ '--debug' ]
-          s.keep_color = true
+      # if role == 'XX'
+      #   c.vm.provision "shell" do |s|
+      #     s.path = "scripts/XX_install.sh"
+      #     s.args = [ '--debug' ]
+      #     s.keep_color = true
+      #   end
+      # end
+
+      ########## PUPPET PROVISIONNING #########
+      # Install required puppet modules, if any
+      puppet_modules.each do |mod|
+        config.vm.provision "shell",
+                            inline: "puppet module install --target-dir #{TOP_PUPPET_MODULEDIR} #{mod}"
+      end
+
+      # A role fact MUST be defined (default: 'default') as it is used in Hiera config
+      c.vm.provision "shell",
+                     inline: "echo '{ \"role\": \"#{role}\" }' > /opt/puppetlabs/facter/facts.d/custom.json",
+                     keep_color: true
+      ################ Puppet install ##############
+      c.vm.provision "puppet" do |puppet|
+        puppet.options = [
+          '--verbose',
+          '-t',
+          # '--debug',
+          "--yamldir /vagrant/#{puppet_dir}/hieradata",
+        ]
+        # Does not work :(
+        # puppet.facter = { "role" => "#{role}" }
+        puppet.hiera_config_path = "#{puppet_dir}/hiera.yaml"
+        puppet.module_path       = [ "#{puppet_dir}/site", "#{puppet_dir}/modules" ]
+        puppet.manifests_path    = "#{puppet_dir}/manifests"
+        puppet.manifest_file     = File.exists?("/vagrant/#{puppet_dir}/manifests/#{role}.pp") ? "#{role}.pp" : 'default.pp'
+      end # puppet
+
+      __table[:rows] << [ name, fqdn, os.to_sym, "#{vcpus}/#{ram}", desc, ip]
+
+      if settings[:vms].keys.last == name
+        c.trigger.after :up do |trigger|
+          trigger.info = (Terminal::Table.new __table).to_s
+          trigger.warn = <<-EOF
+- Virtual Puppet Testing infrastructure deployed deployed!
+EOF
         end
       end
-    end
-    __table[:rows] << [ name, fqdn, os.to_sym, "#{vcpus}/#{ram}", desc, ip]
+
+    end # config.vm.define
   end  # settings
-
-  config.trigger.after :up do
-    puts Terminal::Table.new __table
-  end
-
 end

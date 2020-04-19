@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 14:37 svarrette>
+# Time-stamp: <Sat 2020-04-18 17:36 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -139,6 +139,7 @@ module FalkorLib #:nodoc:
             :domain => 'vagrant.dev',
             :range  => '10.10.1.0/24',
             :boxes => {
+              :centos8  => 'generic/centos8', #'centos/8' is having issue - see https://github.com/dotless-de/vagrant-vbguest/issues/367
               :centos7  => 'centos/7',
               :debian8  => 'debian/contrib-jessie64',
               :ubuntu14 => 'ubuntu/trusty64'

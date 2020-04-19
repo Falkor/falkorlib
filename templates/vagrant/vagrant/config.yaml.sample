@@ -1,5 +1,5 @@
 # -*- mode: yaml; -*-
-# Time-stamp: <Fri 2018-04-27 16:47 svarrette>
+# Time-stamp: <Sat 2020-04-18 18:00 svarrette>
 ################################################################################
 # Complementary configuration for Vagrant
 # You can overwrite here the default settings defined in ../Vagrantfile and
@@ -11,6 +11,7 @@
 # Format:
 #   :<os><version>: <username>/<box> # see https://vagrantcloud.com
 # :boxes:
+#   :centos8: 'centos/8'
 #   :centos7: 'centos/7'
 #   :debian8: 'debian/contrib-jessie64'
 #   :ubuntu14: 'ubuntu/trusty64'
@@ -28,8 +29,6 @@
 # :network:
 #   :domain: 'vagrant.dev'       # network domain to use
 #   :range: '10.10.1.0/24'       # IP range to use
-#   :client_ip_start_offset: 100 # Note: compute nodes will have xx.xx.xx.254
-#   # client/compute nodes VMs will start on xx.xx.xx.<client_ip_start_offset+1>
 
 #___________________________________________________________
 # VMs / Vagrant boxes to define apart from the compute nodes
@@ -40,7 +39,10 @@
 #   :os: <os>       # from the configured boxes
 #   :ram: <ram>
 #   :vcpus: <vcpus>
-#   :role: <role>   # supported: [ 'controller', 'frontend' ]
+#   :role: <role>
+#   :puppet_modules:
+#   - '<name1>-<mod1>'
+#   - '<name2>-<mod2>'
 #
 # :vms:
 #   'anothervm':
@@ -49,3 +51,5 @@
 #     :vcpus: 2
 #     :desc: 'VM #2 (secondary)'
 #     :role: role2
+#     :puppet_modules:
+#     - ...

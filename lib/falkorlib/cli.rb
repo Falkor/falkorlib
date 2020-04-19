@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2018-11-08 23:16 svarrette>
+# Time-stamp: <Sun 2020-04-19 18:55 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -26,6 +26,7 @@ module FalkorLib
 
       package_name 'Falkor[Lib]'
       map %w(--version -V) => :version
+      map %w[--help -h] => :help
 
       namespace :falkor
 
@@ -66,7 +67,7 @@ CONFIG_LONG_DESC
         puts FalkorLib.config.to_yaml
       end # config
 
-      #map %w[--help -h] => :help
+
 
       ###### gitcrypt ######
       method_option :owner, :aliases => '-o',
@@ -160,7 +161,9 @@ By default, <PATH> is '.' meaning that the repository will be initialized in the
       desc "new <type> [<path>]", "Initialize the directory PATH with one of FalkorLib's template(s)"
       subcommand "new", FalkorLib::CLI::New
 
+
       ###### vagrant ######
+      #method_option :help, :aliases => '-h'
       method_option :force, :aliases => '-f', :default => false, :type => :boolean,
                     :desc => "Force generation (might overwrite files)"
       #......................................

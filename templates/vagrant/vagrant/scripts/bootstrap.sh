@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Time-stamp: <Fri 2018-04-27 15:53 svarrette>
+# Time-stamp: <Sun 2020-04-19 12:39 svarrette>
 ###########################################################################################
 # __     __                          _     ____              _       _
 # \ \   / /_ _  __ _ _ __ __ _ _ __ | |_  | __ )  ___   ___ | |_ ___| |_ _ __ __ _ _ __
 #  \ \ / / _` |/ _` | '__/ _` | '_ \| __| |  _ \ / _ \ / _ \| __/ __| __| '__/ _` | '_ \
-#   \ V / (_| | (_| | | | (_| | | | | |_  | |_) | (_) | (_) | |_\__ \ |_| | | (_| | |_) |
+    #   \ V / (_| | (_| | | | (_| | | | | |_  | |_) | (_) | (_) | |_\__ \ |_| | | (_| | |_) |
 #    \_/ \__,_|\__, |_|  \__,_|_| |_|\__| |____/ \___/ \___/ \__|___/\__|_|  \__,_| .__/
 #              |___/                                                              |_|
-#              Copyright (c) 2017 Sebastien Varrette <sebastien.varrette@uni.lu>
+#            Copyright (c) 2017-2020 Sebastien Varrette <sebastien.varrette@uni.lu>
 ###########################################################################################
 # (prefered) way to see a Vagrant box configured.
 #
@@ -23,21 +23,15 @@ STARTDIR="$(pwd)"
 SCRIPTFILENAME=$(basename $0)
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-
 MOTD="/etc/motd"
 DOTFILES_DIR='/etc/dotfiles.d'
 DOTFILES_URL='https://github.com/ULHPC/dotfiles.git'
 EXTRA_PACKAGES=
 
+TITLE=$(hostname -s)
+
 # List of default packages to install
-COMMON_DEFAULT_PACKAGES="wget figlet git screen bash-completion rsync nmap vim python-pip htop direnv"
-
-# Easybuild
-#export EASYBUILD_MODULES_TOOL=Lmod
-export EASYBUILD_MODULE_NAMING_SCHEME=CategorizedModuleNamingScheme
-EB_INSTALL_SCRIPT='/tmp/bootstrap_eb.py'
-EB_INSTALL_SCRIPT_URL='https://raw.githubusercontent.com/easybuilders/easybuild-framework/develop/easybuild/scripts/bootstrap_eb.py'
-
+COMMON_DEFAULT_PACKAGES="ruby wget figlet git screen bash-completion rsync vim htop net-tools mailx"
 
 ######
 # Print information in the following form: '[$2] $1' ($2=INFO if not submitted)
@@ -69,28 +63,26 @@ EOF
 
 #######################  Per OS Bootstrapping function ##########################
 setup_redhat() {
+    info "fix screen title"
+    touch    /etc/sysconfig/bash-prompt-screen
+    chmod +x /etc/sysconfig/bash-prompt-screen
+
     info "Running yum update"
     yum update -y  >/dev/null
 
     info "Installing default packages"
     yum install -y epel-release
-    yum install -y ${COMMON_DEFAULT_PACKAGES} bind-utils ${EXTRA_PACKAGES}  >/dev/null
-
-    info "Uninstalling (eventually) existing Puppet installation"
-    yum erase -y puppet puppetlabs-release >/dev/null
-
-    info "Adding repo for Puppet 4"
-    rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-$1.noarch.rpm
+    yum install -y ${COMMON_DEFAULT_PACKAGES} ruby-devel gdbm-devel bind-utils ${EXTRA_PACKAGES}  >/dev/null
 
     sleep 1
-    info "Installing Puppet and its dependencies"
-    yum install -y puppet-agent >/dev/null
-
-    info "installing Environment modules and  LMod"
-    yum install -y environment-modules Lmod
-
     yum groupinstall -y "Development Tools"
-    yum install -y openssl-devel libssl-dev libopenssl-devel ncurses-devel libibverbs-dev libibverbs-devel, rdma-core-devel bzip2-devel readline-devel libsqlite3x-devel
+
+    # get OS version
+    os_version=$(rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release))
+    info "Adding Puppet Labs repo and installing Puppet for RHEL/CentOS ${os_version}"
+    # Get the major version
+    yum install -y https://yum.puppetlabs.com/puppet-release-el-$(echo $os_version | cut -d '.' -f 1).noarch.rpm
+    yum install -y puppet
 }
 
 setup_apt() {
@@ -190,8 +182,14 @@ setup_motd() {
 EOF
     if [ -n "${has_figlet}" ]; then
         cat <<EOF >> ${motd}
-$(${has_figlet} -w 80 -c "Virtual $(hostname -s)")
+$(${has_figlet} -w 100 -c "Virt. ${TITLE}")
 EOF
+        if [ -n "${SUBTITLE}" ]; then
+            echo "$(${has_figlet} -w 100 -c \"${SUBTILE}\")" >> ${motd}
+        fi
+    fi
+    if [ -n "${DESC}" ]; then
+        echo "${DESC}" >> ${motd}
     fi
     cat <<EOF >> ${motd}
 ================================================================================
@@ -201,7 +199,6 @@ EOF
 ================================================================================
 EOF
 }
-
 
 ######################################################################################
 [ $UID -gt 0 ] && error "You must be root to execute this script (current uid: $UID)"
@@ -228,8 +225,8 @@ case "$OSTYPE" in
     *)        echo "unknown: $OSTYPE"; exit 1;;
 esac
 
-[ -f /usr/bin/puppet ] || ln -s /opt/puppetlabs/puppet/bin/puppet /usr/bin/puppet
-[ -f /usr/bin/facter ] || ln -s /opt/puppetlabs/puppet/bin/facter /usr/bin/facter
+# [ -f /usr/bin/puppet ] || ln -s /opt/puppetlabs/puppet/bin/puppet /usr/bin/puppet
+# [ -f /usr/bin/facter ] || ln -s /opt/puppetlabs/puppet/bin/facter /usr/bin/facter
 
 setup_dotfiles
 setup_motd

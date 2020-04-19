@@ -1,0 +1,4 @@
+# Default Hiera values for Puppet
+---
+
+msg: "Vagrant provisioning with Hiera enabled"
