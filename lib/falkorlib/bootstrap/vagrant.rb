@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 16:47 svarrette>
+# Time-stamp: <Mon 2020-04-20 10:23 svarrette>
 ################################################################################
 # Interface for Bootstrapping MkDocs
 #
@@ -47,9 +47,15 @@ module FalkorLib
       init_from_template(templatedir, rootdir, config,
                          :no_interaction => true,
                          :no_commit => true)
-      [ 'bootstrap.sh', 'config.yaml.sample' ].each do |f|
-        FalkorLib::Git.add(File.join(rootdir, 'vagrant', "#{f}")) if use_git
+      confdir    = File.join(dir, 'vagrant')
+      [ 'config.yaml.sample' ].each do |f|
+        FalkorLib::Git.add(File.join(confdir, "#{f}")) if use_git
       end
+      scriptsdir = File.join(confdir, 'scripts')
+      [ 'bootstrap.sh'].each do |f|
+        FalkorLib::Git.add(File.join(scriptsdir, "#{f}")) if use_git
+      end
+      #puppetdir  = File.join(confdir, 'puppet')
       Dir.chdir( rootdir ) do
         run %(git ignore '.vagrant/' ) if command?('git-ignore')
         #   run %(ln -s README.md index.md )
