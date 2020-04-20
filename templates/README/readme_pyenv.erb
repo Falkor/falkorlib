@@ -1,0 +1,44 @@
+## Python Virtualenv / Pyenv and Direnv
+
+You will have to ensure you have installed [direnv](https://direnv.net/) (configured by [`.envrc`](.envrc)), [pyenv](https://github.com/pyenv/pyenv) and [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv). This assumes also the presence of `~/.config/direnv/direnvrc` from [this page](https://github.com/Falkor/dotfiles/blob/master/direnv/direnvrc) - for more details, see [this blog post](https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/).
+
+You can run the following command to setup your local machine in a compliant way:
+
+```
+make setup-pyenv   # AND/OR 'make setup-direnv'
+```
+
+Running `direnv allow` (this will have to be done only once), you should automatically enable the virtualenv `<%= name.downcase %>` based on the python version specified in [`.python-version`](.python-version). You'll eventually need to install the appropripriate Python version with `pyenv`:
+
+```bash
+pyenv versions   # Plural: show all versions
+pyenv install $(head .python-version)
+# Activate the virtualenv by reentering into the directory
+cd ..
+cd -
+```
+
+From that point, you should install the required packages using:
+
+    pip install -r requirements.txt
+
+Alternatively, you can use `make setup-python`
+
+## Python Code Development
+
+The Python code for `<%= name.downcase %>` is developed as a Python package, i.e. following the [official guidelines](https://packaging.python.org/overview/).
+
+To play in live with the code while developing it, install it in "_editable_" mode by running:
+
+    pip install -e ./
+
+In practice:
+
+    cd src
+    make
+
+Later on, you can clean the directory using
+
+    make clean
+
+Now you can enjoy live runs.

@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_vagrant_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2020-04-12 16:46 svarrette>
+# Time-stamp: <Mon 2020-04-20 10:10 svarrette>
 #
 # @description Check the Bootstrapping operations for Vagrant
 #
@@ -58,24 +58,24 @@ describe FalkorLib::Bootstrap do
       it "#vagrant -- #{ctx}" do
         c = FalkorLib::Bootstrap.vagrant(dir)
         expect(c).to eq(0)
-        confdir = File.join(dir, 'vagrant')
         conffile = File.join(dir, 'Vagrantfile')
-        expect(File.directory?(confdir)).to be true
         expect(File.exists?(conffile)).to be true
-        bootstrap = File.join(confdir, 'bootstrap.sh')
+        confdir      = File.join(dir, 'vagrant')
+        puppetdir    = File.join(confdir, 'puppet')
+        scriptsdir   = File.join(confdir, 'scripts')
+        [ confdir, puppetdir, scriptsdir ].each do |d|
+          expect(File.directory?(d)).to be true
+        end
+        bootstrap = File.join(scriptsdir, 'bootstrap.sh')
         expect(File.exists?(bootstrap)).to be true
-
-        # File.read(File.realpath(conffile)) do |f|
-        #   [
-        #     "site_name: #{File.basename(dir)}",
-        #     "nav:"
-        #   ].each do |pattern|
-        #     f.should include "#{pattern}"
-        #   end
-        # end
+        hiera_config = File.join(puppetdir, 'hiera.yaml')
+        expect(File.exists?(hiera_config)).to be true
+        [ 'hieradata', 'manifests', 'modules', 'site/profiles' ].each do |d|
+          expect(File.directory?(File.join(puppetdir, d))).to be true
+        end
       end
 
-    end # context "bootstrap/mkdocs"
+    end # context "bootstrap/vagrant"
   end # each
 
 end

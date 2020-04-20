@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2018-11-21 11:45 svarrette>
+# Time-stamp: <Mon 2020-04-20 17:12 svarrette>
 ################################################################################
 
 require 'thor'
@@ -15,10 +15,13 @@ module FalkorLib
 
       package_name "Falkor[Lib] 'new'"
       namespace :new
+      map %w[--help -h] => :help
 
       def self.banner(task, _namespace = true, subcommand = false)
         "#{basename} #{task.formatted_usage(self, true, subcommand)}"
       end
+
+      class_option :help, :aliases => ['-h', '--help'], type: :boolean
 
       ###### commands ######
       desc "commands", "Lists all available commands", :hide => true
@@ -26,7 +29,7 @@ module FalkorLib
         puts New.all_commands.keys.sort - [ 'commands' ]
       end
 
-      #map %w[--help -h] => :help
+      map %w[--help -h] => :help
 
       ###### repo ######
       desc "repo NAME [options]", "Bootstrap a Git Repository"
@@ -56,12 +59,17 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       method_option :mkdocs, :type => :boolean, :desc => "Initiate Mk Docs within your project"
       method_option :license,     :default => 'none',    :desc => "Open Source License to use within your project"
       method_option :licensefile, :default => 'LICENSE', :desc => "LICENSE File name"
-
-
-      #method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
+      method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
+      method_option :python, :banner => 'VERSION', :aliases => [ '--pyenv', '-p' ],
+                    :desc => 'Python version to configure / install for pyenv'
+      method_option :virtualenv, :aliases => [ '--env', '-e' ],
+                    :desc => 'Python virtualenv name to configure for this directory'
       #method_option :octopress, :aliases => ['-o', '--www'], :type => :boolean, :desc => "Initiate an Octopress web site"
       #___________________
       def repo(name = '.')
+        # TODO: find a generic way to handle help in subcommands
+        # -- see https://github.com/erikhuda/thor/issues/532
+        (help(__method__) and exit 0) if options[:help]
         options[:rvm] = true if options[:rake] || options[:gem]
         # _newrepo(name, options)
         FalkorLib::Bootstrap.repo(name, options)
@@ -77,6 +85,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       desc "article [options]", "Bootstrap a LaTeX Article"
       #___________________
       def article(path = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap.latex(path, :article, options)
       end # article
 
@@ -88,6 +97,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       desc "letter [options]", "LaTeX-based letter"
       #___________________
       def letter(path = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap.latex(path, :letter, options)
       end # letter
 
@@ -97,6 +107,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       #......................................
       desc "license [options]", "Generate an Open-Source License for your project"
       def license(path = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         license = options[:license] ?  options[:license] : FalkorLib::Bootstrap.select_licence('none')
         FalkorLib::Bootstrap.license(path, license, '', options)
       end # license
@@ -117,6 +128,7 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       #......................................
       desc "make [options]", "Initiate one of Falkor's Makefile"
       def make(dir = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         if options[:repo]
           FalkorLib::Bootstrap.makefile(dir)
         elsif (options[:latex] or options[:gnuplot] or options[:generic] or options[:images] or options[:src])
@@ -156,6 +168,7 @@ PYENV_LONG_DESC
                     :default => true, :desc => 'Force overwritting the  pyenv/direnv config'
       #____________________
       def pyenv(path = '.')
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap.pyenv(path, options)
       end # pyenv
 
@@ -167,6 +180,7 @@ PYENV_LONG_DESC
       #method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
       #___________________
       def slides(path = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap.latex(path, :beamer, options)
       end # slides
 
@@ -174,6 +188,7 @@ PYENV_LONG_DESC
       desc "trash PATH", "Add a Trash directory"
       #________________________
       def trash(path = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap.trash(path)
       end # trash
 
@@ -198,6 +213,7 @@ RVM_LONG_DESC
                     :default => FalkorLib.config[:rvm][:gemsetfile], :desc => 'RVM gemset file'
       #____________________
       def rvm(path = '.')
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap.rvm(path, options)
       end # rvm
 
@@ -228,6 +244,7 @@ RVM_LONG_DESC
       #......................................
       desc "readme PATH [options]", "Initiate a README file in the PATH directory ('./' by default)"
       def readme(path = '.')
+        (help(__method__) and exit 0) if options[:help]  # pas boooooo
         FalkorLib::Bootstrap.readme(path, options)
       end # readme
 

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 14:35 svarrette>
+# Time-stamp: <Mon 2020-04-20 16:13 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -38,7 +38,7 @@ module FalkorLib
     # * :gem         [boolean] Initiate a Ruby gem project           **NOT YET IMPLEMENTED**
     # * :mkdocs      [boolean] Initiate MkDocs within your project
     # * :rvm         [boolean] Initiate a RVM-based Ruby project
-    # * :pyenv       [boolean] Initiate a pyenv-based Python project **NOT YET IMPLEMENTED**
+    # * :pyenv       [boolean] Initiate a pyenv-based Python project
     # * :octopress   [boolean] Initiate an Octopress web site        **NOT YET IMPLEMENTED**
     ##
     def repo(name, options = {})
@@ -91,6 +91,9 @@ module FalkorLib
 
       # === RVM ====
       FalkorLib::Bootstrap.rvm(path, options) if options[:rvm]
+
+      # === Pyenv/Virtualenv/Direnv ====
+      FalkorLib::Bootstrap.pyenv(path, options) if options[:pyenv]
 
       # === README ===
       FalkorLib::Bootstrap.readme(path, options) # This should also save the project configuration

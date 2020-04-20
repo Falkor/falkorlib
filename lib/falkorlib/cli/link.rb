@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Tue 2017-04-04 11:00 svarrette>
+# Time-stamp: <Mon 2020-04-20 17:12 svarrette>
 ################################################################################
 
 require 'thor'
@@ -26,6 +26,9 @@ module FalkorLib
       #......................................
       desc "rootdir [options]", "Create a symlink '.root' which targets the root of the repository"
       def rootdir(dir = Dir.pwd)
+        # TODO: find a generic way to handle help in subcommands
+        # -- see https://github.com/erikhuda/thor/issues/532
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap::Link.root(dir, options)
       end # rootdir
 
@@ -49,6 +52,7 @@ module FalkorLib
       #......................................
       desc "make [options]", "Create a symlink to one of Falkor's Makefile, set as Git submodule"
       def make(dir = Dir.pwd)
+        (help(__method__) and exit 0) if options[:help]
         FalkorLib::Bootstrap::Link.makefile(dir, options)
       end # make
 

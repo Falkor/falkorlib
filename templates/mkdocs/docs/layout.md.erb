@@ -1,10 +1,9 @@
 
-This repository is organized as follows:
+This repository is organized as follows (use `tree -L 2` to complete):
 
 ~~~bash
 .
-├── LICENSE.txt     # Licence of this project
-<% unless options[:rake] %>
+<% if options[:rake] %>
 ├── Rakefile        # Ruby Rake configuration
 <% else %>
 ├── Makefile        # GNU Make configuration
@@ -13,5 +12,27 @@ This repository is organized as follows:
 ├── VERSION         # /!\ DO NOT EDIT. Current repository version
 ├── docs/           # [MkDocs](mkdocs.org) main directory
 ├── mkdocs.yml      # [MkDocs](mkdocs.org) configuration
-└── src/            # Source Code
+<% if File.exists?(File.join(config[:rootdir], '.ruby-version')) %>
+├── .ruby-{version,gemset}  # [RVM](https://rvm.io/) (Ruby Version Manager) configuration
+<% end %>
+<% if File.exists?(File.join(config[:rootdir], 'Gemfile')) %>
+├── Gemfile[.lock]   # [Bundler](https://bundler.io/) configuration
+<% end %>
+<% if File.exists?(File.join(config[:rootdir], '.envrc')) %>
+├── .envrc           # Local direnv configuration -- see https://direnv.net/
+│                    # Assumes you have installed in ~/.config/direnv/direnvrc
+│                    # the version proposed on
+│                    #    https://raw.githubusercontent.com/Falkor/dotfiles/master/direnv/direnvrc
+<% end %>
+<% if File.exists?(File.join(config[:rootdir], '.python-version')) %>
+├── .python-{version,virtualenv}  # Pyenv/Virtualenv configuration
+<% end %>
+<% if File.exists?(File.join(config[:rootdir], 'Vagrantfile')) %>
+├── Vagrantfile     # Vagrant configuration file - see https://www.vagrantup.com/
+└── vagrant/        # Complementary Vagrant configuration
+    ├── config.yaml         # custom config
+    ├── config.yaml.sample
+    ├── puppet/             # puppet provisionning
+    └── scripts/            # scripts (bootstrap etc.) for vagrant VM provisioning
+<% end %>
 ~~~

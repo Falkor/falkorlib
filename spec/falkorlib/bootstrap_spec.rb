@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Fri 2018-11-09 09:43 svarrette>
+# Time-stamp: <Mon 2020-04-20 09:58 svarrette>
 #
 # @description Check the basic Bootstrapping operations
 #
@@ -134,6 +134,31 @@ describe FalkorLib::Bootstrap do
           end
         end
       end
+
+      it "#readme rvm/mkdocs/pyenv" do
+        readme = File.join(dir, 'README.md')
+        #Array.new(6).each { |e|  STDIN.should_receive(:gets).and_return('') }
+        #STDIN.should_receive(:gets).and_return('')
+        #STDIN.should_receive(:gets).and_return('1')
+        FalkorLib::Bootstrap.readme(dir,
+                                    {
+                                      :no_interaction => true,
+                                      :rvm            => true,
+                                      :mkdocs         => true,
+                                      :pyenv          => true
+                                    })
+        expect(File).to exist( readme )
+        File.read(File.realpath( readme )) do |f|
+          [
+            "## Ruby stuff",          # from readme_rvm.erb
+            "## Documentation",       # from readme_mkdocs.erb
+            "## Python Virtualenv",   # from readme_pyenv.erb
+          ].each do |pattern|
+            f.should include "#{pattern}"
+          end
+        end
+      end
+
 
       ### LICENSE file generation
       it "#license -- don't generate LICENSE by default" do

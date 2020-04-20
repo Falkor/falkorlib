@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 10:13 svarrette>
+# Time-stamp: <Mon 2020-04-20 17:52 svarrette>
 ################################################################################
 # Interface for Bootstrapping MkDocs
 #
@@ -32,8 +32,8 @@ module FalkorLib
       rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
       templatedir = File.join( FalkorLib.templates, 'mkdocs')
       config = guess_project_config(rootdir, options)
-      config[:sitename] = ask("\tSite name: ", config[:name].capitalize)
-      puts config.to_yaml
+      config[:rootdir]  = rootdir
+      config[:sitename] = ask("\tSite name: ", config[:name])
       #FalkorLib::GitFlow.start('feature', 'mkdocs', rootdir) if (use_git && FalkorLib::GitFlow.init?(rootdir))
       init_from_template(templatedir, rootdir, config,
                          :no_interaction => true,
@@ -41,7 +41,6 @@ module FalkorLib
       Dir.chdir( File.join(rootdir, 'docs')) do
         run %(ln -s README.md index.md )
         run %(ln -s README.md contributing/index.md )
-        run %(ln -s README.md setup/index.md )
       end
       #exit_status.to_i
     end # mkdocs

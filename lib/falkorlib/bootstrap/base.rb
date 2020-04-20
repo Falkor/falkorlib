@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 14:37 svarrette>
+# Time-stamp: <Mon 2020-04-20 17:21 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -29,11 +29,10 @@ module FalkorLib #:nodoc:
             :hook     => 'pre-commit.git-crypt.sh',
             :ulhpc    => [
               #'0x5D08BCDD4F156AD7',  # S. Varrette
-              #'0x3F3242C5B34D98C2',   # V. Plugaru
               '0x6429C2514EBC4737',   # S. Peter
-              #'0x07FEA8BA69203C2D',   # C. Parisot
               '0x37183CEF550DF40B',   # H. Cartiaux
-
+              '0x10717CE35947FEDF',   # E. Kieffer
+              '0x710A74A36A99455A',   # F. Pinel
             ],
             # :hooks    => {
             #   :precommit => 'https://gist.github.com/848c82daa63710b6c132bb42029b30ef.git',
@@ -62,9 +61,9 @@ module FalkorLib #:nodoc:
             :institute       => 'University of Luxembourg',
             :department      => 'Parallel Computing and Optimization Group',
             :department_acro => 'PCOG',
-            :address         => '7, rue Richard Coudenhove-Kalergie',
-            :zipcode         => 'L-1359',
-            :location        => 'Luxembourg',
+            :address         => '2, avenue de l\'Université',
+            :zipcode         => 'L-4365',
+            :location        => 'Esch-sur-Alzette, Luxembourg',
             :phone           => '(+352) 46 66 44 6600',
             :twitter         => 'svarrette',
             :linkedin        => 'svarrette',
@@ -139,6 +138,7 @@ module FalkorLib #:nodoc:
             :domain => 'vagrant.dev',
             :range  => '10.10.1.0/24',
             :boxes => {
+              :centos8  => 'generic/centos8', #'centos/8' is having issue - see https://github.com/dotless-de/vagrant-vbguest/issues/367
               :centos7  => 'centos/7',
               :debian8  => 'debian/contrib-jessie64',
               :ubuntu14 => 'ubuntu/trusty64'
@@ -313,13 +313,17 @@ module FalkorLib
     # Supported options:
     #  * :no_interaction [boolean]: do not interact
     #  * :force          [boolean] force overwritting
-    #  * :license     [string]  License to use
-    #  * :licensefile [string]  License filename (default: LICENSE)
+    #  * :gem            [boolean] Ruby Gem
     #  * :latex          [boolean] describe a LaTeX project
+    #  * :license        [string]  License to use
+    #  * :licensefile    [string]  License filename (default: LICENSE)
     #  * :octopress      [boolean] octopress site
+    #  * :pyenv          [boolean] Python virtualenv/pyenv/direnv
+    #  * :rvm            [boolean] Ruby RVM
     ##
     def readme(dir = Dir.pwd, options = {})
       info "Bootstrap a README file for this project"
+      path = normalized_path(dir)
       # get the local configuration
       local_config = FalkorLib::Config.get(dir)
       config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
@@ -381,7 +385,7 @@ module FalkorLib
                          when :author
                            (config[:by] == 'ULHPC') ? 'UL HPC Team' : config[:author]
                          when :mail
-                           (config[:by] == 'ULHPC') ? 'hpc-sysadmins@uni.lu'   : config[:mail]
+                           (config[:by] == 'ULHPC') ? 'hpc-team@uni.lu' : config[:mail]
                          when :description
                            (config[:description].empty?) ? (config[:summary]).to_s : (config[:description]).to_s
                          when :source
@@ -398,6 +402,7 @@ module FalkorLib
       tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
       config[:tags]    = tags.split(',')
       config[:license] = select_licence if config[:license].empty?
+      config[:rootdir] = path
       # stack the ERB files required to generate the README
       templatedir = File.join( FalkorLib.templates, 'README')
       erbfiles = [ 'header_readme.erb' ]
@@ -409,6 +414,7 @@ module FalkorLib
       erbfiles << "readme_gitflow.erb" if FalkorLib::GitFlow.init?(dir)
       erbfiles << "readme_rvm.erb"     if config[:type].include?(:rvm)
       erbfiles << "readme_mkdocs.erb"  if options[:mkdocs]
+      erbfiles << "readme_pyenv.erb"   if config[:type].include?(:pyenv)
       erbfiles << "footer_readme.erb"
 
       content = ""
@@ -502,6 +508,9 @@ module FalkorLib
       use_git = FalkorLib::Git.init?(path)
       rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
       local_config = FalkorLib::Config.get(rootdir, :local)
+      if FalkorLib::GitFlow.init?(rootdir)
+        local_config[:project][:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir) if local_config[:project]
+      end
       return local_config[:project] if local_config[:project]
       # Otherwise, guess the rest of the configuration
       config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
@@ -538,9 +547,7 @@ module FalkorLib
       if FalkorLib::GitFlow.init?(rootdir)
         config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
       end
-      config[:make] = File.exists?(File.join(rootdir, 'Makefile'))
-      config[:rake] = File.exists?(File.join(rootdir, 'Rakefile'))
-      config
+       config
     end # guess_project_config
 
 
