@@ -1,4 +1,4 @@
-There is a number of pre-requisite programs / framework you shall install to be able to correctly contribute to this project.
+There is a number of pre-requisite programs / framework you shall install to be able to correctly contribute to this project -- see [../setup.md](../setup.md) for detailed instructions.
 
 <% if config[:gitflow] %>
 __Git Branching Model__
@@ -15,7 +15,7 @@ Thus you are more than encouraged to install the [git-flow](https://github.com/n
 
 __Repository Setup__
 
-As mentioned in the [installation notes](../setup/install.md), to make your local copy of the repository ready to use the [git-flow](https://github.com/nvie/gitflow) workflow
+As mentioned in the [installation notes](../setup.md), to make your local copy of the repository ready to use the [git-flow](https://github.com/nvie/gitflow) workflow, run:
 
 <% if config[:make] %>
     $> make setup
@@ -23,4 +23,4 @@ As mentioned in the [installation notes](../setup/install.md), to make your loca
     $> rake setup
 <% end %>
 
-This will also initiate the [Git submodules of this repository](.gitmodules) for this repository.
+Semantic versioning informations happening upon the release operations are detailed in [`versioning.md`](versioning.md).

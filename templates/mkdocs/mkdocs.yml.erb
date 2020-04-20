@@ -2,12 +2,13 @@ site_name: <%= config[:sitename] %>
 nav:
 - Home: 'index.md'
 - Organization: 'layout.md'
-- Getting Started:
-  - Pre-Requisites: 'setup/preliminaries.md'
-  - Installation: 'setup/install.md'
+- Pre-Requisites and Repository Setup: 'setup.md'
+<% if File.exists?(File.join(config[:rootdir], 'Vagrantfile')) %>
+- Overview of the Vagrant configuration: 'vagrant.md'
+<% end %>
 - Contributing:
   - Overview: 'contributing/index.md'
   - Directory Layout: 'layout.md'
-  - Repository Setup and Developments: 'contributing/setup.md'
+  - Repository Setup and Git Developments: 'contributing/setup.md'
   - Semantic Versioning: 'contributing/versioning.md'
 theme: readthedocs

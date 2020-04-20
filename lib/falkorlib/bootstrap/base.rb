@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2020-04-20 09:16 svarrette>
+# Time-stamp: <Mon 2020-04-20 15:56 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -506,6 +506,9 @@ module FalkorLib
       use_git = FalkorLib::Git.init?(path)
       rootdir = (use_git) ? FalkorLib::Git.rootdir(path) : path
       local_config = FalkorLib::Config.get(rootdir, :local)
+      if FalkorLib::GitFlow.init?(rootdir)
+        local_config[:project][:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir) if local_config[:project]
+      end
       return local_config[:project] if local_config[:project]
       # Otherwise, guess the rest of the configuration
       config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
@@ -542,9 +545,7 @@ module FalkorLib
       if FalkorLib::GitFlow.init?(rootdir)
         config[:gitflow] = FalkorLib::GitFlow.guess_gitflow_config(rootdir)
       end
-      config[:make] = File.exists?(File.join(rootdir, 'Makefile'))
-      config[:rake] = File.exists?(File.join(rootdir, 'Rakefile'))
-      config
+       config
     end # guess_project_config
 
 

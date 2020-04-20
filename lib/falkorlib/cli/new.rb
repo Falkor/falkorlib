@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2018-11-21 11:45 svarrette>
+# Time-stamp: <Mon 2020-04-20 16:14 svarrette>
 ################################################################################
 
 require 'thor'
@@ -56,9 +56,11 @@ By default, NAME is '.' meaning that the repository will be initialized in the c
       method_option :mkdocs, :type => :boolean, :desc => "Initiate Mk Docs within your project"
       method_option :license,     :default => 'none',    :desc => "Open Source License to use within your project"
       method_option :licensefile, :default => 'LICENSE', :desc => "LICENSE File name"
-
-
-      #method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
+      method_option :pyenv, :type => :boolean, :desc => "Initiate a pyenv-based Python project"
+      method_option :python, :banner => 'VERSION', :aliases => [ '--pyenv', '-p' ],
+                    :desc => 'Python version to configure / install for pyenv'
+      method_option :virtualenv, :aliases => [ '--env', '-e' ],
+                    :desc => 'Python virtualenv name to configure for this directory'
       #method_option :octopress, :aliases => ['-o', '--www'], :type => :boolean, :desc => "Initiate an Octopress web site"
       #___________________
       def repo(name = '.')

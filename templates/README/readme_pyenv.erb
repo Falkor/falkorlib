@@ -5,10 +5,10 @@ You will have to ensure you have installed [direnv](https://direnv.net/) (config
 You can run the following command to setup your local machine in a compliant way:
 
 ```
-make setup-pyenv
+make setup-pyenv   # AND/OR 'make setup-direnv'
 ```
 
-Running `direnv allow` (this will have to be done only once), you should automatically enable the virtualenv `<%= name.downcase %>` based on the python version specified in [`.python-version`](.python-version). You'll eventually need to install the appropripriate Pythoin version with `pyenv`:
+Running `direnv allow` (this will have to be done only once), you should automatically enable the virtualenv `<%= name.downcase %>` based on the python version specified in [`.python-version`](.python-version). You'll eventually need to install the appropripriate Python version with `pyenv`:
 
 ```bash
 pyenv versions   # Plural: show all versions

@@ -1,0 +1,85 @@
+## Reproducible VM deployment with Vagrant
+
+This repository comes with a `Vagrantfile` at the root of the repository which, together with the associated configuration (under `vagrant/`), pilots the provisioning of Virtual Machine(s) using [Vagrant](http://www.vagrantup.com/).
+
+[Vagrant](http://vagrantup.com/) uses [Oracle's VirtualBox](http://www.virtualbox.org/)
+to build configurable, lightweight, and portable virtual machines dynamically.
+
+* [Reference installation notes](http://docs.vagrantup.com/v2/installation/) -- assuming you have installed [Oracle's VirtualBox](http://www.virtualbox.org/)
+* [installation notes on Mac OS](http://sourabhbajaj.com/mac-setup/Vagrant/README.html) using [Homebrew](http://brew.sh/) and [Cask](http://sourabhbajaj.com/mac-setup/Homebrew/Cask.html)
+
+#### Plugins installation
+
+Once installed, check the list of VMs ready to be deployed using
+
+```bash
+$> vagrant status
+# Follow instructions to (eventually) install the missing plugings
+$> vagrant plugin install
+$> vagrant plugin install vagrant-hosts
+$> vagrant plugin install vagrant-vbguest
+$> vagrant plugin install vagrant-cachier
+$> vagrant plugin install terminal-table deep_merge
+$> vagrant status
+Current machine states:
+
+[...]
+
+The environment has not yet been created. Run `vagrant up` to
+create the environment. If a machine is not created, only the
+default provider will be shown. So if a provider is not listed,
+then the machine is not created for that environment.
+```
+
+#### Vagrant VM(s) deployment
+
+By default, the following boxes will be deployed upon `vagrant up`:
+
+* `default`: default VM
+
+To initiate the deployment:
+
+```bash
+$> vagrant status
+$> vagrant up
+[...]
++--------------|-------------------------|---------|----------|------------|----------------|------------+
+|                                     Virtual environment deployed on Vagrant                            |
++--------------|-------------------------|---------|----------|------------|----------------|------------+
+| Name         | Hostname                | OS      | vCPU/RAM | Role       | Description    | IP         |
++--------------|-------------------------|---------|----------|------------|----------------|------------+
+| <hostname>   | <hostname>.vagrant.dev  | centos7 | 2/1024   | default    | <description>  | 10.10.1.2  |
+| [...]        |                         |         |          |            |                |            |
++--------------|-------------------------|---------|----------|------------|----------------|------------+
+- Virtual Vagrant infrastructure successfully deployed!
+```
+
+You can ssh into any of the deployed machine afterwards:
+
+```bash
+$> vagrant ssh [<name>]
+```
+
+#### Vagrant boxes provisionning
+
+When you run `vagrant up <name>` to boot the VM, the following default provisioning are applied (shell scripts are located in `vagrant/scripts/`):
+
+| Script           | Type   | Description                           |
+|------------------|--------|---------------------------------------|
+| `bootstrap.sh`   | shell  | Install puppet and defaults packages  |
+
+In addition, a [Puppet](https://puppet.com/)-based provisionning in configured, operated by calling `puppet apply` (i.e. without a Puppet Master). To make the best use of it:
+
+1. associate a `role` name to each of your VM (default role: `default`)
+     - you can use the `:role: <name>` YAML entry in `vagrant/config.yaml` or add `:role => '<name>'` in the appropriate `:vms` hash table entry within the root `Vagrantfile`
+     - use the `:puppet_modules` entry to list the [puppet modules](https://forge.puppet.com/) required for this role
+2. create a new [hiera](https://puppet.com/docs/puppet/latest/hiera_intro.html) YAML configuration under `vagrant/puppet/hieradata/<name>.yaml`.
+     - list the profiles you want to see applied under the `profiles:` key, and append the puppet classes parameters you want to set using [hiera](https://puppet.com/docs/puppet/latest/hiera_automatic.html#class_parameters)
+3. (eventually) create the [puppet manifest(s)](https://puppet.com/docs/puppet/latest/puppet_language.html) for each declared profile under `vagrant/puppet/site/profiles/manifests/`
+     - Ex: `profile::pxe::server` is defined in `vagrant/puppet/site/profiles/manifests/pxe/server.pp`
+
+That should be sufficient. You can test on demand the application of puppet provisionning using
+
+```
+vagrant provision --provision-with puppet
+```
