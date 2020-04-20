@@ -20,8 +20,8 @@ This repository is hosted on [<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge]
 * To clone this repository, proceed as follows (adapt accordingly):
 
 ```bash
-$> mkdir -p ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
-$> cd ~/git/<%= FalkorLib::Config::Bootstrap::DEFAULTS[:forge][ config[:forge].to_sym ][:url] %>/<%= config[:by] %>
+$> mkdir -p ~/<%= config[:rootdir].gsub(ENV['HOME'] + '/', '').gsub(File.basename(config[:rootdir]), '') %>
+$> cd ~/<%= config[:rootdir].gsub(ENV['HOME'] + '/', '').gsub(File.basename(config[:rootdir]), '') %>
 $> git clone <%= config[:origin] %>
 ```
 

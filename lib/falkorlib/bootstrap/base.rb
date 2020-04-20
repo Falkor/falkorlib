@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2020-04-20 15:56 svarrette>
+# Time-stamp: <Mon 2020-04-20 17:21 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -323,6 +323,7 @@ module FalkorLib
     ##
     def readme(dir = Dir.pwd, options = {})
       info "Bootstrap a README file for this project"
+      path = normalized_path(dir)
       # get the local configuration
       local_config = FalkorLib::Config.get(dir)
       config = FalkorLib::Config::Bootstrap::DEFAULTS[:metadata].clone
@@ -401,6 +402,7 @@ module FalkorLib
       tags = ask("\tKeywords (comma-separated list of tags)", config[:tags].join(','))
       config[:tags]    = tags.split(',')
       config[:license] = select_licence if config[:license].empty?
+      config[:rootdir] = path
       # stack the ERB files required to generate the README
       templatedir = File.join( FalkorLib.templates, 'README')
       erbfiles = [ 'header_readme.erb' ]
