@@ -52,13 +52,33 @@ begin
       namespace :suite do
         specsuite.each do |name, _files|
           ###########   #{name}   ###########
-          desc "Run all specs in #{name} spec suite"
-          RSpec::Core::RakeTask.new(name.to_sym) do |t|
-            t.pattern = "spec/**/#{name}_*spec.rb"
-            #t.pattern = "spec/**/git_*spec.rb"
-            t.verbose = false
-            t.rspec_opts = rspec_opts
-          end # task #{name}
+          if _files.count == 1
+            desc "Run all specs in #{name} spec suite"
+            RSpec::Core::RakeTask.new(name.to_sym) do |t|
+              t.pattern = "spec/**/#{name}_*spec.rb"
+              #t.pattern = "spec/**/git_*spec.rb"
+              t.verbose = false
+              t.rspec_opts = rspec_opts
+            end # task #{name}
+          else
+            namespace "#{name.to_sym}" do
+              desc "Run all specs in #{name} spec suite"
+              RSpec::Core::RakeTask.new(:all) do |t|
+                t.pattern = "spec/**/#{name}_*spec.rb"
+                t.verbose = false
+                t.rspec_opts = rspec_opts
+              end # task rspec:suite:#{name}:all
+              _files.map { |f| File.basename(f, '_spec.rb').gsub("#{name}_", '') }.each do |subname|
+                next if subname == name
+                desc "Run the '#{subname}' specs in the #{name} spec suite"
+                RSpec::Core::RakeTask.new(subname.to_sym) do |t|
+                  t.pattern = "spec/**/#{name}_#{subname}*spec.rb"
+                  t.verbose = false
+                  t.rspec_opts = rspec_opts
+                end # task rspec:suite:#{name}:#{subname}
+              end
+            end # namespace #{name}
+          end # id
         end
       end # namespace suite
     end # namespace rspec
@@ -121,8 +141,8 @@ namespace :setenv do
   #desc "Set Code Climate token to report rspec results"
   task :code_climate do |_t|
     unless FalkorLib.config[:tokens].nil? ||
-           FalkorLib.config[:tokens][:code_climate].nil? ||
-           FalkorLib.config[:tokens][:code_climate].empty?
+        FalkorLib.config[:tokens][:code_climate].nil? ||
+        FalkorLib.config[:tokens][:code_climate].empty?
       ans = ask(cyan("A Code Climate token is set - Do you want to report on Code Climate the result of the process? (y|N)"), 'No')
       ENV['CODECLIMATE_REPO_TOKEN'] = FalkorLib.config[:tokens][:code_climate] if ans =~ /y.*/i
     end
