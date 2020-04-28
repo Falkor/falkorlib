@@ -1,11 +1,21 @@
 ## Python Virtualenv / Pyenv and Direnv
 
-You will have to ensure you have installed [direnv](https://direnv.net/) (configured by [`.envrc`](.envrc)), [pyenv](https://github.com/pyenv/pyenv) and [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv). This assumes also the presence of `~/.config/direnv/direnvrc` from [this page](https://github.com/Falkor/dotfiles/blob/master/direnv/direnvrc) - for more details, see [this blog post](https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/).
+You will have to ensure you have installed [direnv](https://direnv.net/) (configured by [`.envrc`](.envrc)), used to automatically activate the virtual environment associated to this project. 
+This assumes also the presence of `~/.config/direnv/direnvrc` from [this page](https://github.com/Falkor/dotfiles/blob/master/direnv/direnvrc) with will be automatically installed when issuing `make setup-direnv` - for more details, see [this blog post](https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/). 
 
-You can run the following command to setup your local machine in a compliant way:
+Then, you can either rely on [pyenv](https://github.com/pyenv/pyenv) and [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv) (most transparent approach). You can run the following command to setup your local machine in a compliant way (this was normally done as part of the `make setup` step) :
 
+```bash
+make setup-direnv
+make setup-pyenv   # OR make setup-venv
 ```
-make setup-pyenv   # AND/OR 'make setup-direnv'
+
+Adapt your favorite shell configuration as suggested. You may want to add the following:
+
+``` bash
+for f in $XDG_CONFIG_HOME/*/init.sh; do
+  . ${f}
+done
 ```
 
 Running `direnv allow` (this will have to be done only once), you should automatically enable the virtualenv `<%= name.downcase %>` based on the python version specified in [`.python-version`](.python-version). You'll eventually need to install the appropripriate Python version with `pyenv`:
@@ -18,27 +28,20 @@ cd ..
 cd -
 ```
 
+If you don't like [pyenv](https://github.com/pyenv/pyenv), you can rely on classical [python 3 venv](https://docs.python.org/fr/3/library/venv.html) initiated from `make setup-venv`. You can then activate it with 
+
+```bash
+# Alternative using venv
+source venv/<%= name.downcase %>/bin/activate
+```
+
 From that point, you should install the required packages using:
 
-    pip install -r requirements.txt
+``` bash
+make setup-python
 
-Alternatively, you can use `make setup-python`
+# OR (manually)
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-## Python Code Development
-
-The Python code for `<%= name.downcase %>` is developed as a Python package, i.e. following the [official guidelines](https://packaging.python.org/overview/).
-
-To play in live with the code while developing it, install it in "_editable_" mode by running:
-
-    pip install -e ./
-
-In practice:
-
-    cd src
-    make
-
-Later on, you can clean the directory using
-
-    make clean
-
-Now you can enjoy live runs.
