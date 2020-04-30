@@ -39,10 +39,12 @@ VAGRANTFILE_API_VERSION = "2"
 
 # Eventually a local YAML configuration for the deployment
 TOP_SRCDIR  = File.expand_path File.dirname(__FILE__)
-TOP_CONFDIR = File.join(TOP_SRCDIR, 'vagrant')
-TOP_PUPPETDIR = File.join(TOP_CONFDIR, 'puppet')
-TOP_PUPPET_MODULEDIR = File.join(TOP_PUPPETDIR, 'modules')
-config_file = File.join(TOP_CONFDIR, 'config.yaml')
+CONFDIR     = 'vagrant'
+config_file = File.join(TOP_SRCDIR, CONFDIR, 'config.yaml')
+
+PUPPETDIR        = File.join(CONFDIR, 'puppet')
+TOP_PUPPETDIR    = File.join(TOP_SRCDIR, PUPPETDIR)
+PUPPET_MODULEDIR = File.join(PUPPETDIR, 'modules')
 
 #SHARED_DIR  = File.join('vagrant', 'shared')
 
@@ -195,7 +197,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Install required puppet modules, if any
       puppet_modules.each do |mod|
         config.vm.provision "shell",
-                            inline: "puppet module install --target-dir #{TOP_PUPPET_MODULEDIR} #{mod}"
+                            inline: "puppet module install --target-dir /vagrant/#{PUPPET_MODULEDIR} #{mod}"
       end
 
       # A role fact MUST be defined (default: 'default') as it is used in Hiera config
