@@ -177,7 +177,7 @@ PYENV_LONG_DESC
       #......................................
       desc "slides [options]", "Bootstrap LaTeX Beamer slides"
       method_option :name, :aliases => '-n', :desc => 'Name of the LaTeX project'
-      #method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
+      method_option :dir,  :aliases => '-d', :desc => 'Project directory (relative to the git root directory)'
       #___________________
       def slides(path = Dir.pwd)
         (help(__method__) and exit 0) if options[:help]
