@@ -57,7 +57,7 @@ module FalkorLib
         if options[:ruby]
           v = options[:ruby]
         else
-          select_from(FalkorLib.config[:rvm][:rubies],
+          v = select_from(FalkorLib.config[:rvm][:rubies],
                       "Select RVM ruby to configure for this directory",
                       (FalkorLib.config[:rvm][:rubies].find_index(FalkorLib.config[:rvm][:version]) + 1))
         end
