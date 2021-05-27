@@ -62,7 +62,8 @@ module FalkorLib #:nodoc:
         :gemsetfile  => '.ruby-gemset'
       },
       :pyenv => {
-        :versions       => ['2.7.16', '3.7.4' ],
+        # See https://devguide.python.org/#status-of-python-branches
+        :versions       => ['2.7.16', '3.7.4', '3.7.10', '3.8.10' ],
         :version        => '3.7.4',
         :versionfile    => '.python-version',
         :virtualenvfile => '.python-virtualenv',
