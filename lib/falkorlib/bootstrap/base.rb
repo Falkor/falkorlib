@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2020-04-20 17:21 svarrette>
+# Time-stamp: <Thu 2022-06-02 19:08 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -29,10 +29,9 @@ module FalkorLib #:nodoc:
             :hook     => 'pre-commit.git-crypt.sh',
             :ulhpc    => [
               #'0x5D08BCDD4F156AD7',  # S. Varrette
-              '0x6429C2514EBC4737',   # S. Peter
               '0x37183CEF550DF40B',   # H. Cartiaux
-              '0x10717CE35947FEDF',   # E. Kieffer
-              '0x710A74A36A99455A',   # F. Pinel
+              '0x7E1457DB75803F41',   # T. Valette
+              '7F883C928BC48E98',     # A. Olloh
             ],
             # :hooks    => {
             #   :precommit => 'https://gist.github.com/848c82daa63710b6c132bb42029b30ef.git',

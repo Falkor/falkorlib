@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 14:57 svarrette>
+# Time-stamp: <Thu 2022-06-02 19:14 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -56,15 +56,15 @@ module FalkorLib #:nodoc:
       #:custom_cfg   => '.falkorlib.yaml',
       :rvm => {
         # See https://www.ruby-lang.org/en/downloads/branches/ for stable branches
-        :rubies      => [ '2.7.0', '2.6.5', '2.5.6', '2.4.9' ],
-        :version     => '2.6.5',
+        :rubies      => [ '3.1.2', '3.0.4', '2.7.6'],
+        :version     => '3.1.2',
         :versionfile => '.ruby-version',
         :gemsetfile  => '.ruby-gemset'
       },
       :pyenv => {
         # See https://devguide.python.org/#status-of-python-branches
-        :versions       => ['2.7.16', '3.7.4', '3.7.10', '3.8.10' ],
-        :version        => '3.7.4',
+        :versions       => ['3.9.13', '3.8.13', '3.7.13', '2.7.18' ],
+        :version        => '3.7.13',
         :versionfile    => '.python-version',
         :virtualenvfile => '.python-virtualenv',
         :direnvfile     => '.envrc',
