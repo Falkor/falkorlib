@@ -13,7 +13,7 @@ Coverage](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/test_covera
                    |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
 
 
-        Copyright (c) 2012-2020 Sebastien Varrette <Sebastien.Varrette@uni.lu>
+        Copyright (c) 2012-2022 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code, `{rake,cap}`
 tasks and project templates
