@@ -69,24 +69,23 @@ Gem::Specification.new do |s|
   #
   #s.add_dependency("rake", ">= 10.1.0")
   s.add_runtime_dependency 'rake',              '>= 12.3.3'
-  s.add_runtime_dependency 'git_remote_branch', '~> 0'
-  s.add_runtime_dependency('minigit',           '~> 0')
-  s.add_runtime_dependency("term-ansicolor",    '> 1.3')
-  s.add_runtime_dependency("configatron",       '~> 3.0')
+  s.add_runtime_dependency("activesupport",     '~> 5.0')
   s.add_runtime_dependency("awesome_print",     '> 1.2')
-  s.add_runtime_dependency("json",              '> 2.0')
-  s.add_runtime_dependency("license-generator", '~> 0')
+  s.add_runtime_dependency("artii",             '>= 2.1')
+  #s.add_runtime_dependency("benchmark", '~> 4.0')
+  #s.add_runtime_dependency("bundler-stats", '~> 2.0')
+  s.add_runtime_dependency("configatron",       '~> 3.0')
   s.add_runtime_dependency("deep_merge",        '~> 1.0')
   s.add_runtime_dependency("diffy",             '>= 3.0')
-  s.add_runtime_dependency("logger",            '>= 1.2.8')
-  s.add_runtime_dependency("thor",              '>= 1.0')
-  s.add_runtime_dependency("artii",             '>= 2.1')
   s.add_runtime_dependency("facter",            '~> 2.4.1')
-  s.add_runtime_dependency("activesupport",     '~> 4.0')
-  #s.add_runtime_dependency("bundler-stats", '~> 2.0')
-  #s.add_runtime_dependency("benchmark", '~> 4.0')
+  s.add_runtime_dependency 'git_remote_branch', '~> 0'
+  s.add_runtime_dependency("json",              '> 2.0')
+  s.add_runtime_dependency("license-generator", '~> 0')
+  s.add_runtime_dependency("logger",            '>= 1.2.8')
   #s.add_runtime_dependency("mercenary", '>= 0.3.5')
-
+  s.add_runtime_dependency('minigit',           '~> 0')
+  s.add_runtime_dependency("term-ansicolor",    '> 1.3')
+  s.add_runtime_dependency("thor",              '>= 1.0')
 
   #
   #
@@ -95,21 +94,19 @@ Gem::Specification.new do |s|
   # One call to add_development_dependency('gem_name', 'gem version requirement')
   # for each development dependency. These gems are required for developers
   #
-  #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
   s.add_development_dependency("bundler", "~> 2.3")
-  s.add_development_dependency 'rspec', '~> 3.0' #, '>= 2.7.0'
-  s.add_development_dependency("pry",    "~> 0.9")
-  s.add_development_dependency("yard",   ">= 0.9.20")
-  s.add_development_dependency('rubocop', '~> 0.49.0')
-  s.add_development_dependency("rubygems-tasks", "~> 0.2")
-  s.add_development_dependency("travis",        "~> 1.6")
-  s.add_development_dependency("travis-lint",   "~> 1.8")
-  s.add_development_dependency('simplecov', '<= 0.17.1')
+  #s.add_development_dependency("bluecloth",      "~> 2.2.0")
   #s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   #s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
+  s.add_development_dependency("pry",    "~> 0.9")
+  s.add_development_dependency 'rspec', '~> 3.0' #, '>= 2.7.0'
+  s.add_development_dependency("rubygems-tasks", "~> 0.2")
+  s.add_development_dependency('rubocop', '~> 0.49.0')
+  s.add_development_dependency('simplecov', '<= 0.17.1')
   #s.add_development_dependency("thor-zsh_completion", '>= 0.1.5')
-  #s.add_development_dependency("bluecloth",      "~> 2.2.0")
-  #s.add_development_dependency("wlang",          "~> 0.10.2")
+  s.add_development_dependency("travis",        "~> 1.11")
+  s.add_development_dependency("travis-lint",   "~> 1.8")
+  s.add_development_dependency("yard",   ">= 0.9.20")
 
 
   # The version of ruby required by this gem
