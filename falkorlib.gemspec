@@ -96,7 +96,7 @@ Gem::Specification.new do |s|
   # for each development dependency. These gems are required for developers
   #
   #s.add_development_dependency("rake",           ">= 10.1.0") #"~> 0.9.2")
-  s.add_development_dependency("bundler", "~> 1.0")
+  s.add_development_dependency("bundler", "~> 2.3")
   s.add_development_dependency 'rspec', '~> 3.0' #, '>= 2.7.0'
   s.add_development_dependency("pry",    "~> 0.9")
   s.add_development_dependency("yard",   ">= 0.9.20")

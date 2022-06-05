@@ -21,6 +21,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    CFPropertyList (2.2.8)
     activesupport (4.2.11.1)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -41,6 +42,8 @@ GEM
     ethon (0.12.0)
       ffi (>= 1.3.0)
     facter (2.4.6)
+    facter (2.4.6-universal-darwin)
+      CFPropertyList (~> 2.2.6)
     faraday (0.17.3)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.14.0)
@@ -148,7 +151,7 @@ PLATFORMS
   x86_64-darwin-18
 
 DEPENDENCIES
-  bundler (~> 1.0)
+  bundler (~> 2.3)
   falkorlib!
   pry (~> 0.9)
   rspec (~> 3.0)
@@ -160,4 +163,4 @@ DEPENDENCIES
   yard (>= 0.9.20)
 
 BUNDLED WITH
-   1.17.3
+   2.3.15
