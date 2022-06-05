@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2018-10-04 08:05 svarrette>
+# Time-stamp: <Sun 2022-06-05 17:15 svarrette>
 #
 # @description Check the Git operations
 #
