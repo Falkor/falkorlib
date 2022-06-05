@@ -69,7 +69,7 @@ Gem::Specification.new do |s|
   #
   #s.add_dependency("rake", ">= 10.1.0")
   s.add_runtime_dependency 'rake',              '>= 12.3.3'
-  s.add_runtime_dependency("activesupport",     '~> 4.0')
+  s.add_runtime_dependency("activesupport",     '~> 5.0')
   s.add_runtime_dependency("awesome_print",     '> 1.2')
   s.add_runtime_dependency("artii",             '>= 2.1')
   #s.add_runtime_dependency("benchmark", '~> 4.0')
@@ -104,9 +104,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rubocop', '~> 0.49.0')
   s.add_development_dependency('simplecov', '<= 0.17.1')
   #s.add_development_dependency("thor-zsh_completion", '>= 0.1.5')
-  s.add_development_dependency("travis",        "~> 1.6")
+  s.add_development_dependency("travis",        "~> 1.11")
   s.add_development_dependency("travis-lint",   "~> 1.8")
-  #s.add_development_dependency("wlang",          "~> 0.10.2")
   s.add_development_dependency("yard",   ">= 0.9.20")
 
 
