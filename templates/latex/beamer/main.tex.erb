@@ -1,9 +1,9 @@
+% Time-stamp: <Thu 2017-08-17 22:22 svarrette>
 % =============================================================================
 % File:  <%= config[:name] %>.tex --
 % Author(s): <%= config[:author] %> (<%= config[:mail] %>)
-% Time-stamp: <Thu 2017-08-17 22:22 svarrette>
 %
-% Copyright (c) <%= Time.now.year %> <%= config[:author] %><Sebastien.Varrette@uni.lu>
+% Copyright (c) <%= Time.now.year %> <%= config[:author] %>
 %
 % For more information:
 % - LaTeX: http://www.latex-project.org/
@@ -12,7 +12,7 @@
 % http://www.ctan.org/tex-archive/info/symbols/comprehensive/symbols-a4.pdf
 % =============================================================================
 
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 % \documentclass[draft]{beamer}
 \usepackage{_style}
 
@@ -31,6 +31,8 @@
 
 \graphicspath{{images/}} % Add this directory to the searched paths for graphics
 
+% \usetikzlibrary{arrows,shapes,positioning,shadows,trees,intersections,backgrounds,calc,fit}
+
 
 %%%%%%%%%% Header %%%%%%%%%%%%
 \title{<%= config[:title] %>}
@@ -39,9 +41,8 @@
 \author[<%= config[:author] %> \& al.]{
   \underline{<%= config[:author] %>}
 }
-\institute[PCOG Research unit]{
-  Parallel Computing and Optimization Group (\href{http://pcog.uni.lu}{PCOG}),
-  University of Luxembourg (\href{http://www.uni.lu}{UL}), Luxembourg
+\institute[University of Luxembourg]{
+  \myurl{https://hpc.uni.lu}
 }
 
 % Mandatory to **declare** a logo to be placed on the bottom right -- normally the
