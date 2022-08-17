@@ -3,7 +3,7 @@
 % Author(s): <%= config[:author] %> (<%= config[:mail] %>)
 % Time-stamp: <Wed 2022-08-17 10:38 svarrette>
 %
-% Copyright (c) <%= Time.now.year %> <%= config[:author] %><Sebastien.Varrette@uni.lu>
+% Copyright (c) <%= Time.now.year %> <%= config[:author] %> 
 %
 % For more information:
 % - LaTeX: http://www.latex-project.org/
@@ -41,6 +41,7 @@
 \author{
   \IEEEauthorblockN{%
     Sebastien Varrette$^{\ast}$, %\,\orcidlink{0000-0001-9011-851X},
+    <%= config[:author] %>,     
     FirstName2 LastName2$^{\ddagger}$, %\,\orcidlink{XXXX},
     and
     FirstName3 LastName3$^{\dagger}$ %\,\orcidlink{YYYY}
