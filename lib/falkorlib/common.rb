@@ -66,7 +66,7 @@ module FalkorLib #:nodoc:
     def warning(str)
       puts cyan("/!\\ WARNING: " + str)
     end
-    alias_method :warn, :warning
+    # alias_method :warn, :warning  # FIXME erb invokes also its own warn method
 
     ## Print an error message and abort
     def error(str)
