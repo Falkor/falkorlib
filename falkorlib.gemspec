@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.authors = ['Sebastien Varrette']
   # The list of author names who wrote this gem.
-  s.email   = ['Sebastien.Varrette@uni.lu']
+  s.email   = ['Sebastien.Varrette@gmail.com']
 
   # Paths in the gem to add to $LOAD_PATH when this gem is activated (required).
   #
@@ -68,24 +68,24 @@ Gem::Specification.new do |s|
   #   "~> 2.2.0"              (shortcut for ">= 2.2.0", "< 2.3.0")
   #
   #s.add_dependency("rake", ">= 10.1.0")
-  s.add_runtime_dependency 'rake',              '>= 12.3.3'
+  s.add_runtime_dependency 'rake',              '~> 13.1'
   s.add_runtime_dependency("activesupport",     '~> 5.0')
-  s.add_runtime_dependency("awesome_print",     '> 1.2')
-  s.add_runtime_dependency("artii",             '>= 2.1')
+  s.add_runtime_dependency("awesome_print",     '~> 1.9', '>= 1.9.2')
+  s.add_runtime_dependency("artii",             '~> 2.1', '>= 2.1.2')
   #s.add_runtime_dependency("benchmark", '~> 4.0')
   #s.add_runtime_dependency("bundler-stats", '~> 2.0')
   s.add_runtime_dependency("configatron",       '~> 3.0')
   s.add_runtime_dependency("deep_merge",        '~> 1.0')
-  s.add_runtime_dependency("diffy",             '>= 3.0')
+  s.add_runtime_dependency("diffy",             '~> 3.4', '>= 3.4.2')
   s.add_runtime_dependency("facter",            '~> 2.4.1')
   s.add_runtime_dependency 'git_remote_branch', '~> 0'
-  s.add_runtime_dependency("json",              '> 2.0')
+  s.add_runtime_dependency("json",              '~> 2.6', '>= 2.6.3')
   s.add_runtime_dependency("license-generator", '~> 0')
-  s.add_runtime_dependency("logger",            '>= 1.2.8')
+  s.add_runtime_dependency("logger",            '~> 1.6')
   #s.add_runtime_dependency("mercenary", '>= 0.3.5')
   s.add_runtime_dependency('minigit',           '~> 0')
   s.add_runtime_dependency("term-ansicolor",    '> 1.3')
-  s.add_runtime_dependency("thor",              '>= 1.0')
+  s.add_runtime_dependency("thor",              '~> 1.3')
 
   #
   #
@@ -94,7 +94,7 @@ Gem::Specification.new do |s|
   # One call to add_development_dependency('gem_name', 'gem version requirement')
   # for each development dependency. These gems are required for developers
   #
-  s.add_development_dependency("bundler", "~> 2.3")
+  s.add_development_dependency("bundler", "~> 2.4")
   #s.add_development_dependency("bluecloth",      "~> 2.2.0")
   #s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   #s.add_development_dependency("codeclimate-test-reporter", '~> 0') #, group: :test, require: nil)
