@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2017-01-16 23:15 svarrette>
+# Time-stamp: <Thu 2023-11-23 18:13 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -100,10 +100,15 @@ module FalkorLib
       info "populating '#{src_project_dir}'"
       #FalkorLib::Bootstrap::Link.root(srcdir, { :verbose => true} )
       FalkorLib::Bootstrap::Link.makefile(srcdir, :no_interaction => true)
-      [ '_style.sty', '.gitignore' ].each do |f|
+      [ '_style.sty' ].each do |f|
         Dir.chdir( srcdir ) do
           dst = ".makefile.d/latex/#{f}"
           run %( ln -s #{dst} #{f} ) unless File.exist?( File.join(srcdir, f) )
+        end
+      end
+      [ '.gitignore' ].each do |f|   # .gitignore no longer accepted as symlink
+        Dir.chdir( srcdir ) do
+          run %( cp .makefile.d/latex/#{f} #{f} ) unless File.exist?( File.join(srcdir, f) )
         end
       end
       if type == :beamer

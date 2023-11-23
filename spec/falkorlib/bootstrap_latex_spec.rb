@@ -3,7 +3,7 @@
 #########################################
 # bootstrap_latex_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Thu 2017-08-17 22:28 svarrette>
+# Time-stamp: <Thu 2023-11-23 18:13 svarrette>
 #
 # @description Check the Bootstrapping operations for LaTeX-based projects
 #
@@ -92,17 +92,18 @@ describe FalkorLib::Bootstrap do
 
         # check src directory
         expect(Dir.exist?(srcdir)).to be true
-        src_latex_symlinks = [ 'Makefile', '_style.sty', '.gitignore' ]
+        src_latex_symlinks = [ 'Makefile', '_style.sty' ]
         src_latex_symlinks.each do |f|
           file = File.join(srcdir, f)
           expect(File.exist?(file)).to be true
           expect(File.readlink(file)).to include '.makefile.d/latex'
         end
 
-        src_latex_files = [ "#{name}.tex" ]
-        src_latex_files  << '_content.md' if type == :beamer
-        src_latex_files = [ '_abstract.tex', '_conclusion.tex', '_experiments.tex', '_introduction.tex', 'biblio.bib', '_related_works.tex' ] if type == :article
+        src_latex_files = [ "#{name}.tex", '.gitignore' ]
+        src_latex_files += [ '_content.md', '.Makefile.local' ] if type == :beamer
+        src_latex_files += [ '_abstract.tex', '_conclusion.tex', '_experiments.tex', '_introduction.tex', 'biblio.bib', '_related_works.tex' ] if type == :article
         src_latex_files.each do |f|
+          $stderr.puts "=> checing file: #{f}"
           file = File.join(srcdir, f)
           expect(File.exist?(file)).to be true
         end

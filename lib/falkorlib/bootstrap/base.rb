@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2022-06-02 19:08 svarrette>
+# Time-stamp: <Wed 2023-11-22 17:32 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -29,10 +29,7 @@ module FalkorLib #:nodoc:
             :hook     => 'pre-commit.git-crypt.sh',
             :ulhpc    => [
               #'0x5D08BCDD4F156AD7',  # S. Varrette
-              '0x37183CEF550DF40B',   # H. Cartiaux
-              '0x7E1457DB75803F41',   # T. Valette
-              '7F883C928BC48E98',     # A. Olloh
-            ],
+           ],
             # :hooks    => {
             #   :precommit => 'https://gist.github.com/848c82daa63710b6c132bb42029b30ef.git',
             # },
@@ -51,19 +48,19 @@ module FalkorLib #:nodoc:
             :mail     => `git config user.email`.chomp,
             :title    => 'Title',
             :subtitle => 'Overview and Open Challenges',
-            :image    => 'images/logo_ULHPC.pdf',
-            :logo     => 'images/logo_UL.pdf',
-            :url      => 'http://csc.uni.lu/sebastien.varrette'
+            :image    => 'images/logo_ANSSI.png',
+            :logo     => 'images/logo_RF.png',
+            :url      => 'http://cyber.gouv.fr'
           },
           :letter => {
             :author_title    => 'PhD',
-            :institute       => 'University of Luxembourg',
-            :department      => 'Parallel Computing and Optimization Group',
-            :department_acro => 'PCOG',
-            :address         => '2, avenue de l\'Université',
-            :zipcode         => 'L-4365',
-            :location        => 'Esch-sur-Alzette, Luxembourg',
-            :phone           => '(+352) 46 66 44 6600',
+            :institute       => 'French National Cybersecurity Agency (ANSSI)',
+            :department      => 'Laboratoire Architectures Matérielles et logicielles',
+            :department_acro => 'LAM',
+            :address         => '51, boulevard de La Tour-Maubourg',
+            :zipcode         => '75007',
+            :location        => 'Paris, France',
+            :phone           => '(+33) n/a',
             :twitter         => 'svarrette',
             :linkedin        => 'svarrette',
             :skype           => 'sebastien.varrette',
@@ -86,7 +83,7 @@ module FalkorLib #:nodoc:
             :tags         => []
           },
           :trashdir => '.Trash',
-          :types    => [ :none, :latex, :gem, :octopress, :puppet_module, :rvm, :pyenv ],
+          :types    => [ :none, :latex, :gem, :vagrant, :puppet_module, :rvm, :pyenv ],
           :licenses => {
             "none"       => {},
             "Apache-2.0" => {
@@ -126,21 +123,25 @@ module FalkorLib #:nodoc:
           :puppet => {},
           :forge => {
             :none   => { :url => '', :name => "None" },
-            :gforge => { :url => 'gforge.uni.lu', :name => 'GForge @ Uni.lu' },
-            :github => { :url => 'github.com',    :name => 'Github', :login => (`whoami`.chomp.capitalize).to_s },
-            :gitlab => { :url => 'gitlab.uni.lu', :name => 'Gitlab @ Uni.lu', :login => (`whoami`.chomp.capitalize).to_s }
+            :github => { :url => 'github.com', :name => 'Github', :login => (`whoami`.chomp.capitalize).to_s },
+            :gitlab => { :url => 'gitlab.com', :name => 'Gitlab', :login => (`whoami`.chomp.capitalize).to_s }
           },
           :vagrant => {
-            :os     => :centos7,
+            :os     => :debian12,
             :ram    => 1024,
             :vcpus  => 2,
             :domain => 'vagrant.dev',
             :range  => '10.10.1.0/24',
             :boxes => {
-              :centos8  => 'generic/centos8', #'centos/8' is having issue - see https://github.com/dotless-de/vagrant-vbguest/issues/367
-              :centos7  => 'centos/7',
-              :debian8  => 'debian/contrib-jessie64',
-              :ubuntu14 => 'ubuntu/trusty64'
+              :debian12      => 'debian/bookworm64',
+              :rockylinux9   => 'rockylinux/9',
+              :rockylinux8   => 'rockylinux/8',
+              :centosstream9 => 'centos/stream9',
+              :centosstream8 => 'centos/stream8',
+              :ubuntu22      => 'ubuntu/jammy64',
+              :ubuntu20      => 'ubuntu/focal64',
+              :fedora38      => 'generic/fedora38',
+              :archlinux     => 'archlinux/archlinux'
             },
           }
         }

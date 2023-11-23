@@ -1,4 +1,4 @@
-% Time-stamp: <Thu 2017-08-17 22:22 svarrette>
+% Time-stamp: <Thu 2023-11-23 17:53 svarrette>
 % =============================================================================
 % File:  <%= config[:name] %>.tex --
 % Author(s): <%= config[:author] %> (<%= config[:mail] %>)
@@ -15,6 +15,16 @@
 \documentclass[aspectratio=169]{beamer}
 % \documentclass[draft]{beamer}
 \usepackage{_style}
+\usepackage[
+  backend=biber,
+  maxnames=999,
+  giveninits=true,
+  style=verbose,
+]{biblatex}
+% \addbibresource{biblio.bib}
+\setbeamerfont{footnote}{size=\tiny}
+% Usage in slides: \footfullcite{<bibentry>}
+
 
 % The key part to use my theme -- if you precise nothing, the image that
 % illustrate the slides is assumed to be images/slides_image.jpg
@@ -41,8 +51,11 @@
 \author[<%= config[:author] %> \& al.]{
   \underline{<%= config[:author] %>}
 }
-\institute[University of Luxembourg]{
-  \myurl{https://hpc.uni.lu}
+\institute[ANSSI/SDE/DST/LAM]{
+  ANSSI/SDE/DST/LAM
+  Agence nationale de la sécurité des systèmes d'information / French National Cybersecurity Agency
+  Laboratoire Architectures Matérielles et logicielles (LAM)
+  \myurl{<%= config[:url] %>}
 }
 
 % Mandatory to **declare** a logo to be placed on the bottom right -- normally the
@@ -80,11 +93,10 @@
     \column{0.5\textwidth}
     % \emph{Contact}\\
     {\tiny
-      \emph{<%= config[:author] %>}\\
-      ~~~~ \structure{University of Luxembourg, Belval Campus}:\\
-      ~~~~ Maison du Nombre, 4th floor\\
-      ~~~~ 2, avenue de l'Universit\'e\\
-      ~~~~ L-4365 Esch-sur-Alzette\\
+      \emph{ANSSI/SDE/DST/LAM}\\
+      ~~~~ \structure{Laboratoire Architectures Matérielles et logicielles}\\
+      \emph{Contacts:}\\
+      ~~~~\emph{<%= config[:author] %>}\\
       ~~~~ \textit{mail:} \href{mailto:<%= config[:mail] %>}{<%= config[:mail] %>}\\
     }
     \column{0.5\textwidth}
