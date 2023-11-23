@@ -2,7 +2,7 @@
 #########################################
 # git_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Sun 2022-06-05 17:15 svarrette>
+# Time-stamp: <Wed 2023-11-22 17:21 svarrette>
 #
 # @description Check the Git operations
 #
@@ -316,7 +316,7 @@ describe FalkorLib::Git do
 
         [ :subtrees, :submodules ].each do |type|
           it "#config_warn(#{type})" do
-            t = capture(:stdout) { FalkorLib::Git.config_warn(type) }
+            t = capture(:stderr) { FalkorLib::Git.config_warn(type) }
             expect(t).to include "FalkorLib.config.git"
             expect(t).to include "FalkorLib.config.git.submodulesdir" if type == :submodules
           end
