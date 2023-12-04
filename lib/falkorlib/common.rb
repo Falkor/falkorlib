@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Sun 2020-04-12 14:38 svarrette>
+# Time-stamp: <Thu 2023-11-23 23:06 svarrette>
 ################################################################################
 
 require "falkorlib"
@@ -375,7 +375,7 @@ module FalkorLib #:nodoc:
           next
         end
         #puts config.to_yaml
-        content += ERB.new(File.read(erb.to_s), nil, '<>').result(binding)
+        content += ERB.new(File.read(erb.to_s), trim_mode: '<>').result(binding)
       end
       # error "Unable to find the template file #{erbfile}" unless File.exists? (erbfile )
       # template = File.read("#{erbfile}")

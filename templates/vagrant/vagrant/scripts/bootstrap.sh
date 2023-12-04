@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Time-stamp: <Sun 2020-04-19 12:39 svarrette>
+# Time-stamp: <Mon 2023-12-04 17:51 svarrette>
 ###########################################################################################
 # __     __                          _     ____              _       _
 # \ \   / /_ _  __ _ _ __ __ _ _ __ | |_  | __ )  ___   ___ | |_ ___| |_ _ __ __ _ _ __
-#  \ \ / / _` |/ _` | '__/ _` | '_ \| __| |  _ \ / _ \ / _ \| __/ __| __| '__/ _` | '_ \
-    #   \ V / (_| | (_| | | | (_| | | | | |_  | |_) | (_) | (_) | |_\__ \ |_| | | (_| | |_) |
+#  \ \ / / _` |/ _` | '__/ _` | '_ \| __| |  _ \ / _ \ / _ \| __/ __| __| '__/ _` | '_ \  .
+#   \ V / (_| | (_| | | | (_| | | | | |_  | |_) | (_) | (_) | |_\__ \ |_| | | (_| | |_) |
 #    \_/ \__,_|\__, |_|  \__,_|_| |_|\__| |____/ \___/ \___/ \__|___/\__|_|  \__,_| .__/
 #              |___/                                                              |_|
-#            Copyright (c) 2017-2020 Sebastien Varrette <sebastien.varrette@uni.lu>
+#            Copyright (c) 2017-2023 Sebastien Varrette
 ###########################################################################################
 # (prefered) way to see a Vagrant box configured.
 #
@@ -26,12 +26,12 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MOTD="/etc/motd"
 DOTFILES_DIR='/etc/dotfiles.d'
 DOTFILES_URL='https://github.com/ULHPC/dotfiles.git'
-EXTRA_PACKAGES=
+EXTRA_PACKAGES='swtpm swtpm-tools'
 
 TITLE=$(hostname -s)
 
 # List of default packages to install
-COMMON_DEFAULT_PACKAGES="ruby wget figlet git screen bash-completion rsync vim htop net-tools mailx"
+COMMON_DEFAULT_PACKAGES="ruby wget figlet git screen bash-completion rsync vim htop net-tools"
 
 ######
 # Print information in the following form: '[$2] $1' ($2=INFO if not submitted)
@@ -67,6 +67,15 @@ setup_redhat() {
     touch    /etc/sysconfig/bash-prompt-screen
     chmod +x /etc/sysconfig/bash-prompt-screen
 
+    if [ -x "/usr/bin/crb" ]; then
+        info "Enable CodeReady Builder (CRB) repository"
+        /usr/bin/crb enable
+    fi
+
+    if ! grep -e "fastestmirror" /etc/dnf/dnf.conf; then
+        echo "fastestmirror=1" >> /etc/dnf/dnf.conf
+    fi
+
     info "Running yum update"
     yum update -y  >/dev/null
 
@@ -81,17 +90,24 @@ setup_redhat() {
     os_version=$(rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release))
     info "Adding Puppet Labs repo and installing Puppet for RHEL/CentOS ${os_version}"
     # Get the major version
-    yum install -y https://yum.puppetlabs.com/puppet-release-el-$(echo $os_version | cut -d '.' -f 1).noarch.rpm
+    yum install -y https://yum.puppetlabs.com/puppet7-release-el-$(echo $os_version | cut -d '.' -f 1).noarch.rpm
     yum install -y puppet
 }
 
 setup_apt() {
+    export DEBIAN_FRONTEND=noninteractive
+
     case $1 in
         3*) codename=cumulus ;;
         6)  codename=squeeze ;;
         7)  codename=wheezy ;;
         8)  codename=jessie  ;;
         9)  codename=stretch  ;;
+        10) codename=buster  ;;
+        11) codename=bullseye ;;
+        12) codename=bookworm ;;
+        13) codename=trixie ;;
+        14) codename=forky ;;
         12.04) codename=precise ;;
         14.04) codename=trusty  ;;
         16.04) codename=xenial ;;
@@ -104,13 +120,12 @@ setup_apt() {
     info "Installing default packages"
     apt-get install -y ${COMMON_DEFAULT_PACKAGES} git-core ${EXTRA_PACKAGES}  >/dev/null
 
-    info "Installing Puppet and its dependencies"
-    apt-get install puppet-agent -y >/dev/null
-    apt-get install apt-transport-https -y >/dev/null
+    info "Set locale"
+    localectl set-locale LANG=en_US.UTF-8
 
-    info "installing Environment modules and  LMod"
-    apt-get install -y environment-modules lmod
-    apt-get install -y build-essentials
+    info "Installing puppet"
+    apt-get install -y puppet >/dev/null
+
 }
 
 setup_linux() {
@@ -144,7 +159,7 @@ setup_linux() {
     info "Detected Linux distro: ${distro} version ${majver} on arch ${ARCH}"
     case "$distro" in
         debian|ubuntu) setup_apt $majver ;;
-        redhat|fedora|centos|scientific|amazon) setup_redhat $majver ;;
+        redhat|rocky|fedora|centos|almalinux|scientific|amazon) setup_redhat $majver ;;
         *) echo "Not supported distro: $distro"; exit 1;;
     esac
 
@@ -169,6 +184,9 @@ setup_dotfiles () {
         info "installing dotfiles for 'vagrant' user"
         sudo -u vagrant ${dotfile_install_cmd}
     fi
+    info "cleanup .inputrc"
+    rm -f /root/.inputrc
+    sudo -u vagrant rm -f ~vagrant/.inputrc
 }
 
 setup_motd() {

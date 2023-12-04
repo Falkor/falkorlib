@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Wed 2023-11-22 17:32 svarrette>
+# Time-stamp: <Mon 2023-12-04 16:10 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -131,17 +131,20 @@ module FalkorLib #:nodoc:
             :ram    => 1024,
             :vcpus  => 2,
             :domain => 'vagrant.dev',
-            :range  => '10.10.1.0/24',
+            :range  => '192.168.56.0/21',
+            :provider => 'virtualbox',
             :boxes => {
-              :debian12      => 'debian/bookworm64',
-              :rockylinux9   => 'rockylinux/9',
-              :rockylinux8   => 'rockylinux/8',
-              :centosstream9 => 'centos/stream9',
-              :centosstream8 => 'centos/stream8',
-              :ubuntu22      => 'ubuntu/jammy64',
-              :ubuntu20      => 'ubuntu/focal64',
-              :fedora38      => 'generic/fedora38',
-              :archlinux     => 'archlinux/archlinux'
+              :debian12        => 'generic/debian12',
+              :debian12_uefi   => 'ncrmro/debian-bookworm64-uefi',
+              :almalinux9      => 'almalinux/9',
+              :almalinux8      => 'almalinux/8',
+              :almalinux8_uefi => 'almalinux/8.uefi',
+              :rockylinux8     => 'rockylinux/8',
+              :centosstream8   => 'centos/stream8',
+              :ubuntu22        => 'ubuntu/jammy64',
+              :ubuntu20        => 'ubuntu/focal64',
+              :fedora38        => 'generic/fedora38',
+              :archlinux       => 'archlinux/archlinux'
             },
           }
         }
