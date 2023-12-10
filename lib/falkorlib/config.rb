@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Thu 2022-06-02 19:14 svarrette>
+# Time-stamp: <Tue 2023-11-21 17:21 svarrette>
 ################################################################################
 # FalkorLib Configuration
 #
@@ -56,8 +56,8 @@ module FalkorLib #:nodoc:
       #:custom_cfg   => '.falkorlib.yaml',
       :rvm => {
         # See https://www.ruby-lang.org/en/downloads/branches/ for stable branches
-        :rubies      => [ '3.1.2', '3.0.4', '2.7.6'],
-        :version     => '3.1.2',
+        :rubies      => [ '3.2.2', '3.1.4', '3.0.6', '2.7.8'],
+        :version     => '3.1.4',
         :versionfile => '.ruby-version',
         :gemsetfile  => '.ruby-gemset'
       },

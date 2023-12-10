@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2020-04-20 10:23 svarrette>
+# Time-stamp: <Mon 2023-12-04 16:37 svarrette>
 ################################################################################
 # Interface for Bootstrapping MkDocs
 #
@@ -39,9 +39,23 @@ module FalkorLib
                     "Select OS to configure within your vagrant boxes by default",
                     (config[:boxes].keys.find_index(config[:os]) + 1))
       end
+      # Eventually adapt default provider and IP range
+      providers = ['virtualbox', 'libvirt']
+      default_provider = (config[:os] =~ /_uefi$/) ? 'libvirt': 'virtualbox'
+      info "OS selected: #{config[:os]} (thus with default provider: #{default_provider})"
+      config[:provider] = select_from(providers,
+        "Confirm vagrant hypervisor provider:",
+        providers.find_index(default_provider)+1)
+      config[:range] = case config[:provider]
+                       when 'libvirt'
+                         '192.168.122.1/24'
+                       else
+                         '192.168.56.0/21'
+                       end
       [ :ram, :vcpus, :domain, :range ].each do |k|
         config[k.to_sym] = ask("\tDefault #{k.capitalize}:", config[k.to_sym])
       end
+
       puts config.to_yaml
       FalkorLib::GitFlow.start('feature', 'vagrant', rootdir) if (use_git && FalkorLib::GitFlow.init?(rootdir))
       init_from_template(templatedir, rootdir, config,
@@ -55,15 +69,8 @@ module FalkorLib
       [ 'bootstrap.sh'].each do |f|
         FalkorLib::Git.add(File.join(scriptsdir, "#{f}")) if use_git
       end
-      #puppetdir  = File.join(confdir, 'puppet')
-      Dir.chdir( rootdir ) do
-        run %(git ignore '.vagrant/' ) if command?('git-ignore')
-        #   run %(ln -s README.md index.md )
-      #   run %(ln -s README.md contributing/index.md )
-      #   run %(ln -s README.md setup/index.md )
-      end
-      if File.exist?(File.join(rootdir, '.gitignore'))
-        FalkorLib::Git.add(File.join(rootdir, '.gitignore')) if use_git
+      [ '.gitignore', '.ruby-version' ].each do |f|
+        FalkorLib::Git.add(File.join(rootdir, "#{f}")) if (use_git && File.exist?(File.join(rootdir, "#{f}")))
       end
       return 0
       #exit_status.to_i
