@@ -226,6 +226,7 @@ module FalkorLib
         exit_status = run %(
           mkdir -p #{dirname}
           echo '*' > #{dirname}/.gitignore
+          echo '!.gitignore' >> #{dirname}/.gitignore
                 )
         if FalkorLib::Git.init?(path)
           exit_status = FalkorLib::Git.add(File.join(trashdir.to_s, '.gitignore' ),
