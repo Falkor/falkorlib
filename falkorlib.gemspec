@@ -77,7 +77,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("configatron",       '~> 3.0')
   s.add_runtime_dependency("deep_merge",        '~> 1.0')
   s.add_runtime_dependency("diffy",             '~> 3.4', '>= 3.4.2')
-  s.add_runtime_dependency("facter",            '~> 2.4.1')
+  s.add_runtime_dependency("facter",            '~> 4.6.1')
   s.add_runtime_dependency 'git_remote_branch', '~> 0'
   s.add_runtime_dependency("json",              '~> 2.6', '>= 2.6.3')
   s.add_runtime_dependency("license-generator", '~> 0')
