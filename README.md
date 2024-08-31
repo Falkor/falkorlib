@@ -116,15 +116,16 @@ This library comes with a CLI `falkor`, providing the following [sub] commands.
 
 __Base commands__
 
-| Command                            | Description                                                       |
-|------------------------------------|-------------------------------------------------------------------|
-| `falkor --version, -V`             | Print the version number of Falkor[Lib]                           |
-| `falkor help [COMMAND]`            | Describe available commands or one specific command               |
-| `falkor gitcrypt <PATH> [options]` | Initialize git-crypt for the current repository                   |
-| `falkor init <PATH> [options]`     | Bootstrap a Git[flow] Repository                                  |
-| `falkor mkdocs [options]`          | Initialize mkdocs for the current project                         |
-| `falkor motd <PATH> [options]`     | Initiate a 'motd' file - message of the day                       |
-| `falkor vagrant [options]`         | Initialize vagrant for the current project                        |
+| Command                             | Description                                         |
+|-------------------------------------+-----------------------------------------------------|
+| `falkor --version, -V`              | Print the version number of Falkor[Lib]             |
+| `falkor help [COMMAND]`             | Describe available commands or one specific command |
+| `falkor gitcrypt <PATH> [options]`  | Initialize git-crypt for the repository             |
+| `falkor gitignore <PATH> [options]` | Populate .gitignore                                 |
+| `falkor init <PATH> [options]`      | Bootstrap a Git[flow] Repository                    |
+| `falkor mkdocs [options]`           | Initialize mkdocs for the current project           |
+| `falkor motd <PATH> [options]`      | Initiate a 'motd' file - message of the day         |
+| `falkor vagrant [options]`          | Initialize vagrant for the current project          |
 
 __`falkor link <type> [path]`__
 

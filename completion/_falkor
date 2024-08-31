@@ -1,7 +1,7 @@
 #compdef falkor
 ########################################################################################
 # -*- mode:sh; -*-
-# Time-stamp: <Wed 2018-11-21 11:53 svarrette>
+# Time-stamp: <Sat 2024-08-31 16:27 svarrette>
 #
 # ZSH completion for [FalkorLib](https://github.com/Falkor/falkorlib)
 #
@@ -41,6 +41,7 @@ _falkor()
         'commands:Lists all available commands'
         'config:Print the current configuration of FalkorLib'
         'gitcrypt:Initialize git-crypt for the current repository'
+        'gitignore:Initialize .gitignore for the current repository'
         'help:Describe available commands or one specific command'
         'init:Bootstrap a Git Repository the falkor way'
         'link:Initialize a special symlink (.root, .makefile.d etc.)'
@@ -77,6 +78,8 @@ _falkor()
                     __falkor_config && ret=0 ;;
                 (gitcrypt)
                     __falkor_gitcrypt && ret=0 ;;
+                (gitignore)
+                    __falkor_gitignore && ret=0 ;;
                 (init)
                     __falkor_init   && ret=0   ;;
                 (link)
@@ -337,6 +340,18 @@ __falkor_gitcrypt() {
                {--owner,-o}'[Email or GPG ID of the owner of the git-crypt root vault]:owner:($(git config user.signingKey) $(git config user.email))' \
                {--keys,-k}'[(space separated) List of GPG IDs allowed to unlock the repository]:keys' \
                {-u,--ulhpc}'[Bootstrap git-crypt for the UL HPC team]' \
+               '*:directory:_files -/'
+}
+
+##################
+__falkor_gitignore() {
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+
+    _arguments -C \
+               {--all,-a}'[Ignore all files (except .gitignore)]' \
+               {--latex,-l}'[Setup .gitignore for LaTeX sources]' \
+               {--python,-p}'[Setup .gitignore for Python project]' \
                '*:directory:_files -/'
 }
 
