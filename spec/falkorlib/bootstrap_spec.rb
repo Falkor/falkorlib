@@ -2,7 +2,7 @@
 #########################################
 # bootstrap_spec.rb
 # @author Sebastien Varrette <Sebastien.Varrette@uni.lu>
-# Time-stamp: <Mon 2020-04-20 09:58 svarrette>
+# Time-stamp: <Sat 2024-08-31 16:18 svarrette>
 #
 # @description Check the basic Bootstrapping operations
 #
@@ -186,6 +186,50 @@ describe FalkorLib::Bootstrap do
             expect(File).to exist( File.join(dir, f))
           end
         end
+
+        it "#gitignore -- git ignore population from default templates (ignore all)" do
+          c = FalkorLib::Bootstrap.gitignore(dir, { :no_interaction => true })
+          gitignore = File.join(dir, '.gitignore')
+          expect(File).to exist( gitignore )
+          # Default .gitignore should ignore itself
+          File.read(File.realpath( gitignore )) do |f|
+            f.should include "!.gitignore"
+          end
+        end
+
+        it "#gitignore -- git ignore population from LaTeX templates" do
+          c = FalkorLib::Bootstrap.gitignore(dir, { :latex => true, :no_interaction => true })
+          gitignore = File.join(dir, '.gitignore')
+          expect(File).to exist( gitignore )
+          # Default .gitignore should ignore itself
+          File.read(File.realpath( gitignore )) do |f|
+            [
+              "*.aux",
+              "*.synctex",
+              "/*.pdf",       # ignore local PDF
+            ].each do |pattern|
+              f.should include "#{pattern}"
+            end
+          end
+        end
+
+        it "#gitignore -- git ignore population from Python templates" do
+          c = FalkorLib::Bootstrap.gitignore(dir, { :python => true, :no_interaction => true })
+          gitignore = File.join(dir, '.gitignore')
+          expect(File).to exist( gitignore )
+          # Default .gitignore should ignore itself
+          File.read(File.realpath( gitignore )) do |f|
+            [
+              "__pycache__/",
+              "*.egg-info",
+              "*.nox",
+            ].each do |pattern|
+              f.should include "#{pattern}"
+            end
+          end
+        end
+
+
       end
 
       if (ctx == :with_git and !ENV['TRAVIS_CI_RUN'])

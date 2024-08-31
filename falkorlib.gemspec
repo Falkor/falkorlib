@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version      = FalkorLib::Version.to_s #$version
   s.date         = Time.now.strftime('%Y-%m-%d')
   s.summary      = "Sebastien Varrette aka Falkor's Common library to share Ruby code and {rake,cap} tasks"
-  s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several element of my daily workflow (new git repository, new beamer slides etc.).\n"
+  s.description  = "This is my personal library I use to share the Ruby tidbits and Rake tasks I made it for my various projects, and also to bootstrap easily several elements of my daily workflow (new git repository, new beamer slides etc.).\n"
 
   s.homepage     = "https://github.com/Falkor/falkorlib"
   s.licenses     = 'MIT'
@@ -77,7 +77,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("configatron",       '~> 3.0')
   s.add_runtime_dependency("deep_merge",        '~> 1.0')
   s.add_runtime_dependency("diffy",             '~> 3.4', '>= 3.4.2')
-  s.add_runtime_dependency("facter",            '~> 2.4.1')
+  s.add_runtime_dependency("facter",            '~> 4.6.1')
   s.add_runtime_dependency 'git_remote_branch', '~> 0'
   s.add_runtime_dependency("json",              '~> 2.6', '>= 2.6.3')
   s.add_runtime_dependency("license-generator", '~> 0')

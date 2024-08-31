@@ -226,6 +226,7 @@ module FalkorLib
         exit_status = run %(
           mkdir -p #{dirname}
           echo '*' > #{dirname}/.gitignore
+          echo '!.gitignore' >> #{dirname}/.gitignore
                 )
         if FalkorLib::Git.init?(path)
           exit_status = FalkorLib::Git.add(File.join(trashdir.to_s, '.gitignore' ),
@@ -297,15 +298,15 @@ module FalkorLib
         next if [:file, :width].include?(k)
         config[k.to_sym] = ask( "\t" + format("Message of the Day (MotD) %-10s", k.to_s), config[k.to_sym]) unless options[:no_interaction]
       end
-      config[:os] = Facter.value(:lsbdistdescription) if Facter.value(:lsbdistdescription)
-      config[:os] = "Mac " + Facter.value(:sp_os_version) if Facter.value(:sp_os_version)
+      config[:os] = Facter.value('os.distro.description') if Facter.value('os.distro.description')
+      config[:os] = "Mac " + Facter.value('system_profiler.system_version') if Facter.value('system_profiler.system_version')
       unless options[:nodemodel]
-        config[:nodemodel] = Facter.value(:sp_machine_name) if Facter.value(:sp_machine_name)
-        config[:nodemodel] += " (#{Facter.value(:sp_cpu_type)}" if Facter.value(:sp_cpu_type)
-        config[:nodemodel] += " " + Facter.value(:sp_current_processor_speed) if Facter.value(:sp_current_processor_speed)
-        config[:nodemodel] += " #{Facter.value(:sp_number_processors)} cores )" if Facter.value(:sp_number_processors)
+        config[:nodemodel] = Facter.value('system_profiler.model_name') if Facter.value('system_profiler.model_name')
+        config[:nodemodel] += " (#{Facter.value('system_profiler.processor_name')}" if Facter.value('system_profiler.processor_name')
+        config[:nodemodel] += " " + Facter.value('system_profiler.processor_speed') if Facter.value('system_profiler.processor_speed')
+        config[:nodemodel] += " #{Facter.value('system_profiler.cores')} cores )" if Facter.value('system_profiler.cores')
       end
-      config[:nodemodel] = Facter.value(:sp_machine_name) unless options[:nodemodel]
+      config[:nodemodel] = Facter.value('system_profiler.model_name') unless options[:nodemodel]
       write_from_erb_template(erbfile, outfile, config, options)
     end # motd
 

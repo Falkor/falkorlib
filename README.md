@@ -13,7 +13,7 @@ Coverage](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/test_covera
                    |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
 
 
-        Copyright (c) 2012-2023 Sebastien Varrette <Sebastien.Varrette@gmail.com>
+        Copyright (c) 2012-2024 Sebastien Varrette <Sebastien.Varrette@gmail.com>
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code, `{rake,cap}`
 tasks and project templates
@@ -116,15 +116,16 @@ This library comes with a CLI `falkor`, providing the following [sub] commands.
 
 __Base commands__
 
-| Command                            | Description                                                       |
-|------------------------------------|-------------------------------------------------------------------|
-| `falkor --version, -V`             | Print the version number of Falkor[Lib]                           |
-| `falkor help [COMMAND]`            | Describe available commands or one specific command               |
-| `falkor gitcrypt <PATH> [options]` | Initialize git-crypt for the current repository                   |
-| `falkor init <PATH> [options]`     | Bootstrap a Git[flow] Repository                                  |
-| `falkor mkdocs [options]`          | Initialize mkdocs for the current project                         |
-| `falkor motd <PATH> [options]`     | Initiate a 'motd' file - message of the day                       |
-| `falkor vagrant [options]`         | Initialize vagrant for the current project                        |
+| Command                             | Description                                         |
+|-------------------------------------+-----------------------------------------------------|
+| `falkor --version, -V`              | Print the version number of Falkor[Lib]             |
+| `falkor help [COMMAND]`             | Describe available commands or one specific command |
+| `falkor gitcrypt <PATH> [options]`  | Initialize git-crypt for the repository             |
+| `falkor gitignore <PATH> [options]` | Populate .gitignore                                 |
+| `falkor init <PATH> [options]`      | Bootstrap a Git[flow] Repository                    |
+| `falkor mkdocs [options]`           | Initialize mkdocs for the current project           |
+| `falkor motd <PATH> [options]`      | Initiate a 'motd' file - message of the day         |
+| `falkor vagrant [options]`          | Initialize vagrant for the current project          |
 
 __`falkor link <type> [path]`__
 
@@ -491,6 +492,41 @@ Then install the required dependent gems as follows:
 
     $> bundle install
 
+### Using bundle during developments
+
+When you are developping /contributing to this module, you can test *locally* the `falkor` CLI with:
+
+```bash
+bundle exec falkor [...] /path/to/testing/directory
+```
+
+### Release a new gem
+
+(notes for myself ;))
+
+Once satisfied with the changes:
+
+* disable (temporarily) git commit signing as it slow downs the rspec tests `~/.config/git/git.local`
+
+```bash
+rake version:bump:{patch,minor,major} # Select accordingly
+# Ensure all tests pass - otherwise correct them in the release/<new-version> branch
+rake version:release
+```
+
+The follow the [guide for publishing your gem](https://guides.rubygems.org/publishing/):
+
+* Sign-in on [RubyGem Dashboard](https://rubygems.org/dashboard)
+* **DO NOT** save your credentials under `~//.gem/credentials` as suggested (just why would you do that?)
+* Run:
+
+```bash
+gem push pkg/falkorlib-<version>.gem
+```
+
+Check the status on <https://rubygems.org/gems/falkorlib>
+
+* Restore your [local] git configuration to sign back all your commits
 
 ### Git Branching Model
 

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2020-04-20 16:13 svarrette>
+# Time-stamp: <Sat 2024-08-31 16:34 svarrette>
 ################################################################################
 # Interface for the main Bootstrapping operations
 #
@@ -215,11 +215,26 @@ module FalkorLib
           run %( git crypt add-gpg-user #{k} )
         end
       end
-
-
-
-
     end # gitcrypt
+
+    ###### gitignore ######
+    # Initialize .gitignore in the [current] directory
+    def gitignore(dir = Dir.pwd, options = {})
+      path = normalized_path(dir)
+      unless File.directory?(path)
+        warning "The directory '#{path}' does not exist yet."
+        warning 'Do you want to create (and git init) this directory?'
+        really_continue?
+        run %(mkdir -p #{path})
+      end
+      templatedir = File.join( FalkorLib.templates, 'gitignore')
+      src_gitignore = 'All.gitignore'    # Default without any option
+      src_gitignore = 'TeX.gitignore'    if options[:latex]
+      src_gitignore = 'Python.gitignore' if options[:python]
+      src_gitignore = 'All.gitignore'    if options[:all]
+      run %(cp #{templatedir}/#{src_gitignore} #{path}/.gitignore)
+    end # gitignore
+
 
   end # module Bootstrap
 end # module FalkorLib

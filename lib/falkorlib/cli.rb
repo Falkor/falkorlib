@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 ################################################################################
-# Time-stamp: <Mon 2020-04-20 17:04 svarrette>
+# Time-stamp: <Sat 2024-08-31 16:30 svarrette>
 ################################################################################
 # Interface for the CLI
 #
@@ -92,6 +92,21 @@ CONFIG_LONG_DESC
       def gitcrypt(path = '.')
         FalkorLib::Bootstrap.gitcrypt(path, options)
       end # gitcrypt
+
+      ###### gitignore ######
+      method_option :all, :aliases => ['--all', '-a' ], :type => :boolean, :default => true,
+                    :desc => "Ignore all files (except .gitignore)"
+      method_option :latex, :aliases => ['--latex', '--tex', '-l' ], :type => :boolean, :default => false,
+                    :desc => "Setup .gitignore for LaTeX sources"
+      method_option :python, :aliases => '-p', :type => :boolean, :default => false,
+                    :desc => "Setup .gitignore for Python project"
+      #......................................
+      desc "gitignore <PATH> [options]", "Initialize .gitignore for the [current] directory (by default, ignore all files but .gitignore"
+      def gitignore(path = '.')
+        FalkorLib::Bootstrap.gitignore(path, options)
+      end # gitignore
+
+
 
       ###### init ######
       desc "init <PATH> [options]", "Bootstrap a Git Repository"
