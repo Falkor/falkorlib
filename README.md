@@ -504,17 +504,20 @@ bundle exec falkor [...] /path/to/testing/directory
 
 (notes for myself ;))
 
-Once you're satisfied with your changes,
+Once satisfied with the changes:
+
+* disable (temporarily) git commit signing as it slow downs the rspec tests `~/.config/git/git.local`
 
 ```bash
 rake version:bump:{patch,minor,major} # Select accordingly
+# Ensure all tests pass - otherwise correct them in the release/<new-version> branch
 rake version:release
 ```
 
 The follow the [guide for publishing your gem](https://guides.rubygems.org/publishing/):
 
-* Sign-in on [RubyGem Dashboard](https://rubygems.org/dashboard), select
-* **DO NOT** save your credentials under `~//.gem/credentials` as suggested (just why would you do that...)
+* Sign-in on [RubyGem Dashboard](https://rubygems.org/dashboard)
+* **DO NOT** save your credentials under `~//.gem/credentials` as suggested (just why would you do that?)
 * Run:
 
 ```bash
@@ -522,6 +525,8 @@ gem push pkg/falkorlib-<version>.gem
 ```
 
 Check the status on <https://rubygems.org/gems/falkorlib>
+
+* Restore your [local] git configuration to sign back all your commits
 
 ### Git Branching Model
 
