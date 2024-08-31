@@ -500,6 +500,29 @@ When you are developping /contributing to this module, you can test *locally* th
 bundle exec falkor [...] /path/to/testing/directory
 ```
 
+### Release a new gem
+
+(notes for myself ;))
+
+Once you're satisfied with your changes,
+
+```bash
+rake version:bump:{patch,minor,major} # Select accordingly
+rake version:release
+```
+
+The follow the [guide for publishing your gem](https://guides.rubygems.org/publishing/):
+
+* Sign-in on [RubyGem Dashboard](https://rubygems.org/dashboard), select
+* **DO NOT** save your credentials under `~//.gem/credentials` as suggested (just why would you do that...)
+* Run:
+
+```bash
+gem push pkg/falkorlib-<version>.gem
+```
+
+Check the status on <https://rubygems.org/gems/falkorlib>
+
 ### Git Branching Model
 
 The Git branching model for this repository follows the guidelines of [gitflow](http://nvie.com/posts/a-successful-git-branching-model/).
