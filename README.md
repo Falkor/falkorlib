@@ -13,7 +13,7 @@ Coverage](https://api.codeclimate.com/v1/badges/9f1c7762f29572b3f8f0/test_covera
                    |_|  \__,_|_|_|\_\___/|_|  |_____|_|_.__/
 
 
-        Copyright (c) 2012-2023 Sebastien Varrette <Sebastien.Varrette@gmail.com>
+        Copyright (c) 2012-2024 Sebastien Varrette <Sebastien.Varrette@gmail.com>
 
 Sebastien Varrette aka Falkor's Common library to share Ruby code, `{rake,cap}`
 tasks and project templates
@@ -491,6 +491,13 @@ Then install the required dependent gems as follows:
 
     $> bundle install
 
+### Using bundle during developments
+
+When you are developping /contributing to this module, you can test *locally* the `falkor` CLI with:
+
+```bash
+bundle exec falkor [...] /path/to/testing/directory
+```
 
 ### Git Branching Model
 
