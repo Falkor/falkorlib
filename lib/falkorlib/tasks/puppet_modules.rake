@@ -175,7 +175,9 @@ task :lint => :lint_info
 # Puppet-syntax - see https://github.com/gds-operations/puppet-syntax
 #
 require 'puppet-syntax/tasks/puppet-syntax'
-PuppetSyntax.future_parser = true
+if Gem::Version.new(PuppetSyntax::VERSION) < Gem::Version.new('3.0.0')
+  PuppetSyntax.future_parser = true
+end
 PuppetSyntax.exclude_paths = exclude_tests_paths
 
 # task :syntax_info do
